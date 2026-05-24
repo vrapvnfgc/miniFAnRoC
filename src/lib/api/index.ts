@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { APIClient } from './client';
 
 export interface ApiResponse<T> {
