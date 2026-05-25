@@ -8,6 +8,7 @@ import { teamsRouter } from './modules/teams/teams.routes';
 import { fieldsRouter } from './modules/fields/fields.routes';
 import { matchesRouter } from './modules/matches/matches.routes';
 import { scoresRouter } from './modules/scores/scores.routes';
+import { rankingsRouter } from './modules/rankings/rankings.routes';
 const app = express();
 
 app.use(cors());
@@ -20,6 +21,7 @@ app.use('/api/v1/teams', teamsRouter);
 app.use('/api/v1/fields', fieldsRouter);
 app.use('/api/v1/matches', matchesRouter);
 app.use('/api/v1/matches', scoresRouter);
+app.use('/api/v1/rankings', rankingsRouter);
 app.use((req, _res, next) => {
 	next(AppError.notFound(`endpoint not found: ${req.method} ${req.path}`));
 });
