@@ -1,7 +1,6 @@
 import mongoose, { Schema, HydratedDocument } from 'mongoose';
 
 export interface IField {
-	_id: string;
 	name: string;
 	description?: string;
 	status: 'ACTIVE' | 'INACTIVE';
@@ -13,14 +12,12 @@ export type IFieldDocument = HydratedDocument<IField>;
 
 const FieldSchema = new Schema<IField>(
 	{
-		_id: { type: String, required: true },
 		name: { type: String, required: true, unique: true, trim: true },
 		description: { type: String, trim: true },
 		status: { type: String, enum: ['ACTIVE', 'INACTIVE'], default: 'ACTIVE' }
 	},
 	{
-		timestamps: true,
-		_id: false
+		timestamps: true
 	}
 );
 

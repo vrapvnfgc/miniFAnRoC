@@ -1,4 +1,4 @@
-import { BaseService, type ApiResponse } from './index';
+import { BaseService, type ApiResponse } from './base';
 
 export type MatchPhase = 'qualification' | 'semifinal' | 'final';
 
@@ -41,29 +41,27 @@ export type CreateMatch = {
 export type UpdateMatch = Partial<CreateMatch>;
 
 export class MatchesService extends BaseService {
-	async getAll(): Promise<ApiResponse<{ matches: MatchResponse[] }>> {
+	getAll(): Promise<ApiResponse<{ matches: MatchResponse[] }>> {
 		return this.http.get<ApiResponse<{ matches: MatchResponse[] }>>('/matches');
 	}
 
-	async getById(id: string): Promise<ApiResponse<{ match: MatchResponse }>> {
+	getById(id: string): Promise<ApiResponse<{ match: MatchResponse }>> {
 		return this.http.get<ApiResponse<{ match: MatchResponse }>>(`/matches/${id}`);
 	}
 
-	async create(data: CreateMatch): Promise<ApiResponse<{ match: MatchResponse }>> {
+	create(data: CreateMatch): Promise<ApiResponse<{ match: MatchResponse }>> {
 		return this.http.post<ApiResponse<{ match: MatchResponse }>>('/matches', data);
 	}
 
-	async update(id: string, data: UpdateMatch): Promise<ApiResponse<{ match: MatchResponse }>> {
+	update(id: string, data: UpdateMatch): Promise<ApiResponse<{ match: MatchResponse }>> {
 		return this.http.patch<ApiResponse<{ match: MatchResponse }>>(`/matches/${id}`, data);
 	}
 
-	async updateStatus(id: string, status: MatchStatus): Promise<ApiResponse<{ match: MatchResponse }>> {
+	updateStatus(id: string, status: MatchStatus): Promise<ApiResponse<{ match: MatchResponse }>> {
 		return this.update(id, { status });
 	}
 
-	async delete(id: string): Promise<void> {
+	delete(id: string): Promise<void> {
 		return this.http.delete<void>(`/matches/${id}`);
 	}
 }
-
-export const matchesApi = new MatchesService();

@@ -1,4 +1,4 @@
-import { BaseService, type ApiResponse } from './index';
+import { BaseService, type ApiResponse } from './base';
 
 export type ScoreStatus = 'draft' | 'submitted' | 'finalized';
 
@@ -33,24 +33,22 @@ export type MatchScoreResponse = {
 };
 
 export class ScoresService extends BaseService {
-	async save(matchId: string, data: SaveMatchScore): Promise<ApiResponse<{ score: MatchScoreResponse }>> {
+	save(matchId: string, data: SaveMatchScore): Promise<ApiResponse<{ score: MatchScoreResponse }>> {
 		return this.http.post<ApiResponse<{ score: MatchScoreResponse }>>(
 			`/matches/${matchId}/score`,
 			data
 		);
 	}
 
-	async getByMatchId(matchId: string): Promise<ApiResponse<{ score: MatchScoreResponse }>> {
+	getByMatchId(matchId: string): Promise<ApiResponse<{ score: MatchScoreResponse }>> {
 		return this.http.get<ApiResponse<{ score: MatchScoreResponse }>>(
 			`/matches/${matchId}/score`
 		);
 	}
 
-	async finalize(matchId: string): Promise<ApiResponse<{ score: MatchScoreResponse }>> {
+	finalize(matchId: string): Promise<ApiResponse<{ score: MatchScoreResponse }>> {
 		return this.http.post<ApiResponse<{ score: MatchScoreResponse }>>(
 			`/matches/${matchId}/score/finalize`
 		);
 	}
 }
-
-export const scoresApi = new ScoresService();

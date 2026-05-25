@@ -12,7 +12,6 @@ export interface IAllianceScore {
 }
 
 export interface IMatchScore {
-	_id: string;
 	matchId: string;
 	red: IAllianceScore;
 	blue: IAllianceScore;
@@ -39,8 +38,6 @@ const AllianceScoreSchema = new Schema<IAllianceScore>(
 
 const MatchScoreSchema = new Schema<IMatchScore>(
 	{
-		_id: { type: String, required: true },
-
 		matchId: {
 			type: String,
 			required: true,
@@ -67,8 +64,7 @@ const MatchScoreSchema = new Schema<IMatchScore>(
 		finalizedAt: { type: Date }
 	},
 	{
-		timestamps: true,
-		_id: false
+		timestamps: true
 	}
 );
 

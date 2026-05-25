@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { AppError } from '../../core/errors';
 import { FieldModel } from './fields.model';
 
@@ -21,7 +20,7 @@ export type FieldResponse = {
 
 function mapField(field: any): FieldResponse {
 	return {
-		id: field._id,
+		id: String(field._id),
 		name: field.name,
 		description: field.description,
 		status: field.status,
@@ -38,19 +37,15 @@ class FieldsService {
 			throw AppError.conflict(`Field "${data.name}" already exists`, 'FIELD_ALREADY_EXISTS');
 		}
 
-		const id = crypto.randomUUID();
-
 		try {
 			const field = await FieldModel.create({
-				_id: id,
 				name: data.name,
 				description: data.description,
 				status: data.status || 'ACTIVE'
 			});
 
 			return mapField(field);
-		}
-        catch (error: any) {
+		} catch (error: any) {
 			if (error.code === 11000) {
 				throw AppError.conflict(`Field "${data.name}" already exists`, 'FIELD_ALREADY_EXISTS');
 			}

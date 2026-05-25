@@ -10,7 +10,6 @@ export type MatchStatus =
 	| 'terminated';
 
 export interface IMatch {
-	_id: string;
 	matchNumber: number;
 	phase: MatchPhase;
 	fieldId: string;
@@ -29,8 +28,6 @@ export type IMatchDocument = HydratedDocument<IMatch>;
 
 const MatchSchema = new Schema<IMatch>(
 	{
-		_id: { type: String, required: true },
-
 		matchNumber: {
 			type: Number,
 			required: true,
@@ -78,8 +75,7 @@ const MatchSchema = new Schema<IMatch>(
 		notes: { type: String, trim: true }
 	},
 	{
-		timestamps: true,
-		_id: false
+		timestamps: true
 	}
 );
 

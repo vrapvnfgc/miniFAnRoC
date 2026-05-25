@@ -5,8 +5,12 @@ import { matchesService } from './matches.service';
 
 const router = Router();
 
+const ObjectIdSchema = z
+	.string()
+	.regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId');
+
 const MatchIdParamSchema = z.object({
-	id: z.string().uuid('Match ID must be a valid UUID format')
+	id: ObjectIdSchema
 });
 
 const MatchStatusSchema = z.enum([
@@ -22,9 +26,9 @@ const MatchPhaseSchema = z.enum(['qualification', 'semifinal', 'final']);
 const CreateMatchSchema = z.object({
 	matchNumber: z.number().int().positive('Match number must be positive'),
 	phase: MatchPhaseSchema,
-	fieldId: z.string().uuid('Field ID must be a valid UUID format'),
-	redTeamIds: z.array(z.string().uuid()).length(2, 'Red alliance must have exactly 2 teams'),
-	blueTeamIds: z.array(z.string().uuid()).length(2, 'Blue alliance must have exactly 2 teams'),
+	fieldId: ObjectIdSchema,
+	redTeamIds: z.array(ObjectIdSchema).length(2, 'Red alliance must have exactly 2 teams'),
+	blueTeamIds: z.array(ObjectIdSchema).length(2, 'Blue alliance must have exactly 2 teams'),
 	status: MatchStatusSchema.optional(),
 	scheduledTime: z.string().datetime().optional(),
 	startTime: z.string().datetime().optional(),

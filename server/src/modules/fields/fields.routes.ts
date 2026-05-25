@@ -5,17 +5,18 @@ import { fieldsService } from './fields.service';
 
 const router = Router();
 
+const ObjectIdSchema = z
+	.string()
+	.regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId');
+
 const FieldIdParamSchema = z.object({
-	id: z.string().uuid('Field ID must be a valid UUID format')
+	id: ObjectIdSchema
 });
 
 const CreateFieldSchema = z.object({
 	name: z.string().min(1, 'Field name is required'),
 	description: z.string().optional(),
-	status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
-	currentMatchId: z.string().uuid().nullable().optional(),
-	location: z.string().optional(),
-	capacity: z.number().int().positive().optional()
+	status: z.enum(['ACTIVE', 'INACTIVE']).optional()
 });
 
 const UpdateFieldSchema = CreateFieldSchema.partial();

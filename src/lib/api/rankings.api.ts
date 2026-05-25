@@ -1,4 +1,4 @@
-import { BaseService, type ApiResponse } from './index';
+import { BaseService, type ApiResponse } from './base';
 
 export type RankingItem = {
 	rank: number;
@@ -13,10 +13,8 @@ export type RankingItem = {
 };
 
 export class RankingsService extends BaseService {
-	async getAll(includeUnfinalized = false): Promise<ApiResponse<{ rankings: RankingItem[] }>> {
+	getAll(includeUnfinalized = false): Promise<ApiResponse<{ rankings: RankingItem[] }>> {
 		const query = includeUnfinalized ? '?includeUnfinalized=true' : '';
 		return this.http.get<ApiResponse<{ rankings: RankingItem[] }>>(`/rankings${query}`);
 	}
 }
-
-export const rankingsApi = new RankingsService();

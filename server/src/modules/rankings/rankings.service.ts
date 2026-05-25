@@ -21,9 +21,11 @@ class RankingsService {
 		const rankingMap = new Map<string, RankingItem>();
 
 		for (const team of teams) {
-			rankingMap.set(team._id, {
+			const teamId = String(team._id);
+
+			rankingMap.set(teamId, {
 				rank: 0,
-				teamId: team._id,
+				teamId,
 				teamNumber: team.teamNumber,
 				teamName: team.name,
 				rankingScore: 0,
@@ -39,14 +41,13 @@ class RankingsService {
 			: { status: 'finalized' };
 
 		const scores = await MatchScoreModel.find(scoreFilter);
-
 		const matchIds = scores.map((score) => score.matchId);
 
 		const matches = await MatchModel.find({
 			_id: { $in: matchIds }
 		});
 
-		const matchMap = new Map(matches.map((match) => [match._id, match]));
+		const matchMap = new Map(matches.map((match) => [String(match._id), match]));
 
 		for (const score of scores) {
 			const match = matchMap.get(score.matchId);
@@ -59,11 +60,11 @@ class RankingsService {
 			const blueScore = score.blue.total;
 
 			for (const teamId of match.redTeamIds) {
-				this.applyMatchScore(rankingMap.get(teamId), redScore);
+				this.applyMatchScore(rankingMap.get(String(teamId)), redScore);
 			}
 
 			for (const teamId of match.blueTeamIds) {
-				this.applyMatchScore(rankingMap.get(teamId), blueScore);
+				this.applyMatchScore(rankingMap.get(String(teamId)), blueScore);
 			}
 		}
 
@@ -101,8 +102,6 @@ class RankingsService {
 			ranking.highestMatchScore = matchScore;
 		}
 
-		// Tạm thời bonusPoint = 0.
-		// Sau này có đề chính thức thì sửa ở đây.
 		ranking.bonusPoint += 0;
 	}
 }

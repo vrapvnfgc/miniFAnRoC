@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { AppError } from '../../core/errors';
 import { MatchModel, MatchPhase, MatchStatus } from './matches.model';
 import { TeamModel } from '../teams/teams.model';
@@ -37,7 +36,7 @@ export type MatchResponse = {
 
 function mapMatch(match: any): MatchResponse {
 	return {
-		id: match._id,
+		id: String(match._id),
 		matchNumber: match.matchNumber,
 		phase: match.phase,
 		fieldId: match.fieldId,
@@ -64,7 +63,10 @@ async function validateMatchReferences(fieldId: string, redTeamIds: string[], bl
 	const uniqueTeamIds = [...new Set(allTeamIds)];
 
 	if (uniqueTeamIds.length !== allTeamIds.length) {
-		throw AppError.badRequest('A team cannot appear more than once in the same match', 'DUPLICATE_TEAM_IN_MATCH');
+		throw AppError.badRequest(
+			'A team cannot appear more than once in the same match',
+			'DUPLICATE_TEAM_IN_MATCH'
+		);
 	}
 
 	const existingTeamsCount = await TeamModel.countDocuments({
@@ -89,11 +91,8 @@ class MatchesService {
 
 		await validateMatchReferences(data.fieldId, data.redTeamIds, data.blueTeamIds);
 
-		const id = crypto.randomUUID();
-
 		try {
 			const match = await MatchModel.create({
-				_id: id,
 				matchNumber: data.matchNumber,
 				phase: data.phase,
 				fieldId: data.fieldId,
@@ -177,4 +176,4 @@ class MatchesService {
 	}
 }
 
-export const matchesService = new MatchesService(); 
+export const matchesService = new MatchesService();

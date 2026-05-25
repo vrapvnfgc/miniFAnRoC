@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { AppError } from '../../core/errors';
 import { MatchModel } from '../matches/matches.model';
 import { MatchScoreModel, ScoreStatus } from './scores.model';
@@ -55,7 +54,7 @@ function buildAllianceScore(score: AllianceScoreInput): AllianceScoreResponse {
 
 function mapScore(score: any): MatchScoreResponse {
 	return {
-		id: score._id,
+		id: String(score._id),
 		matchId: score.matchId,
 		red: score.red,
 		blue: score.blue,
@@ -99,7 +98,6 @@ class ScoresService {
 		}
 
 		const score = await MatchScoreModel.create({
-			_id: crypto.randomUUID(),
 			matchId,
 			red,
 			blue,

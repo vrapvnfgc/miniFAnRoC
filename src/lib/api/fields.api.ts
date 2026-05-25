@@ -1,4 +1,4 @@
-import { BaseService, type ApiResponse } from './index';
+import { BaseService, type ApiResponse } from './base';
 
 export type FieldStatus = 'ACTIVE' | 'INACTIVE';
 
@@ -20,29 +20,27 @@ export type CreateField = {
 export type UpdateField = Partial<CreateField>;
 
 export class FieldsService extends BaseService {
-	async getAll(): Promise<ApiResponse<{ fields: FieldResponse[] }>> {
+	getAll(): Promise<ApiResponse<{ fields: FieldResponse[] }>> {
 		return this.http.get<ApiResponse<{ fields: FieldResponse[] }>>('/fields');
 	}
 
-	async getActive(): Promise<ApiResponse<{ fields: FieldResponse[] }>> {
+	getActive(): Promise<ApiResponse<{ fields: FieldResponse[] }>> {
 		return this.http.get<ApiResponse<{ fields: FieldResponse[] }>>('/fields/active');
 	}
 
-	async getById(id: string): Promise<ApiResponse<{ field: FieldResponse }>> {
+	getById(id: string): Promise<ApiResponse<{ field: FieldResponse }>> {
 		return this.http.get<ApiResponse<{ field: FieldResponse }>>(`/fields/${id}`);
 	}
 
-	async create(data: CreateField): Promise<ApiResponse<{ field: FieldResponse }>> {
+	create(data: CreateField): Promise<ApiResponse<{ field: FieldResponse }>> {
 		return this.http.post<ApiResponse<{ field: FieldResponse }>>('/fields', data);
 	}
 
-	async update(id: string, data: UpdateField): Promise<ApiResponse<{ field: FieldResponse }>> {
+	update(id: string, data: UpdateField): Promise<ApiResponse<{ field: FieldResponse }>> {
 		return this.http.patch<ApiResponse<{ field: FieldResponse }>>(`/fields/${id}`, data);
 	}
 
-	async delete(id: string): Promise<void> {
+	delete(id: string): Promise<void> {
 		return this.http.delete<void>(`/fields/${id}`);
 	}
 }
-
-export const fieldsApi = new FieldsService();

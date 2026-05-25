@@ -5,8 +5,12 @@ import { scoresService } from './scores.service';
 
 const router = Router();
 
+const ObjectIdSchema = z
+	.string()
+	.regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId');
+
 const MatchIdParamSchema = z.object({
-	matchId: z.string().uuid('Match ID must be a valid UUID format')
+	matchId: ObjectIdSchema
 });
 
 const AllianceScoreSchema = z.object({

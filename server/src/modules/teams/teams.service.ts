@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { AppError } from '../../core/errors';
 import { TeamModel } from './teams.model';
 
@@ -27,7 +26,7 @@ export type TeamResponse = {
 
 function mapTeam(team: any): TeamResponse {
 	return {
-		id: team._id,
+		id: String(team._id),
 		teamNumber: team.teamNumber,
 		name: team.name,
 		school: team.school,
@@ -50,11 +49,8 @@ class TeamsService {
 			);
 		}
 
-		const id = crypto.randomUUID();
-
 		try {
 			const team = await TeamModel.create({
-				_id: id,
 				teamNumber: data.teamNumber,
 				name: data.name,
 				school: data.school,

@@ -1,7 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, HydratedDocument } from 'mongoose';
 
-export interface ITeamDocument extends Document<string> {
-	_id: string;
+export interface ITeam {
 	teamNumber: string;
 	name: string;
 	school: string;
@@ -12,9 +11,10 @@ export interface ITeamDocument extends Document<string> {
 	updatedAt: Date;
 }
 
-const TeamSchema: Schema = new Schema<ITeamDocument>(
+export type ITeamDocument = HydratedDocument<ITeam>;
+
+const TeamSchema = new Schema<ITeam>(
 	{
-		_id: { type: String, required: true },
 		teamNumber: { type: String, required: true, unique: true, trim: true },
 		name: { type: String, required: true, trim: true },
 		school: { type: String, required: true, trim: true },
@@ -23,9 +23,8 @@ const TeamSchema: Schema = new Schema<ITeamDocument>(
 		members: [{ type: String, trim: true }]
 	},
 	{
-		timestamps: true,
-		_id: false
+		timestamps: true
 	}
 );
 
-export const TeamModel = mongoose.model<ITeamDocument>('Team', TeamSchema);
+export const TeamModel = mongoose.model<ITeam>('Team', TeamSchema);
