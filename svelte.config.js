@@ -7,7 +7,7 @@ const config = {
 		runes: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : true)
 	},
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({ out: 'build/sveltekit' }),
 		alias: {
 			'@shared': './shared'
 		}

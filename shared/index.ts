@@ -5,7 +5,7 @@ const userRoles = ['USER', 'ADMIN'] as const;
 export type UserRoles = (typeof userRoles)[number];
 
 export const UserSchema = z.object({
-	id: z.string().uuid(),
+	id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ObjectId'),
 	email: z.string().email('Invalid email address'),
 	name: z.string().min(2, 'Name must be at least 2 characters long'),
 	role: z.enum(userRoles).default('USER'),

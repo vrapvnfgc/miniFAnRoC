@@ -25,11 +25,9 @@ class UsersService {
 		}
 
 		const passwordHash = crypto.createHash('sha256').update(data.password).digest('hex');
-		const id = crypto.randomUUID();
 
 		try {
 			const user = await UserModel.create({
-				_id: id,
 				email: data.email,
 				name: data.name,
 				role: data.role || 'USER',

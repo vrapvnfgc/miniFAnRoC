@@ -71,7 +71,7 @@ describe('Users API Endpoints (/api/v1/users)', () => {
 		expect(res.body.data.users.length).toBeGreaterThan(0);
 	});
 
-	it('should fetch a single user by standard UUID', async () => {
+	it('should fetch a single user by standard ObjectId', async () => {
 		const createRes = await request(app).post('/api/v1/users').send({
 			email: 'findme@example.com',
 			name: 'Find Me',
@@ -86,18 +86,18 @@ describe('Users API Endpoints (/api/v1/users)', () => {
 		expect(res.body.data.user.email).toBe('findme@example.com');
 	});
 
-	it('should return 400 validation error for non-UUID user ID path param', async () => {
-		const res = await request(app).get('/api/v1/users/not-a-valid-uuid');
+	it('should return 400 validation error for non-ObjectId user ID path param', async () => {
+		const res = await request(app).get('/api/v1/users/not-a-valid-objectid');
 
 		expect(res.status).toBe(400);
 		expect(res.body.status).toBe('fail');
 		expect(res.body.error.code).toBe('VALIDATION_ERROR');
-		expect(res.body.error.details[0].message).toContain('valid UUID format');
+		expect(res.body.error.details[0].message).toContain('valid MongoDB ObjectId format');
 	});
 
-	it('should return 404 for non-existent UUID user ID', async () => {
-		const randomUuid = '00000000-0000-0000-0000-000000000000';
-		const res = await request(app).get(`/api/v1/users/${randomUuid}`);
+	it('should return 404 for non-existent ObjectId user ID', async () => {
+		const randomObjectId = '000000000000000000000000';
+		const res = await request(app).get(`/api/v1/users/${randomObjectId}`);
 
 		expect(res.status).toBe(404);
 		expect(res.body.status).toBe('fail');

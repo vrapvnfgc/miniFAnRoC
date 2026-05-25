@@ -26,8 +26,8 @@ export class APIError extends Error {
 export class HttpClient {
 	private baseUrl: string;
 
-	constructor(baseUrl: string = 'http://localhost:3001/api/v1') {
-		this.baseUrl = baseUrl;
+	constructor(baseUrl?: string) {
+		this.baseUrl = baseUrl || (typeof window !== 'undefined' ? '/api/v1' : 'http://localhost:3000/api/v1');
 	}
 
 	async request<T>(path: string, options: RequestInit = {}): Promise<T> {
