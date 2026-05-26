@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Mail, Phone, Facebook, Instagram, Youtube, ExternalLink, Bot } from 'lucide-svelte';
+  import { Mail, Phone, Share2, Heart, Music, ExternalLink, Bot } from 'lucide-svelte';
   import type { Component } from 'svelte';
 
   const quickLinks = [
@@ -14,9 +14,9 @@
   type Social = { icon: Component<{ class?: string }>; href: string; label: string };
 
   const socials: Social[] = [
-    { icon: Facebook,  href: '#', label: 'Facebook'  },
-    { icon: Instagram, href: '#', label: 'Instagram' },
-    { icon: Youtube,   href: '#', label: 'Youtube'   },
+    { icon: Share2,    href: '#', label: 'Facebook'  },
+    { icon: Heart,     href: '#', label: 'Instagram' },
+    { icon: Music,     href: '#', label: 'Youtube'   },
   ];
 </script>
 
