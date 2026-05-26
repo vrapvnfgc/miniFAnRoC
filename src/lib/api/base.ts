@@ -3,15 +3,6 @@ export type ApiResponse<T> = {
 	data: T;
 };
 
-export type ApiErrorResponse = {
-	status: 'fail';
-	error: {
-		code: string;
-		message: string;
-		details?: unknown;
-	};
-};
-
 export class HttpClient {
 	constructor(private readonly baseUrl: string) {}
 

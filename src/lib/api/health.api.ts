@@ -1,4 +1,4 @@
-import { BaseService, type ApiResponse } from '.';
+import { BaseService, type ApiResponse } from './base';
 
 export class HealthService extends BaseService {
 	async check(): Promise<ApiResponse<{ status: string; uptime: number; timestamp: string }>> {

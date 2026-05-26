@@ -4,8 +4,9 @@ import { FieldsService } from './fields.api';
 import { MatchesService } from './matches.api';
 import { ScoresService } from './scores.api';
 import { RankingsService } from './rankings.api';
+import { BACKEND_API_URL } from '$env/static/private';
 
-const DEFAULT_API_BASE_URL = 'http://localhost:3000/api/v1';
+const API_BASE_URL = BACKEND_API_URL || 'http://localhost:3000/api/v1';
 
 export class APIClient {
 	readonly teams: TeamsService;
@@ -14,7 +15,7 @@ export class APIClient {
 	readonly scores: ScoresService;
 	readonly rankings: RankingsService;
 
-	constructor(baseUrl = DEFAULT_API_BASE_URL) {
+	constructor(baseUrl = API_BASE_URL) {
 		const http = new HttpClient(baseUrl);
 
 		this.teams = new TeamsService(http);

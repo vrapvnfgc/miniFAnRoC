@@ -1,4 +1,4 @@
-import { BaseService, type ApiResponse } from '.';
+import { BaseService, type ApiResponse } from './base';
 import type { CreateUser, UserResponse } from '@shared';
 
 export class UserService extends BaseService {
