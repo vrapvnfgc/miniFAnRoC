@@ -5,7 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "concurrently -n \"client,server\" -c \"cyan,magenta\" \"vite dev\" \"pnpm --filter server dev\"",
-		"build": "vite build",
+		"build": "vite build && pnpm --filter @mini-fanroc/server build",
+		"start": "pnpm --filter @mini-fanroc/server start",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -24,20 +25,31 @@
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.2.2",
 		"@types/node": "^22",
+		"@vite-pwa/sveltekit": "^1.1.0",
+		"bits-ui": "^2.18.1",
 		"concurrently": "^8.2.2",
 		"eslint": "^10.2.0",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.17.0",
 		"globals": "^17.4.0",
+		"phosphor-svelte": "^3.1.0",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.5.1",
 		"prettier-plugin-tailwindcss": "^0.7.2",
+		"shadcn-svelte": "^1.2.7",
 		"svelte": "^5.55.2",
 		"svelte-check": "^4.4.6",
+		"tailwind-variants": "^3.2.2",
 		"tailwindcss": "^4.2.2",
+		"tw-animate-css": "^1.4.0",
 		"typescript": "^6.0.2",
 		"typescript-eslint": "^8.58.1",
 		"vite": "^8.0.7",
+		"vite-plugin-pwa": "^1.3.0",
 		"zod": "^3.25.76"
+	},
+	"dependencies": {
+		"clsx": "^2.1.1",
+		"tailwind-merge": "^3.6.0"
 	}
 }

@@ -7,7 +7,7 @@ import { z } from 'zod';
 const router = Router();
 
 const UserIdParamSchema = z.object({
-	id: z.string().uuid('User ID must be a valid UUID format')
+	id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'User ID must be a valid MongoDB ObjectId format')
 });
 
 router.post('/', validate({ body: CreateUserSchema }), createUserHandler);

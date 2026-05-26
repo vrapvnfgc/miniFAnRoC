@@ -22,6 +22,17 @@ app.use('/api/v1/fields', fieldsRouter);
 app.use('/api/v1/matches', matchesRouter);
 app.use('/api/v1/matches', scoresRouter);
 app.use('/api/v1/rankings', rankingsRouter);
+
+if (process.env.NODE_ENV === 'production') {
+	try {
+		const handlerPath = './sveltekit/handler.js';
+		const { handler } = await import(handlerPath);
+		app.use(handler);
+	} catch (error) {
+		console.error('Failed to load SvelteKit handler:', error);
+	}
+}
+
 app.use((req, _res, next) => {
 	next(AppError.notFound(`endpoint not found: ${req.method} ${req.path}`));
 });
