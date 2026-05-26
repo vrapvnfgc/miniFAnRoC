@@ -1,133 +1,34 @@
 {
-  "nav": {
-    "home": "Trang chủ",
-    "teams": "Đội thi",
-    "schedule": "Lịch thi đấu",
-    "awards": "Giải thưởng",
-    "sponsors": "Nhà tài trợ",
-    "contact": "Liên hệ",
-    "language": "Ngôn ngữ"
-  },
-  "hero": {
-    "badge": "Cuộc thi Robot khu vực Việt Nam FIRST®",
-    "title": "miniFAnRoC",
-    "subtitle": "Mini FPT Automation & Robotics Competition",
-    "description": "Nơi thế hệ kỹ sư, lập trình viên và nhà sáng tạo tiếp theo tranh tài để định hình tương lai công nghệ và robot.",
-    "cta_register": "Đăng ký đội thi",
-    "cta_schedule": "Xem lịch thi đấu",
-    "scroll_down": "Cuộn để khám phá"
-  },
-  "stats": {
-    "teams": "Đội thi đã đăng ký",
-    "participants": "Thí sinh",
-    "provinces": "Tỉnh thành",
-    "prize_pool": "Tổng giải thưởng"
-  },
-  "teams": {
-    "title": "Danh sách đội thi",
-    "subtitle": "Gặp gỡ những tài năng xuất sắc tranh tài vô địch",
-    "add_team": "Đăng ký đội",
-    "search_placeholder": "Tìm kiếm đội...",
-    "columns": {
-      "rank": "STT",
-      "name": "Tên đội",
-      "members": "Thành viên",
-      "score": "Điểm",
-      "status": "Trạng thái"
-    },
-    "status": {
-      "active": "Đang thi",
-      "pending": "Chờ duyệt",
-      "eliminated": "Bị loại"
-    },
-    "empty": "Chưa có đội đăng ký. Hãy là người đầu tiên!",
-    "loading": "Đang tải..."
-  },
-  "register": {
-    "title": "Đăng ký đội thi",
-    "subtitle": "Tham gia cuộc thi và khẳng định tài năng sáng tạo của bạn",
-    "fields": {
-      "captain_email": "Email đội trưởng",
-      "captain_email_placeholder": "truongdoi@example.com",
-      "team_name": "Tên đội",
-      "team_name_placeholder": "VD: Đội RoboTương Lai",
-      "captain_name": "Họ và tên đội trưởng",
-      "captain_name_placeholder": "Nhập họ tên đầy đủ",
-      "member_count": "Số lượng thành viên",
-      "member_count_placeholder": "2 - 6"
-    },
-    "validation": {
-      "email_required": "Email là bắt buộc",
-      "email_invalid": "Địa chỉ email không hợp lệ",
-      "team_name_required": "Tên đội là bắt buộc",
-      "team_name_min": "Tên đội phải có ít nhất 3 ký tự",
-      "captain_name_required": "Tên đội trưởng là bắt buộc",
-      "member_count_required": "Số lượng thành viên là bắt buộc",
-      "member_count_range": "Phải có từ 2 đến 6 thành viên"
-    },
-    "submit": "Đăng ký đội",
-    "submitting": "Đang đăng ký...",
-    "success_title": "Đăng ký thành công!",
-    "success_message": "Đội của bạn đã được đăng ký. Hãy sẵn sàng tranh tài!",
-    "back_to_list": "← Quay lại danh sách"
-  },
-  "timeline": {
-    "title": "Lịch trình cuộc thi",
-    "subtitle": "Các mốc thời gian quan trọng của miniFAnRoC 2025",
-    "events": {
-      "registration": {
-        "title": "Mở đăng ký",
-        "description": "Bắt đầu nhận đăng ký đội thi. Đặt chỗ của bạn ngay hôm nay."
-      },
-      "deadline": {
-        "title": "Hạn đăng ký",
-        "description": "Ngày cuối cùng đăng ký đội và nộp hồ sơ."
-      },
-      "qualifying": {
-        "title": "Vòng loại",
-        "description": "Các đội tranh tài qua thử thách kỹ thuật và kiểm tra robot."
-      },
-      "semifinals": {
-        "title": "Bán kết",
-        "description": "Các đội xuất sắc lọt vào vòng bán kết gay cấn."
-      },
-      "finals": {
-        "title": "Chung kết",
-        "description": "Trận đấu quyết định. Nhà vô địch được trao danh hiệu."
-      }
-    }
-  },
-  "awards": {
-    "title": "Giải thưởng",
-    "subtitle": "Vinh danh các đội thi và cá nhân xuất sắc",
-    "champion": "Vô địch",
-    "runner_up": "Á quân",
-    "third_place": "Hạng Ba",
-    "innovation": "Giải Sáng Tạo",
-    "spirit": "Giải Tinh Thần",
-    "rookie": "Đội Mới Xuất Sắc"
-  },
-  "sponsors": {
-    "title": "Nhà tài trợ",
-    "subtitle": "Được hỗ trợ bởi các tổ chức công nghệ hàng đầu Việt Nam",
-    "partner_types": {
-      "platinum": "Đối tác Bạch Kim",
-      "gold": "Đối tác Vàng",
-      "silver": "Đối tác Bạc"
-    }
-  },
-  "footer": {
-    "tagline": "Truyền cảm hứng STEM. Xây dựng kỹ sư tương lai.",
-    "rights": "Bảo lưu mọi quyền.",
-    "organized_by": "Tổ chức bởi Đại học FPT"
-  },
-  "common": {
-    "loading": "Đang tải...",
-    "error": "Đã xảy ra lỗi",
-    "back": "Quay lại",
-    "next": "Tiếp theo",
-    "close": "Đóng",
-    "confirm": "Xác nhận",
-    "cancel": "Hủy"
-  }
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "hello_world": "Xin chào, {name} từ vi!",
+  "nav_home": "Trang Chủ",
+  "nav_teams": "Danh Sách Đội",
+  "nav_ranking": "Bảng Xếp Hạng",
+  "nav_matches": "Trận Đấu",
+  "nav_awards": "Giải Thưởng",
+  "nav_manual": "Tài Liệu Thi Đấu",
+  "nav_resources": "Tài Nguyên Đội Thi",
+  "nav_login": "Đăng Nhập / Đăng Ký",
+  "hero_badge": "Nền tảng miniFAnRoC",
+  "hero_title": "FSchool AI and Robotics Challenge",
+  "hero_subtitle": "Cuộc thi STEM, AI và Robotics toàn quốc dành cho học sinh THCS trên cả nước Việt Nam.",
+  "hero_desc": "miniFAnRoC là nền tảng vận hành chính thức cho quản lý giải đấu Robotics, hệ thống trận đấu và điều phối giải đấu.",
+  "hero_cta_register": "Đăng Ký Đội",
+  "hero_cta_explore": "Khám Phá Giải Đấu",
+  "about_label": "Về Cuộc Thi",
+  "about_title": "Xây Dựng Thế Hệ Đổi Mới Của Việt Nam",
+  "stats_label": "Thống Kê Thực Tế",
+  "stats_title": "Cộng Đồng Phát Triển Toàn Quốc",
+  "timeline_label": "Quy Trình Thi Đấu",
+  "timeline_title": "Cuộc Thi Diễn Ra Như Thế Nào",
+  "map_label": "Địa Điểm Thi Đấu Khu Vực",
+  "map_title": "Nơi Các Đội Thi Đấu",
+  "awards_label": "Giải Thưởng",
+  "awards_title": "Cơ Cấu Giải Thưởng Chung Kết Quốc Gia",
+  "matches_label": "Trung Tâm Trận Đấu",
+  "matches_title": "Kết Quả Và Trận Đấu Sắp Tới",
+  "cta_label": "Tham Gia Phong Trào",
+  "cta_title": "Xây Dựng Tương Lai Với Robotics & AI",
+  "sponsors_label": "Ban Tổ Chức & Nhà Tài Trợ",
+  "sponsors_title": "Được Hỗ Trợ Bởi Đổi Mới"
 }

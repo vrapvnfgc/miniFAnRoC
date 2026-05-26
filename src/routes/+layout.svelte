@@ -1,21 +1,20 @@
 <script lang="ts">
-	import '../app.css';
-	import { onMount } from 'svelte';
-	import { uiStore } from '$lib/stores/ui';
-	import { i18n } from '$lib/i18n';
-	import Navbar from '$lib/components/layout/Navbar.svelte';
-	import Footer from '$lib/components/layout/Footer.svelte';
+	import type { Pathname } from '$app/types';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+	import { locales, localizeHref } from '$lib/paraglide/runtime';
+	import './layout.css';
+	import favicon from '$lib/assets/favicon.svg';
 
-	onMount(() => {
-		uiStore.initTheme();
-		i18n.initLocale();
-	});
+	let { children } = $props();
 </script>
 
-<div class="flex flex-col min-h-screen">
-	<Navbar />
-	<main class="flex-1">
-		<slot />
-	</main>
-	<Footer />
+<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+
+{@render children()}
+
+<div style="display:none">
+	{#each locales as locale (locale)}
+		<a href={resolve(localizeHref(page.url.pathname, { locale }) as Pathname)}>{locale}</a>
+	{/each}
 </div>

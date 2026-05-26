@@ -1,171 +1,164 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { slide, fade } from 'svelte/transition';
-	import { Menu, X, Moon, Sun, Globe, Bot } from 'lucide-svelte';
-	import { t, locale, setLocale, type Locale } from '$lib/i18n';
-	import { uiStore } from '$lib/stores/ui';
+  import { Menu, X, Sun, Moon, Bot, ChevronDown } from 'lucide-svelte';
+  import { page } from '$app/state';
 
-	const { theme, mobileMenuOpen, toggleTheme, switchTab } = uiStore;
+  let mobileOpen = $state(false);
+  let scrolled = $state(false);
+  let darkMode = $state(true);
 
-	const navLinks = [
-		{ key: 'nav.home', href: '#home' },
-		{ key: 'nav.teams', href: '#teams' },
-		{ key: 'nav.schedule', href: '#schedule' },
-		{ key: 'nav.awards', href: '#awards' },
-		{ key: 'nav.sponsors', href: '#sponsors' }
-	];
+  const navItems = [
+    { label: 'Home', href: '/homepage' },
+    { label: 'Team List', href: '/teams' },
+    { label: 'Ranking', href: '/ranking' },
+    { label: 'Matches', href: '/matches' },
+    { label: 'Awards', href: '/awards' },
+    {
+      label: 'Resources',
+      children: [
+        { label: 'Competition Manual', href: '/manual' },
+        { label: 'Team Guide', href: '/resources' }
+      ]
+    }
+  ];
 
-	let scrolled = false;
+  let resourcesOpen = $state(false);
 
-	onMount(() => {
-		const handler = () => { scrolled = window.scrollY > 20; };
-		window.addEventListener('scroll', handler);
-		return () => window.removeEventListener('scroll', handler);
-	});
+  $effect(() => {
+    if (typeof window === 'undefined') return;
+    const onScroll = () => { scrolled = window.scrollY > 20; };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  });
 
-	function toggleLang() {
-		setLocale($locale === 'vi' ? 'en' : 'vi');
-	}
+  function toggleTheme() {
+    darkMode = !darkMode;
+    document.documentElement.classList.toggle('dark', darkMode);
+  }
 
-	function handleTeamNav() {
-		switchTab('list');
-		document.getElementById('teams')?.scrollIntoView({ behavior: 'smooth' });
-		mobileMenuOpen.set(false);
-	}
+  function closeMobile() { mobileOpen = false; }
 </script>
 
-<header
-	class="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
-	class:scrolled
+<nav
+  class="fixed top-0 z-50 w-full transition-all duration-300"
+  class:scrolled
+  style={scrolled
+    ? 'background: rgba(2,6,23,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.08);'
+    : 'background: transparent;'}
 >
-	<!-- Blur backdrop when scrolled -->
-	{#if scrolled}
-		<div
-			class="absolute inset-0 backdrop-blur-xl"
-			style="background: rgba(8, 13, 28, 0.85); border-bottom: 1px solid rgba(0, 180, 230, 0.15);"
-			transition:fade={{ duration: 200 }}
-		/>
-	{/if}
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+    <!-- LOGO -->
+    <a href="/homepage" class="flex items-center gap-3 group">
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/25 transition group-hover:scale-105">
+        <Bot class="h-5 w-5 text-white" />
+      </div>
+      <div>
+        <p class="text-base font-bold text-white leading-none">miniFAnRoC</p>
+        <p class="text-[10px] text-cyan-400 leading-none mt-0.5">FAnRoC Platform</p>
+      </div>
+    </a>
 
-	<nav class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-		<!-- Logo -->
-		<a
-			href="#home"
-			class="flex items-center gap-2.5 group"
-			aria-label="miniFAnRoC Home"
-		>
-			<div class="relative w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden"
-				style="background: linear-gradient(135deg, #00b4e6, #8b47ff);">
-				<Bot size={20} class="text-white relative z-10" />
-				<div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-					style="background: linear-gradient(135deg, #00f5ff, #a855f7);" />
-			</div>
-			<span class="font-display font-bold text-lg tracking-wider text-gradient hidden sm:block">
-				miniFAnRoC
-			</span>
-		</a>
+    <!-- DESKTOP NAV -->
+    <div class="hidden items-center gap-1 lg:flex">
+      {#each navItems as item}
+        {#if item.children}
+          <div class="relative">
+            <button
+              onclick={() => resourcesOpen = !resourcesOpen}
+              class="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-slate-300 transition hover:bg-white/5 hover:text-cyan-300"
+            >
+              {item.label}
+              <ChevronDown class="h-3.5 w-3.5 transition-transform" style={resourcesOpen ? 'transform:rotate(180deg)' : ''} />
+            </button>
+            {#if resourcesOpen}
+              <div class="absolute top-full mt-2 left-0 min-w-[180px] rounded-2xl border border-white/10 bg-slate-950/95 backdrop-blur-xl p-2 shadow-xl">
+                {#each item.children as child}
+                  <a
+                    href={child.href}
+                    onclick={() => resourcesOpen = false}
+                    class="block rounded-lg px-4 py-2.5 text-sm text-slate-300 transition hover:bg-white/5 hover:text-cyan-300"
+                  >{child.label}</a>
+                {/each}
+              </div>
+            {/if}
+          </div>
+        {:else}
+          <a
+            href={item.href}
+            class="rounded-lg px-3 py-2 text-sm transition hover:bg-white/5"
+            style={page.url.pathname === item.href ? 'color: rgb(103 232 249)' : 'color: rgb(203 213 225)'}
+          >
+            {item.label}
+          </a>
+        {/if}
+      {/each}
+    </div>
 
-		<!-- Desktop nav -->
-		<div class="hidden md:flex items-center gap-1">
-			{#each navLinks as link}
-				<a
-					href={link.href}
-					class="px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-					style="color: var(--text-secondary);"
-					on:mouseenter={(e) => {
-						e.currentTarget.style.color = 'var(--accent-cyan)';
-						e.currentTarget.style.background = 'rgba(0, 180, 230, 0.08)';
-					}}
-					on:mouseleave={(e) => {
-						e.currentTarget.style.color = 'var(--text-secondary)';
-						e.currentTarget.style.background = 'transparent';
-					}}
-				>
-					{$t(link.key)}
-				</a>
-			{/each}
-		</div>
+    <!-- DESKTOP ACTIONS -->
+    <div class="hidden items-center gap-3 lg:flex">
+      <!-- Lang toggle - placeholder -->
+      <button class="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-white/10 hover:text-white">
+        EN / VI
+      </button>
 
-		<!-- Controls -->
-		<div class="flex items-center gap-2">
-			<!-- Language toggle -->
-			<button
-				on:click={toggleLang}
-				class="btn-ghost flex items-center gap-1.5 !px-3 !py-2"
-				aria-label={$t('nav.language')}
-				title={$t('nav.language')}
-			>
-				<Globe size={14} />
-				<span class="text-xs font-mono font-bold uppercase">
-					{$locale === 'vi' ? 'EN' : 'VI'}
-				</span>
-			</button>
+      <!-- Theme toggle -->
+      <button
+        onclick={toggleTheme}
+        class="rounded-lg border border-white/10 bg-white/5 p-2 text-slate-300 transition hover:bg-white/10 hover:text-white"
+        aria-label="Toggle theme"
+      >
+        {#if darkMode}
+          <Sun class="h-4 w-4" />
+        {:else}
+          <Moon class="h-4 w-4" />
+        {/if}
+      </button>
 
-			<!-- Theme toggle -->
-			<button
-				on:click={toggleTheme}
-				class="btn-ghost !px-2.5 !py-2"
-				aria-label="Toggle theme"
-			>
-				{#if $theme === 'dark'}
-					<Sun size={16} />
-				{:else}
-					<Moon size={16} />
-				{/if}
-			</button>
+      <a
+        href="/login"
+        class="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-105 hover:shadow-cyan-500/40"
+      >
+        Login / Sign Up
+      </a>
+    </div>
 
-			<!-- CTA desktop -->
-			<button
-				on:click={() => { switchTab('register'); document.getElementById('teams')?.scrollIntoView({ behavior: 'smooth' }); }}
-				class="btn-primary hidden sm:inline-flex !py-2 !px-4 text-xs"
-			>
-				{$t('register.submit')}
-			</button>
+    <!-- MOBILE HAMBURGER -->
+    <button
+      class="rounded-lg border border-white/10 bg-white/5 p-2 text-white lg:hidden"
+      onclick={() => mobileOpen = !mobileOpen}
+      aria-label="Toggle menu"
+    >
+      {#if mobileOpen}
+        <X class="h-5 w-5" />
+      {:else}
+        <Menu class="h-5 w-5" />
+      {/if}
+    </button>
+  </div>
 
-			<!-- Mobile hamburger -->
-			<button
-				on:click={() => mobileMenuOpen.update(v => !v)}
-				class="md:hidden btn-ghost !px-2.5 !py-2"
-				aria-label="Toggle menu"
-				aria-expanded={$mobileMenuOpen}
-			>
-				{#if $mobileMenuOpen}
-					<X size={18} />
-				{:else}
-					<Menu size={18} />
-				{/if}
-			</button>
-		</div>
-	</nav>
-
-	<!-- Mobile menu -->
-	{#if $mobileMenuOpen}
-		<div
-			class="md:hidden border-t"
-			style="background: rgba(8, 13, 28, 0.97); border-color: var(--border-color);"
-			transition:slide={{ duration: 250 }}
-		>
-			<div class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
-				{#each navLinks as link}
-					<a
-						href={link.href}
-						class="px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
-						style="color: var(--text-secondary);"
-						on:click={() => mobileMenuOpen.set(false)}
-					>
-						{$t(link.key)}
-					</a>
-				{/each}
-				<div class="h-px my-2" style="background: var(--border-color);" />
-				<button
-					on:click={handleTeamNav}
-					class="btn-primary w-full justify-center"
-				>
-					{$t('register.submit')}
-				</button>
-			</div>
-		</div>
-	{/if}
-</header>
-
-
+  <!-- MOBILE MENU -->
+  {#if mobileOpen}
+    <div class="border-t border-white/10 bg-slate-950/98 backdrop-blur-xl lg:hidden">
+      <div class="flex flex-col gap-1 px-4 py-4">
+        {#each navItems as item}
+          {#if item.children}
+            {#each item.children as child}
+              <a href={child.href} onclick={closeMobile} class="rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-white/5 hover:text-cyan-300">
+                {child.label}
+              </a>
+            {/each}
+          {:else}
+            <a href={item.href} onclick={closeMobile} class="rounded-lg px-4 py-3 text-sm text-slate-300 transition hover:bg-white/5 hover:text-cyan-300">
+              {item.label}
+            </a>
+          {/if}
+        {/each}
+        <div class="mt-3 flex items-center gap-3 px-1">
+          <button class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-300">EN / VI</button>
+          <a href="/login" onclick={closeMobile} class="flex-1 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white">
+            Login / Sign Up
+          </a>
+        </div>
+      </div>
+    </div>
+  {/if}
+</nav>

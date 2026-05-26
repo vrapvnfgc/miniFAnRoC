@@ -1,133 +1,34 @@
 {
-  "nav": {
-    "home": "Home",
-    "teams": "Teams",
-    "schedule": "Schedule",
-    "awards": "Awards",
-    "sponsors": "Sponsors",
-    "contact": "Contact",
-    "language": "Language"
-  },
-  "hero": {
-    "badge": "Vietnam Regional FIRST® Robotics Championship",
-    "title": "miniFAnRoC",
-    "subtitle": "Mini FPT Automation & Robotics Competition",
-    "description": "Where the next generation of engineers, programmers, and innovators compete to shape the future of technology and robotics.",
-    "cta_register": "Register Your Team",
-    "cta_schedule": "View Schedule",
-    "scroll_down": "Scroll to explore"
-  },
-  "stats": {
-    "teams": "Registered Teams",
-    "participants": "Participants",
-    "provinces": "Provinces",
-    "prize_pool": "Prize Pool"
-  },
-  "teams": {
-    "title": "Competing Teams",
-    "subtitle": "Meet the brilliant minds competing for the championship",
-    "add_team": "Register Team",
-    "search_placeholder": "Search teams...",
-    "columns": {
-      "rank": "#",
-      "name": "Team Name",
-      "members": "Members",
-      "score": "Score",
-      "status": "Status"
-    },
-    "status": {
-      "active": "Active",
-      "pending": "Pending",
-      "eliminated": "Eliminated"
-    },
-    "empty": "No teams registered yet. Be the first!",
-    "loading": "Loading teams..."
-  },
-  "register": {
-    "title": "Register Your Team",
-    "subtitle": "Join the competition and prove your innovation",
-    "fields": {
-      "captain_email": "Captain's Email",
-      "captain_email_placeholder": "captain@example.com",
-      "team_name": "Team Name",
-      "team_name_placeholder": "e.g. Team RoboFuture",
-      "captain_name": "Captain's Full Name",
-      "captain_name_placeholder": "Enter full name",
-      "member_count": "Number of Members",
-      "member_count_placeholder": "2 - 6"
-    },
-    "validation": {
-      "email_required": "Email is required",
-      "email_invalid": "Invalid email address",
-      "team_name_required": "Team name is required",
-      "team_name_min": "Team name must be at least 3 characters",
-      "captain_name_required": "Captain name is required",
-      "member_count_required": "Member count is required",
-      "member_count_range": "Must be between 2 and 6 members"
-    },
-    "submit": "Register Team",
-    "submitting": "Registering...",
-    "success_title": "Registration Successful!",
-    "success_message": "Your team has been registered. Get ready to compete!",
-    "back_to_list": "← Back to Team List"
-  },
-  "timeline": {
-    "title": "Competition Timeline",
-    "subtitle": "Key dates for miniFAnRoC 2025",
-    "events": {
-      "registration": {
-        "title": "Registration Opens",
-        "description": "Team registration begins. Secure your spot in the competition."
-      },
-      "deadline": {
-        "title": "Registration Deadline",
-        "description": "Last day to register your team and submit documentation."
-      },
-      "qualifying": {
-        "title": "Qualifying Rounds",
-        "description": "Teams compete in technical challenges and robotics trials."
-      },
-      "semifinals": {
-        "title": "Semi-Finals",
-        "description": "Top teams advance to intense semi-final competitions."
-      },
-      "finals": {
-        "title": "Grand Finals",
-        "description": "The ultimate showdown. Champions are crowned."
-      }
-    }
-  },
-  "awards": {
-    "title": "Awards & Prizes",
-    "subtitle": "Recognition for outstanding teams and individuals",
-    "champion": "Grand Champion",
-    "runner_up": "Runner-Up",
-    "third_place": "3rd Place",
-    "innovation": "Innovation Award",
-    "spirit": "Spirit Award",
-    "rookie": "Rookie Award"
-  },
-  "sponsors": {
-    "title": "Our Sponsors",
-    "subtitle": "Supported by Vietnam's leading technology organizations",
-    "partner_types": {
-      "platinum": "Platinum Partner",
-      "gold": "Gold Partner",
-      "silver": "Silver Partner"
-    }
-  },
-  "footer": {
-    "tagline": "Inspiring STEM. Building Future Engineers.",
-    "rights": "All rights reserved.",
-    "organized_by": "Organized by FPT University"
-  },
-  "common": {
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "back": "Back",
-    "next": "Next",
-    "close": "Close",
-    "confirm": "Confirm",
-    "cancel": "Cancel"
-  }
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "hello_world": "Hello, {name} from en!",
+  "nav_home": "Home",
+  "nav_teams": "Team List",
+  "nav_ranking": "Ranking",
+  "nav_matches": "Matches",
+  "nav_awards": "Awards",
+  "nav_manual": "Competition Manual",
+  "nav_resources": "Team Guide Resources",
+  "nav_login": "Login / Sign Up",
+  "hero_badge": "Powered by miniFAnRoC Platform",
+  "hero_title": "FSchool AI and Robotics Challenge",
+  "hero_subtitle": "A nationwide STEM, AI and Robotics competition for middle school students across Vietnam.",
+  "hero_desc": "miniFAnRoC is the official operation platform for robotics competition management, match systems and tournament coordination.",
+  "hero_cta_register": "Register Team",
+  "hero_cta_explore": "Explore Competition",
+  "about_label": "About The Competition",
+  "about_title": "Building Vietnam's Future Innovators",
+  "stats_label": "Live Statistics",
+  "stats_title": "Growing Nationwide Community",
+  "timeline_label": "Competition Flow",
+  "timeline_title": "How The Competition Works",
+  "map_label": "Regional Competition Hubs",
+  "map_title": "Where Teams Compete",
+  "awards_label": "Awards",
+  "awards_title": "National Finals Award Structure",
+  "matches_label": "Match Center",
+  "matches_title": "Latest & Upcoming Matches",
+  "cta_label": "Join The Movement",
+  "cta_title": "Build The Future With Robotics & AI",
+  "sponsors_label": "Organizers & Sponsors",
+  "sponsors_title": "Powered By Innovation"
 }
