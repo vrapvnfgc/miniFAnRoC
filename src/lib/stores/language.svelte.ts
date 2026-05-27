@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
-import { invalidateAll } from '$app/navigation';
+import { goto } from '$app/navigation';
 import { cookieName } from '$lib/paraglide/runtime';
+import { page } from '$app/state';
 
 type Locale = 'en' | 'vi';
 
@@ -20,8 +21,8 @@ function createLanguageStore() {
 		// because paraglide uses cookie strategy (not URL prefix in this config)
 		document.cookie = `${cookieName}=${newLocale};path=/;max-age=34560000;SameSite=Lax`;
 
-		// Invalidate all load functions so SSR re-runs with new locale
-		await invalidateAll();
+		// Reload the page to apply the new locale
+		await goto(page.url.pathname, { invalidateAll: true });
 	}
 
 	return {
