@@ -39,12 +39,12 @@
   <div class="mx-auto max-w-7xl">
     <div class="mb-12 text-center">
       <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">{m.stats_label()}</p>
-      <h2 class="text-4xl font-black text-slate-900 dark:text-white">{m.stats_title()}</h2>
+      <h2 class="text-4xl font-black text-slate-900 dark:text-slate-100">{m.stats_title()}</h2>
     </div>
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       {#each stats as s, i}
         {@const Icon = s.icon}
-        <div class="group relative rounded-[28px] border border-slate-200 dark:border-white/10 bg-white dark:bg-gradient-to-br dark:from-white/[0.04] dark:to-white/[0.01] p-8 shadow-sm dark:shadow-none backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-slate-300 dark:hover:border-white/20 hover:shadow-md">
+        <div class="group relative rounded-[28px] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800/50 p-8 shadow-sm dark:shadow-none backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-slate-300 dark:hover:border-white/20 hover:shadow-md">
           <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl {s.iconBg} ring-1 ring-black/5 dark:ring-white/10">
             <Icon class="h-7 w-7 {s.iconColor}" />
           </div>
