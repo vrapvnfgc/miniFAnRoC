@@ -1,60 +1,43 @@
 <script lang="ts">
-  const sponsors = [
-    { name: 'FPT Corporation', role: 'Main Organizer', placeholder: true },
-    { name: 'FSchool', role: 'Host Organization', placeholder: true },
-    { name: 'REV Robotics', role: 'Equipment Partner', placeholder: true },
-    { name: 'Sponsor 4', role: 'Title Sponsor', placeholder: true },
-    { name: 'Sponsor 5', role: 'Supporting Sponsor', placeholder: true },
-    { name: 'Sponsor 6', role: 'Technology Partner', placeholder: true },
-  ];
+  import * as m from '$lib/paraglide/messages';
 
-  // Duplicate for seamless marquee
+  const sponsors = [
+    { name: 'FPT Corporation', role: 'Main Organizer'      },
+    { name: 'FSchool',         role: 'Host Organization'   },
+    { name: 'REV Robotics',    role: 'Equipment Partner'   },
+    { name: 'Sponsor 4',       role: 'Title Sponsor'       },
+    { name: 'Sponsor 5',       role: 'Supporting Sponsor'  },
+    { name: 'Sponsor 6',       role: 'Technology Partner'  },
+  ];
   const marqueeSponsors = [...sponsors, ...sponsors];
 </script>
 
 <style>
-  @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-  .marquee-track {
-    animation: marquee 24s linear infinite;
-  }
-  .marquee-track:hover {
-    animation-play-state: paused;
-  }
+  @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .marquee-track { animation: marquee 24s linear infinite; }
+  .marquee-track:hover { animation-play-state: paused; }
 </style>
 
-<section class="px-6 py-24">
+<section class="px-6 py-24 bg-slate-50 dark:bg-slate-900/40">
   <div class="mx-auto max-w-7xl">
     <div class="mb-12 text-center">
-      <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">Organizers & Sponsors</p>
-      <h2 class="text-4xl font-black">Powered By Innovation</h2>
-      <p class="mt-4 text-slate-400">Organized by FPT Corporation & FSchool. Made possible by our sponsors.</p>
+      <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">{m.sponsors_label()}</p>
+      <h2 class="text-4xl font-black text-slate-900 dark:text-white">{m.sponsors_title()}</h2>
+      <p class="mt-4 text-slate-500 dark:text-slate-400">Organized by FPT Corporation & FSchool. Made possible by our sponsors.</p>
     </div>
 
-    <!-- Marquee -->
-    <div class="overflow-hidden rounded-[32px] border border-white/5 bg-white/[0.01] py-8">
+    <div class="overflow-hidden rounded-[32px] border border-slate-200 dark:border-white/5 bg-white dark:bg-white/[0.01] py-8">
       <div class="flex marquee-track gap-6" style="width: max-content">
         {#each marqueeSponsors as sponsor}
-          <div class="flex h-28 w-48 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-6 transition hover:border-white/20 hover:bg-white/[0.04]">
+          <div class="flex h-28 w-48 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] px-6 transition hover:border-slate-400 dark:hover:border-white/20 hover:bg-white dark:hover:bg-white/[0.04]">
             <!-- IMAGE SLOT: replace with <img src="..." alt="{sponsor.name}" class="h-10 object-contain"> -->
-            <div class="h-10 w-24 rounded-lg border border-dashed border-white/15 bg-white/5 flex items-center justify-center">
-              <span class="text-[10px] text-slate-600 text-center px-2">{sponsor.name}</span>
+            <div class="h-10 w-24 rounded-lg border border-dashed border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 flex items-center justify-center">
+              <span class="text-[10px] text-slate-400 dark:text-slate-600 text-center px-2">{sponsor.name}</span>
             </div>
-            <p class="text-xs text-slate-600 text-center">{sponsor.role}</p>
+            <p class="text-xs text-slate-400 dark:text-slate-600 text-center">{sponsor.role}</p>
           </div>
         {/each}
       </div>
-    </div>
-
-    <!-- Static grid for smaller screens fallback -->
-    <div class="mt-6 grid grid-cols-3 gap-4 md:grid-cols-6 lg:hidden">
-      {#each sponsors as sponsor}
-        <div class="flex h-20 items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/[0.02]">
-          <span class="text-xs text-slate-600 text-center px-2">{sponsor.name}</span>
-        </div>
-      {/each}
     </div>
   </div>
 </section>

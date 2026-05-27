@@ -18,9 +18,9 @@
   <meta name="description" content="Vietnam's nationwide STEM, AI and Robotics competition for middle school students. Powered by miniFAnRoC platform." />
 </svelte:head>
 
-<div class="min-h-screen overflow-x-hidden bg-slate-950 text-white">
+<!-- Root wrapper: light = white bg + dark text, dark = slate-950 bg + white text -->
+<div class="min-h-screen overflow-x-hidden bg-white text-slate-900 dark:bg-slate-950 dark:text-white transition-colors duration-300">
   <Navbar />
-
   <HeroSection />
   <AboutSection />
   <StatisticsSection />
@@ -31,6 +31,5 @@
   <MatchesSection />
   <CTASection />
   <SponsorsSection />
-
   <Footer />
 </div>
