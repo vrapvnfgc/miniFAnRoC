@@ -4,10 +4,10 @@
   import * as m from '$lib/paraglide/messages';
 
   const stats = [
-    { icon: Trophy, label: 'Competing Teams',      value: 128, suffix: '+', iconColor: 'text-yellow-600 dark:text-yellow-400', iconBg: 'bg-yellow-500/10', numColor: 'text-yellow-600 dark:text-yellow-400' },
-    { icon: Users,  label: 'Student Participants', value: 542, suffix: '+', iconColor: 'text-cyan-600 dark:text-cyan-400',    iconBg: 'bg-cyan-500/10',   numColor: 'text-cyan-600 dark:text-cyan-400'    },
-    { icon: School, label: 'Schools Registered',   value: 61,  suffix: '+', iconColor: 'text-blue-600 dark:text-blue-400',   iconBg: 'bg-blue-500/10',   numColor: 'text-blue-600 dark:text-blue-400'   },
-    { icon: Globe,  label: 'Provinces',             value: 27,  suffix: '+', iconColor: 'text-emerald-600 dark:text-emerald-400', iconBg: 'bg-emerald-500/10', numColor: 'text-emerald-600 dark:text-emerald-400' },
+    { icon: Trophy, label: m.stats_teams(),      value: 128, suffix: '+', iconColor: 'text-yellow-600 dark:text-yellow-400', iconBg: 'bg-yellow-500/10', numColor: 'text-yellow-600 dark:text-yellow-400' },
+    { icon: Users,  label: m.stats_students(),   value: 542, suffix: '+', iconColor: 'text-cyan-600 dark:text-cyan-400',    iconBg: 'bg-cyan-500/10',   numColor: 'text-cyan-600 dark:text-cyan-400'    },
+    { icon: School, label: m.stats_schools(),    value: 61,  suffix: '+', iconColor: 'text-blue-600 dark:text-blue-400',   iconBg: 'bg-blue-500/10',   numColor: 'text-blue-600 dark:text-blue-400'   },
+    { icon: Globe,  label: m.stats_provinces(),  value: 27,  suffix: '+', iconColor: 'text-emerald-600 dark:text-emerald-400', iconBg: 'bg-emerald-500/10', numColor: 'text-emerald-600 dark:text-emerald-400' },
   ] as const;
 
   let counts = $state([0, 0, 0, 0]);

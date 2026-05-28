@@ -2,12 +2,12 @@
   import * as m from '$lib/paraglide/messages';
 
   const sponsors = [
-    { name: 'FPT Corporation', role: 'Main Organizer'      },
-    { name: 'FSchool',         role: 'Host Organization'   },
-    { name: 'REV Robotics',    role: 'Equipment Partner'   },
-    { name: 'Sponsor 4',       role: 'Title Sponsor'       },
-    { name: 'Sponsor 5',       role: 'Supporting Sponsor'  },
-    { name: 'Sponsor 6',       role: 'Technology Partner'  },
+    { name: 'FPT Corporation', role: m.sponsor_main_organizer() },
+    { name: 'FSchool',         role: m.sponsor_host_organization() },
+    { name: 'REV Robotics',    role: m.sponsor_equipment_partner() },
+    { name: 'Sponsor 4',       role: m.sponsor_title_sponsor() },
+    { name: 'Sponsor 5',       role: m.sponsor_supporting_sponsor() },
+    { name: 'Sponsor 6',       role: m.sponsor_technology_partner() },
   ];
   const marqueeSponsors = [...sponsors, ...sponsors];
 </script>
@@ -23,7 +23,7 @@
     <div class="mb-12 text-center">
       <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">{m.sponsors_label()}</p>
       <h2 class="text-4xl font-black text-slate-900 dark:text-white">{m.sponsors_title()}</h2>
-      <p class="mt-4 text-slate-500 dark:text-slate-400">Organized by FPT Corporation & FSchool. Made possible by our sponsors.</p>
+      <p class="mt-4 text-slate-500 dark:text-slate-400">{m.sponsors_desc()}</p>
     </div>
 
     <div class="overflow-hidden rounded-[32px] border border-slate-200 dark:border-white/5 bg-white dark:bg-white/[0.01] py-8">
