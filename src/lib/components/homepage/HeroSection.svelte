@@ -48,7 +48,11 @@
       </div>
 
       <div class="mt-12 flex flex-wrap gap-6">
-        {#each [['128+','Teams'],['542+','Students'],['27+','Provinces']] as [val, lbl]}
+        {#each [
+          ['128+', m.hero_stats_teams()],
+          ['542+', m.hero_stats_students()],
+          ['27+', m.hero_stats_provinces()]
+        ] as [val, lbl]}
           <div class="text-center">
             <p class="text-2xl font-black text-cyan-600 dark:text-cyan-300">{val}</p>
             <p class="text-xs text-slate-500 dark:text-slate-500 mt-0.5">{lbl}</p>
@@ -66,19 +70,19 @@
           <div class="relative flex h-[440px] items-center justify-center overflow-hidden rounded-[28px] border border-dashed border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-950 lg:h-[520px]">
             <div class="text-center select-none pointer-events-none">
               <Bot class="mx-auto mb-4 h-20 w-20 text-slate-300 dark:text-cyan-400/50" />
-              <p class="text-sm text-slate-400 dark:text-slate-600">[ Place hero robot/students image here ]</p>
+              <p class="text-sm text-slate-400 dark:text-slate-600">{m.hero_image_placeholder()}</p>
             </div>
             <div class="absolute top-4 right-4 h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_2px_rgba(34,211,238,0.6)]"></div>
             <div class="absolute bottom-4 left-4 h-2 w-2 rounded-full bg-purple-400 shadow-[0_0_8px_2px_rgba(192,132,252,0.6)]"></div>
           </div>
           <div class="mt-3 flex items-center justify-between rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] px-5 py-3">
             <div>
-              <p class="text-xs text-slate-500 dark:text-slate-500">Competition</p>
+              <p class="text-xs text-slate-500 dark:text-slate-500">{m.hero_competition_label()}</p>
               <p class="text-sm font-semibold text-slate-800 dark:text-white">FAnRoC 2026</p>
             </div>
             <div class="text-right">
-              <p class="text-xs text-slate-500 dark:text-slate-500">Status</p>
-              <p class="text-sm font-semibold text-green-600 dark:text-green-400">Registration Open</p>
+              <p class="text-xs text-slate-500 dark:text-slate-500">{m.hero_status_label()}</p>
+              <p class="text-sm font-semibold text-green-600 dark:text-green-400">{m.hero_status_open()}</p>
             </div>
           </div>
         </div>
@@ -86,8 +90,8 @@
     </div>
   </div>
 
-  <a href="#about" class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-400 dark:text-slate-600 transition hover:text-slate-600 dark:hover:text-slate-400" aria-label="Scroll down">
-    <span class="text-xs tracking-widest uppercase">Scroll</span>
+  <a href="#about" class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-400 dark:text-slate-600 transition hover:text-slate-600 dark:hover:text-slate-400" aria-label={m.hero_scroll_aria()}>
+    <span class="text-xs tracking-widest uppercase">{m.hero_scroll_label()}</span>
     <ChevronDown class="h-5 w-5 animate-bounce" />
   </a>
 </section>

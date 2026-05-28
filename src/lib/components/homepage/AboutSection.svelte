@@ -48,7 +48,7 @@
               <div class="mx-auto mb-2 h-8 w-8 rounded-lg border border-dashed border-slate-300 dark:border-white/20 flex items-center justify-center">
                 <span class="text-xs text-slate-400 dark:text-slate-600">{i}</span>
               </div>
-              <p class="text-xs text-slate-400 dark:text-slate-600">[ Competition image {i} ]</p>
+              <p class="text-xs text-slate-400 dark:text-slate-600">{m.about_gallery_image_label({ i })}</p>
             </div>
           </div>
         {/each}

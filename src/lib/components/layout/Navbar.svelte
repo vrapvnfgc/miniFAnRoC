@@ -4,22 +4,23 @@
   import { themeStore } from '$lib/stores/theme.svelte';
   import { languageStore } from '$lib/stores/language.svelte';
   import { locales } from '$lib/paraglide/runtime';
+  import * as m from '$lib/paraglide/messages';
 
   let mobileOpen = $state(false);
   let scrolled = $state(false);
   let languageOpen = $state(false);
 
   const navItems = [
-    { label: 'Home', href: '/homepage' },
-    { label: 'Team List', href: '/teams' },
-    { label: 'Ranking', href: '/ranking' },
-    { label: 'Matches', href: '/matches' },
-    { label: 'Awards', href: '/awards' },
+    { label: m.nav_home(), href: '/homepage' },
+    { label: m.nav_teams(), href: '/teams' },
+    { label: m.nav_ranking(), href: '/ranking' },
+    { label: m.nav_matches(), href: '/matches' },
+    { label: m.nav_awards(), href: '/awards' },
     {
-      label: 'Resources',
+      label: m.nav_resources(),
       children: [
-        { label: 'Competition Manual', href: '/manual' },
-        { label: 'Team Guide', href: '/resources' }
+        { label: m.nav_manual(), href: '/manual' },
+        { label: m.nav_resources(), href: '/resources' }
       ]
     }
   ];
@@ -144,7 +145,7 @@
         href="/login"
         class="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-105 hover:shadow-cyan-500/40"
       >
-        Login / Sign Up
+        {m.nav_login()}
       </a>
     </div>
 
@@ -216,7 +217,7 @@
             </div>
           </div>
           <a href="/login" onclick={closeMobile} class="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white">
-            Login / Sign Up
+            {m.nav_login()}
           </a>
         </div>
       </div>

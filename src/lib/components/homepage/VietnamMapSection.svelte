@@ -4,10 +4,10 @@
   let hoveredRegion = $state<string | null>(null);
 
   const regions = [
-    { id: 'hanoi',    name: 'Hanoi Regional Hub',     subtitle: 'Northern Vietnam',              venue: 'FSchool Hanoi',     color: '#0ea5e9', bgClass: 'border-blue-500/25 bg-blue-50 dark:bg-blue-500/10',     labelClass: 'text-blue-700 dark:text-blue-300',   tooltip: 'Competes at FSchool Hanoi'     },
-    { id: 'thanhhoa', name: 'Thanh Hoa Regional Hub', subtitle: 'Thanh Hoa · Nghe An · Ha Tinh', venue: 'FSchool Thanh Hoa', color: '#f97316', bgClass: 'border-orange-500/25 bg-orange-50 dark:bg-orange-500/10', labelClass: 'text-orange-700 dark:text-orange-300', tooltip: 'Competes at FSchool Thanh Hoa' },
-    { id: 'danang',   name: 'Da Nang Regional Hub',   subtitle: 'Central Vietnam',               venue: 'FSchool Da Nang',   color: '#a855f7', bgClass: 'border-purple-500/25 bg-purple-50 dark:bg-purple-500/10', labelClass: 'text-purple-700 dark:text-purple-300', tooltip: 'Competes at FSchool Da Nang'   },
-    { id: 'cantho',   name: 'Can Tho Regional Hub',   subtitle: 'Southern Vietnam',              venue: 'FSchool Can Tho',   color: '#22c55e', bgClass: 'border-green-500/25 bg-green-50 dark:bg-green-500/10',   labelClass: 'text-green-700 dark:text-green-300',   tooltip: 'Competes at FSchool Can Tho'   },
+    { id: 'hanoi',    name: m.map_region_hanoi_name(),     subtitle: m.map_region_hanoi_subtitle(),     venue: m.map_region_hanoi_venue(),     color: '#0ea5e9', bgClass: 'border-blue-500/25 bg-blue-50 dark:bg-blue-500/10',     labelClass: 'text-blue-700 dark:text-blue-300',   tooltip: m.map_region_hanoi_tooltip() },
+    { id: 'thanhhoa', name: m.map_region_thanhhoa_name(), subtitle: m.map_region_thanhhoa_subtitle(), venue: m.map_region_thanhhoa_venue(), color: '#f97316', bgClass: 'border-orange-500/25 bg-orange-50 dark:bg-orange-500/10', labelClass: 'text-orange-700 dark:text-orange-300', tooltip: m.map_region_thanhhoa_tooltip() },
+    { id: 'danang',   name: m.map_region_danang_name(),   subtitle: m.map_region_danang_subtitle(),   venue: m.map_region_danang_venue(),   color: '#a855f7', bgClass: 'border-purple-500/25 bg-purple-50 dark:bg-purple-500/10', labelClass: 'text-purple-700 dark:text-purple-300', tooltip: m.map_region_danang_tooltip() },
+    { id: 'cantho',   name: m.map_region_cantho_name(),   subtitle: m.map_region_cantho_subtitle(),   venue: m.map_region_cantho_venue(),   color: '#22c55e', bgClass: 'border-green-500/25 bg-green-50 dark:bg-green-500/10',   labelClass: 'text-green-700 dark:text-green-300',   tooltip: m.map_region_cantho_tooltip() },
   ];
 
   function setHover(id: string | null) { hoveredRegion = id; }
@@ -19,7 +19,7 @@
       <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">{m.map_label()}</p>
       <h2 class="text-4xl font-black text-slate-900 dark:text-white">{m.map_title()}</h2>
       <p class="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-400">
-        Four regional hubs across Vietnam, bringing the competition close to every student.
+        {m.map_desc()}
       </p>
     </div>
 
@@ -52,7 +52,7 @@
               <text x="140" y="486" text-anchor="middle" fill="#16a34a" font-size="9"  style="pointer-events:none">FSchool Can Tho</text>
               <circle cx="140" cy="508" r="5" fill="#22c55e" opacity="0.8" style="pointer-events:none"><animate attributeName="opacity" values="0.8;0.3;0.8" dur="2.5s" repeatCount="indefinite"/></circle>
             </g>
-            <text x="140" y="578" text-anchor="middle" fill="#94a3b8" font-size="8">[ Replace with real SVG map ]</text>
+            <text x="140" y="578" text-anchor="middle" fill="#94a3b8" font-size="8">{m.map_placeholder()}</text>
           </svg>
 
           {#if hoveredRegion}

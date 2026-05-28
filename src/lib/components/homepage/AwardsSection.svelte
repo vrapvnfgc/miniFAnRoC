@@ -41,14 +41,14 @@
             {m.awards_grand_desc()}
           </p>
           <div class="mt-4 inline-flex items-center gap-2 rounded-2xl border border-dashed border-yellow-400/30 dark:border-yellow-400/20 bg-yellow-50 dark:bg-yellow-500/5 px-5 py-3 text-sm text-yellow-700 dark:text-yellow-300">
-            🎁 Prize: REV Robotics FTC Starter Kit + <span class="ml-1 opacity-50">[ Cash prize TBA ]</span>
+            {m.awards_grand_prize()}
           </div>
         </div>
         <div class="flex shrink-0 gap-3 lg:flex-col">
           <a href="/awards" class="inline-flex items-center gap-2 rounded-2xl bg-yellow-100 dark:bg-yellow-500/15 border border-yellow-400/30 dark:border-yellow-500/30 px-5 py-3 text-sm font-semibold text-yellow-700 dark:text-yellow-300 transition hover:bg-yellow-200 dark:hover:bg-yellow-500/25">
-            <FileText class="h-4 w-4" /> Award Report
+            <FileText class="h-4 w-4" /> {m.awards_report()}
           </a>
-          <a href="/awards/guide" class="inline-flex items-center gap-2 rounded-2xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-5 py-3 text-sm font-semibold text-slate-700 dark:text-white transition hover:bg-slate-100 dark:hover:bg-white/10">Explanation Guide</a>
+          <a href="/awards/guide" class="inline-flex items-center gap-2 rounded-2xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-5 py-3 text-sm font-semibold text-slate-700 dark:text-white transition hover:bg-slate-100 dark:hover:bg-white/10">{m.awards_guide()}</a>
         </div>
       </div>
     </div>
@@ -65,7 +65,7 @@
           <p class="mb-1 text-xs font-semibold {award.color} uppercase tracking-wider">{award.subtitle}</p>
           <h4 class="mb-3 text-base font-bold text-slate-900 dark:text-white">{award.title}</h4>
           <p class="mb-4 text-sm leading-6 text-slate-600 dark:text-slate-400">{award.desc}</p>
-          <div class="rounded-xl border border-dashed border-slate-300 dark:border-white/10 px-4 py-2.5 text-xs text-slate-400 dark:text-slate-600">Prize: [ TBA ]</div>
+          <div class="rounded-xl border border-dashed border-slate-300 dark:border-white/10 px-4 py-2.5 text-xs text-slate-400 dark:text-slate-600">{m.awards_prize_tba()}</div>
         </div>
       {/each}
     </div>
@@ -80,7 +80,7 @@
           </div>
           <h4 class="mb-2 font-bold text-slate-900 dark:text-white">{award.title}</h4>
           <p class="text-sm leading-6 text-slate-500 dark:text-slate-500">{award.desc}</p>
-          <div class="mt-4 rounded-xl border border-dashed border-slate-300 dark:border-white/10 px-4 py-2 text-xs text-slate-400 dark:text-slate-600">Prize: [ TBA ]</div>
+          <div class="mt-4 rounded-xl border border-dashed border-slate-300 dark:border-white/10 px-4 py-2 text-xs text-slate-400 dark:text-slate-600">{m.awards_prize_tba()}</div>
         </div>
       {/each}
     </div>
