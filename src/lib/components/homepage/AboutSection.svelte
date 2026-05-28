@@ -3,10 +3,10 @@
   import * as m from '$lib/paraglide/messages';
 
   const objectives = [
-    { icon: Rocket, title: 'Inspire STEM Passion',    desc: 'Encouraging students to explore the wonders of science, technology and robotics.',              gradFrom: 'from-cyan-500/20',   gradTo: 'to-cyan-600/5',   border: 'border-cyan-500/20',   iconBg: 'bg-cyan-500/10',   iconColor: 'text-cyan-600 dark:text-cyan-400'   },
-    { icon: Brain,  title: 'Promote AI Literacy',     desc: 'Helping the next generation understand and apply AI technologies in real life.',                 gradFrom: 'from-blue-500/20',   gradTo: 'to-blue-600/5',   border: 'border-blue-500/20',   iconBg: 'bg-blue-500/10',   iconColor: 'text-blue-600 dark:text-blue-400'   },
-    { icon: Cpu,    title: 'Engineering Thinking',    desc: 'Building strong engineering and problem-solving mindset through hands-on challenges.',            gradFrom: 'from-purple-500/20', gradTo: 'to-purple-600/5', border: 'border-purple-500/20', iconBg: 'bg-purple-500/10', iconColor: 'text-purple-600 dark:text-purple-400' },
-    { icon: Users,  title: 'Team Collaboration',      desc: 'Developing teamwork, leadership and communication skills under competitive pressure.',            gradFrom: 'from-emerald-500/20',gradTo: 'to-emerald-600/5',border: 'border-emerald-500/20',iconBg: 'bg-emerald-500/10',iconColor: 'text-emerald-600 dark:text-emerald-400'},
+    { icon: Rocket, title: m.about_objective_1_title(),    desc: m.about_objective_1_desc(),              gradFrom: 'from-cyan-500/20',   gradTo: 'to-cyan-600/5',   border: 'border-cyan-500/20',   iconBg: 'bg-cyan-500/10',   iconColor: 'text-cyan-600 dark:text-cyan-400'   },
+    { icon: Brain,  title: m.about_objective_2_title(),     desc: m.about_objective_2_desc(),                 gradFrom: 'from-blue-500/20',   gradTo: 'to-blue-600/5',   border: 'border-blue-500/20',   iconBg: 'bg-blue-500/10',   iconColor: 'text-blue-600 dark:text-blue-400'   },
+    { icon: Cpu,    title: m.about_objective_3_title(),    desc: m.about_objective_3_desc(),            gradFrom: 'from-purple-500/20', gradTo: 'to-purple-600/5', border: 'border-purple-500/20', iconBg: 'bg-purple-500/10', iconColor: 'text-purple-600 dark:text-purple-400' },
+    { icon: Users,  title: m.about_objective_4_title(),      desc: m.about_objective_4_desc(),            gradFrom: 'from-emerald-500/20',gradTo: 'to-emerald-600/5',border: 'border-emerald-500/20',iconBg: 'bg-emerald-500/10',iconColor: 'text-emerald-600 dark:text-emerald-400'},
   ];
 </script>
 
@@ -15,12 +15,10 @@
     <div class="mb-16 text-center">
       <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">{m.about_label()}</p>
       <h2 class="text-4xl font-black text-slate-900 dark:text-white md:text-5xl">
-        Building Vietnam's<br/>
-        <span class="bg-gradient-to-r from-cyan-500 to-blue-500 dark:from-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">Future Innovators</span>
+        {m.about_title()}
       </h2>
       <p class="mx-auto mt-6 max-w-3xl text-lg leading-8 text-slate-600 dark:text-slate-400">
-        FAnRoC (FSchool AI and Robotics Challenge) is a nationwide STEM, AI and Robotics competition designed
-        for middle school students to develop engineering mindset, teamwork and innovation skills.
+        {m.about_desc()}
       </p>
     </div>
 
@@ -40,8 +38,8 @@
     <!-- Image gallery -->
     <div class="mt-20">
       <div class="mb-8 flex items-center justify-between">
-        <h3 class="text-2xl font-black text-slate-900 dark:text-white">Competition Moments</h3>
-        <p class="text-sm text-slate-400 dark:text-slate-500">[ Photo gallery — add images below ]</p>
+        <h3 class="text-2xl font-black text-slate-900 dark:text-white">{m.about_competition_moments()}</h3>
+        <p class="text-sm text-slate-400 dark:text-slate-500">{m.about_gallery_placeholder()}</p>
       </div>
       <div class="grid gap-4 md:grid-cols-3">
         {#each [1, 2, 3] as i}
