@@ -3,10 +3,10 @@
   import * as m from '$lib/paraglide/messages';
 
   const timeline = [
-    { icon: ClipboardList, date: 'Aug 10, 2026', title: 'Team Registration',  desc: 'Register your team online. All required documents must be submitted before the deadline.',                                       color: 'text-cyan-600 dark:text-cyan-400',    bg: 'bg-cyan-500/10',   border: 'border-cyan-500/30',   step: 1 },
-    { icon: CalendarDays,  date: 'Aug 24, 2026', title: 'Training Webinar',   desc: 'Attend the official online training session to learn competition rules and robot design guidelines.',                              color: 'text-blue-600 dark:text-blue-400',   bg: 'bg-blue-500/10',   border: 'border-blue-500/30',   step: 2 },
-    { icon: Flag,          date: 'Sep 14, 2026', title: 'Regional Qualifiers',desc: 'Teams compete at regional FSchool hubs in Hanoi, Thanh Hoa, Da Nang and Can Tho.',                                               color: 'text-purple-600 dark:text-purple-400',bg: 'bg-purple-500/10', border: 'border-purple-500/30', step: 3 },
-    { icon: Trophy,        date: 'Oct 12, 2026', title: 'National Finals',    desc: 'Top teams from all regions gather at FSchool Hanoi to compete for the national championship.',                                     color: 'text-yellow-600 dark:text-yellow-400',bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', step: 4 },
+    { icon: ClipboardList, date: m.timeline_1_date(), title: m.timeline_1_title(),  desc: m.timeline_1_desc(),                                       color: 'text-cyan-600 dark:text-cyan-400',    bg: 'bg-cyan-500/10',   border: 'border-cyan-500/30',   step: 1 },
+    { icon: CalendarDays,  date: m.timeline_2_date(), title: m.timeline_2_title(),   desc: m.timeline_2_desc(),                              color: 'text-blue-600 dark:text-blue-400',   bg: 'bg-blue-500/10',   border: 'border-blue-500/30',   step: 2 },
+    { icon: Flag,          date: m.timeline_3_date(), title: m.timeline_3_title(),desc: m.timeline_3_desc(),                                               color: 'text-purple-600 dark:text-purple-400',bg: 'bg-purple-500/10', border: 'border-purple-500/30', step: 3 },
+    { icon: Trophy,        date: m.timeline_4_date(), title: m.timeline_4_title(),    desc: m.timeline_4_desc(),                                     color: 'text-yellow-600 dark:text-yellow-400',bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', step: 4 },
   ];
 </script>
 
@@ -16,8 +16,7 @@
       <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">{m.timeline_label()}</p>
       <h2 class="text-4xl font-black text-slate-900 dark:text-white">{m.timeline_title()}</h2>
       <p class="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-600 dark:text-slate-400">
-        Teams from across Vietnam will compete at regional hubs at FSchool campuses in Hanoi, Thanh Hoa,
-        Da Nang and Can Tho before advancing to the National Finals at FSchool Hanoi.
+        {m.timeline_desc()}
       </p>
     </div>
 

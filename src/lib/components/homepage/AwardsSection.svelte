@@ -3,19 +3,19 @@
   import * as m from '$lib/paraglide/messages';
 
   const mainAwards = [
-    { title: 'FAnRoC Excellence Award', subtitle: 'Champion',                       desc: 'Presented to the overall champion team of the national finals.',                     icon: Trophy,   color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-50 dark:bg-yellow-500/10',  border: 'border-yellow-400/30 dark:border-yellow-500/20' },
-    { title: 'Outstanding Award',        subtitle: 'Runner-up',                     desc: 'Awarded to the runner-up team demonstrating excellence throughout the competition.', icon: Medal,    color: 'text-slate-500 dark:text-slate-300',   bg: 'bg-slate-100 dark:bg-slate-500/10',   border: 'border-slate-300 dark:border-slate-500/20'      },
-    { title: 'Innovation Award',          subtitle: 'Third Place',                   desc: 'Recognizes the team with the most creative and innovative robot design.',            icon: Sparkles, color: 'text-amber-600 dark:text-amber-500',   bg: 'bg-amber-50 dark:bg-amber-700/10',    border: 'border-amber-400/30 dark:border-amber-700/20'   },
-    { title: 'Rising Star Award',         subtitle: 'Honorable Mention · 3 per div',desc: 'Celebrates outstanding newcomers who show exceptional promise and growth.',          icon: Star,     color: 'text-cyan-600 dark:text-cyan-400',     bg: 'bg-cyan-50 dark:bg-cyan-500/10',      border: 'border-cyan-400/30 dark:border-cyan-500/20'     },
+    { title: m.awards_1_title(), subtitle: m.awards_1_subtitle(), desc: m.awards_1_desc(), icon: Trophy, color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-50 dark:bg-yellow-500/10', border: 'border-yellow-400/30 dark:border-yellow-500/20' },
+    { title: m.awards_2_title(), subtitle: m.awards_2_subtitle(), desc: m.awards_2_desc(), icon: Medal, color: 'text-slate-500 dark:text-slate-300', bg: 'bg-slate-100 dark:bg-slate-500/10', border: 'border-slate-300 dark:border-slate-500/20' },
+    { title: m.awards_3_title(), subtitle: m.awards_3_subtitle(), desc: m.awards_3_desc(), icon: Sparkles, color: 'text-amber-600 dark:text-amber-500', bg: 'bg-amber-50 dark:bg-amber-700/10', border: 'border-amber-400/30 dark:border-amber-700/20' },
+    { title: m.awards_4_title(), subtitle: m.awards_4_subtitle(), desc: m.awards_4_desc(), icon: Star, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-500/10', border: 'border-cyan-400/30 dark:border-cyan-500/20' },
   ];
 
   const specialAwards = [
-    { title: 'Team Sustainability Award',    desc: 'Awarded to the team demonstrating the most sustainable engineering practices.'       },
-    { title: 'Gracious Professionalism Award',desc: 'Recognizes teams that embody the spirit of gracious professionalism on and off the field.' },
-    { title: 'Open Tech Award',              desc: 'For the team making the best use of open-source technologies in their robot design.'  },
-    { title: 'Engineering Innovation Award', desc: 'Highlights groundbreaking engineering solutions and novel technical approaches.'      },
-    { title: 'Engineering Design Award',     desc: 'Honors the best overall robot design considering functionality and aesthetics.'       },
-    { title: 'Engineering Document Award',   desc: 'Recognizes the most thorough and professional technical documentation.'              },
+    { title: m.awards_special_1(), desc: m.awards_special_1_desc() },
+    { title: m.awards_special_2(), desc: m.awards_special_2_desc() },
+    { title: m.awards_special_3(), desc: m.awards_special_3_desc() },
+    { title: m.awards_special_4(), desc: m.awards_special_4_desc() },
+    { title: m.awards_special_5(), desc: m.awards_special_5_desc() },
+    { title: m.awards_special_6(), desc: m.awards_special_6_desc() },
   ];
 </script>
 
@@ -24,7 +24,7 @@
     <div class="mb-16 text-center">
       <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">{m.awards_label()}</p>
       <h2 class="text-4xl font-black text-slate-900 dark:text-white">{m.awards_title()}</h2>
-      <p class="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-400">Recognizing excellence, innovation, and the spirit of engineering across all divisions.</p>
+      <p class="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-400">{m.awards_desc()}</p>
     </div>
 
     <!-- Grand Award -->
@@ -35,10 +35,10 @@
           <Trophy class="h-12 w-12 text-yellow-600 dark:text-yellow-300" />
         </div>
         <div class="flex-1">
-          <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-yellow-400/30 dark:border-yellow-500/25 bg-yellow-100 dark:bg-yellow-500/10 px-3 py-1 text-xs font-semibold text-yellow-700 dark:text-yellow-400 uppercase tracking-wider">🏆 Grand Award</div>
-          <h3 class="mb-3 text-3xl font-black text-slate-900 dark:text-yellow-100 md:text-4xl">Seymour Papert Inspirer Award</h3>
+          <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-yellow-400/30 dark:border-yellow-500/25 bg-yellow-100 dark:bg-yellow-500/10 px-3 py-1 text-xs font-semibold text-yellow-700 dark:text-yellow-400 uppercase tracking-wider">🏆 {m.awards_grand_label()}</div>
+          <h3 class="mb-3 text-3xl font-black text-slate-900 dark:text-yellow-100 md:text-4xl">{m.awards_grand_title()}</h3>
           <p class="max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
-            Presented to the most outstanding team in the entire competition — across both divisions. Includes a REV Robotics FTC Starter Kit.
+            {m.awards_grand_desc()}
           </p>
           <div class="mt-4 inline-flex items-center gap-2 rounded-2xl border border-dashed border-yellow-400/30 dark:border-yellow-400/20 bg-yellow-50 dark:bg-yellow-500/5 px-5 py-3 text-sm text-yellow-700 dark:text-yellow-300">
             🎁 Prize: REV Robotics FTC Starter Kit + <span class="ml-1 opacity-50">[ Cash prize TBA ]</span>
@@ -54,7 +54,7 @@
     </div>
 
     <!-- Main Awards -->
-    <h3 class="mb-6 text-xl font-bold text-slate-700 dark:text-slate-300">Main Awards</h3>
+    <h3 class="mb-6 text-xl font-bold text-slate-700 dark:text-slate-300">{m.awards_main_title()}</h3>
     <div class="mb-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {#each mainAwards as award}
         {@const Icon = award.icon}
@@ -71,7 +71,7 @@
     </div>
 
     <!-- Special Awards -->
-    <h3 class="mb-6 text-xl font-bold text-slate-700 dark:text-slate-300">Special Awards</h3>
+    <h3 class="mb-6 text-xl font-bold text-slate-700 dark:text-slate-300">{m.awards_special_title()}</h3>
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {#each specialAwards as award}
         <div class="rounded-[24px] border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] p-6 shadow-sm dark:shadow-none transition hover:-translate-y-1 hover:border-slate-300 dark:hover:border-white/20">

@@ -14,19 +14,17 @@
       <div class="relative">
         <p class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">{m.cta_label()}</p>
         <h2 class="text-4xl font-black leading-tight text-slate-900 dark:text-white md:text-5xl lg:text-6xl">
-          Build The Future<br/>
-          <span class="bg-gradient-to-r from-cyan-500 to-purple-500 dark:from-cyan-400 dark:to-purple-400 bg-clip-text text-transparent">With Robotics & AI</span>
+          {m.cta_title()}
         </h2>
         <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
-          Join Vietnam's next generation of innovators, engineers and technology leaders.
-          Register your team today and compete on the national stage.
+          {m.cta_desc()}
         </p>
         <div class="mt-10 flex flex-wrap justify-center gap-4">
           <a href="/signup" class="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-8 py-4 font-semibold text-white shadow-xl shadow-cyan-500/20 transition hover:scale-105 hover:shadow-cyan-500/40">
-            <UserPlus class="h-5 w-5" /> Sign Up
+            <UserPlus class="h-5 w-5" /> {m.btn_sign_up()}
           </a>
           <a href="/register" class="group inline-flex items-center gap-2 rounded-2xl border border-slate-300 dark:border-white/15 bg-white dark:bg-white/5 px-8 py-4 font-semibold text-slate-700 dark:text-white backdrop-blur-sm transition hover:bg-slate-100 dark:hover:bg-white/10 hover:border-slate-400 dark:hover:border-white/30">
-            Register Team <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            {m.btn_register_team()} <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </a>
         </div>
       </div>

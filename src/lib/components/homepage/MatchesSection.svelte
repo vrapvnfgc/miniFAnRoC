@@ -22,12 +22,12 @@
         <h2 class="text-4xl font-black text-slate-900 dark:text-white">{m.matches_title()}</h2>
       </div>
       <a href="/matches" class="group inline-flex items-center gap-2 rounded-2xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-white transition hover:bg-slate-100 dark:hover:bg-white/10">
-        View All Matches <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        {m.btn_view_all_matches()} <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
       </a>
     </div>
 
     <!-- Recent -->
-    <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Recent Results</h3>
+    <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">{m.matches_recent_results()}</h3>
     <div class="mb-10 grid gap-4 md:grid-cols-2">
       {#each recentMatches as match}
         <div class="rounded-[24px] border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] p-6 shadow-sm dark:shadow-none">
@@ -61,7 +61,7 @@
     </div>
 
     <!-- Upcoming -->
-    <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Upcoming Matches</h3>
+    <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">{m.matches_upcoming()}</h3>
     <div class="grid gap-5 lg:grid-cols-3">
       {#each upcomingMatches as match}
         <div class="rounded-[24px] border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] p-6 shadow-sm dark:shadow-none transition hover:-translate-y-1 hover:border-slate-300 dark:hover:border-white/20">

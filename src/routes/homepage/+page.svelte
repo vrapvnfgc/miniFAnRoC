@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as m from '$lib/paraglide/messages';
   import Navbar from '$lib/components/layout/Navbar.svelte';
   import Footer from '$lib/components/layout/Footer.svelte';
   import HeroSection from '$lib/components/homepage/HeroSection.svelte';
@@ -14,8 +15,8 @@
 </script>
 
 <svelte:head>
-  <title>miniFAnRoC — FSchool AI and Robotics Challenge</title>
-  <meta name="description" content="Vietnam's nationwide STEM, AI and Robotics competition for middle school students. Powered by miniFAnRoC platform." />
+  <title>{m.page_title()}</title>
+  <meta name="description" content={m.page_description()} />
 </svelte:head>
 
 <!-- Root wrapper: light = white bg + dark text, dark = slate-950 bg + white text -->
