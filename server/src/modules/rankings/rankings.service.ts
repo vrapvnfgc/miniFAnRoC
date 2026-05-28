@@ -1,18 +1,7 @@
+import { RankingItem } from '@shared';
 import { TeamModel } from '../teams/teams.model';
 import { MatchModel } from '../matches/matches.model';
 import { MatchScoreModel } from '../scores/scores.model';
-
-export type RankingItem = {
-	rank: number;
-	teamId: string;
-	teamNumber: string;
-	teamName: string;
-	rankingScore: number;
-	highestMatchScore: number;
-	bonusPoint: number;
-	matchesPlayed: number;
-	reason: string;
-};
 
 class RankingsService {
 	async getRankings(includeUnfinalized = false): Promise<RankingItem[]> {
@@ -86,7 +75,7 @@ class RankingsService {
 
 		return rankings.map((ranking, index, arr) => ({
 			...ranking,
-			rank: index + 1,
+			rank: index + 1
 		}));
 	}
 

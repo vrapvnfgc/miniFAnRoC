@@ -1,22 +1,6 @@
+import { CreateField, UpdateField, FieldResponse } from '@shared';
 import { AppError } from '../../core/errors';
 import { FieldModel } from './fields.model';
-
-export type CreateField = {
-	name: string;
-	description?: string;
-	status?: 'ACTIVE' | 'INACTIVE';
-};
-
-export type UpdateField = Partial<CreateField>;
-
-export type FieldResponse = {
-	id: string;
-	name: string;
-	description?: string;
-	status: 'ACTIVE' | 'INACTIVE';
-	createdAt: Date;
-	updatedAt: Date;
-};
 
 function mapField(field: any): FieldResponse {
 	return {

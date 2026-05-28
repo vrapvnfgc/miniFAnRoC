@@ -3,6 +3,7 @@ import { CreateUserSchema } from '@shared';
 import { validate } from '../../core/middlewares';
 import { usersService } from './users.service';
 import { z } from 'zod';
+import { requireAuth, requireAdmin } from '../../core/auth.middleware';
 
 const router = Router();
 
@@ -11,8 +12,8 @@ const UserIdParamSchema = z.object({
 });
 
 router.post('/', validate({ body: CreateUserSchema }), createUserHandler);
-router.get('/', getAllUsersHandler);
-router.get('/:id', validate({ params: UserIdParamSchema }), getUserByIdHandler);
+router.get('/', requireAdmin, getAllUsersHandler);
+router.get('/:id', requireAuth, validate({ params: UserIdParamSchema }), getUserByIdHandler);
 
 export { router as usersRouter };
 

@@ -2,12 +2,7 @@ import { BaseService, type ApiResponse } from './base';
 
 export type MatchPhase = 'qualification' | 'semifinal' | 'final';
 
-export type MatchStatus =
-	| 'queued'
-	| 'scheduled'
-	| 'in_progress'
-	| 'finished'
-	| 'terminated';
+export type MatchStatus = 'queued' | 'scheduled' | 'in_progress' | 'finished' | 'terminated';
 
 export type MatchResponse = {
 	id: string;

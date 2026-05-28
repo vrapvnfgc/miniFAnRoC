@@ -1,28 +1,6 @@
+import { CreateTeam, UpdateTeam, TeamResponse } from '@shared';
 import { AppError } from '../../core/errors';
 import { TeamModel } from './teams.model';
-
-export type CreateTeam = {
-	teamNumber: string;
-	name: string;
-	school: string;
-	coach?: string;
-	robotName?: string;
-	members?: string[];
-};
-
-export type UpdateTeam = Partial<CreateTeam>;
-
-export type TeamResponse = {
-	id: string;
-	teamNumber: string;
-	name: string;
-	school: string;
-	coach?: string;
-	robotName?: string;
-	members?: string[];
-	createdAt: Date;
-	updatedAt: Date;
-};
 
 function mapTeam(team: any): TeamResponse {
 	return {
