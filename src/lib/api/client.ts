@@ -4,9 +4,11 @@ import { FieldsService } from './fields.api';
 import { MatchesService } from './matches.api';
 import { ScoresService } from './scores.api';
 import { RankingsService } from './rankings.api';
-import { BACKEND_API_URL } from '$env/static/private';
+import { AuthService } from './auth.api';
+import { UserService } from './user.api';
+import { PUBLIC_BACKEND_API_URL } from '$env/static/public';
 
-const API_BASE_URL = BACKEND_API_URL || 'http://localhost:3000/api/v1';
+const API_BASE_URL = PUBLIC_BACKEND_API_URL || 'http://localhost:3000/api/v1';
 
 export class APIClient {
 	readonly teams: TeamsService;
@@ -14,6 +16,8 @@ export class APIClient {
 	readonly matches: MatchesService;
 	readonly scores: ScoresService;
 	readonly rankings: RankingsService;
+	readonly auth: AuthService;
+	readonly users: UserService;
 
 	constructor(baseUrl = API_BASE_URL) {
 		const http = new HttpClient(baseUrl);
@@ -23,6 +27,8 @@ export class APIClient {
 		this.matches = new MatchesService(http);
 		this.scores = new ScoresService(http);
 		this.rankings = new RankingsService(http);
+		this.auth = new AuthService(http);
+		this.users = new UserService(http);
 	}
 }
 

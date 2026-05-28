@@ -1,12 +1,5 @@
+import { IField } from '@shared';
 import mongoose, { Schema, HydratedDocument } from 'mongoose';
-
-export interface IField {
-	name: string;
-	description?: string;
-	status: 'ACTIVE' | 'INACTIVE';
-	createdAt: Date;
-	updatedAt: Date;
-}
 
 export type IFieldDocument = HydratedDocument<IField>;
 

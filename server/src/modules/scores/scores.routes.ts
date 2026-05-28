@@ -5,9 +5,7 @@ import { scoresService } from './scores.service';
 
 const router = Router();
 
-const ObjectIdSchema = z
-	.string()
-	.regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId');
+const ObjectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId');
 
 const MatchIdParamSchema = z.object({
 	matchId: ObjectIdSchema
@@ -33,11 +31,7 @@ router.post(
 	saveMatchScoreHandler
 );
 
-router.get(
-	'/:matchId/score',
-	validate({ params: MatchIdParamSchema }),
-	getScoreByMatchIdHandler
-);
+router.get('/:matchId/score', validate({ params: MatchIdParamSchema }), getScoreByMatchIdHandler);
 
 router.post(
 	'/:matchId/score/finalize',

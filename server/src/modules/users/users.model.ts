@@ -1,13 +1,9 @@
+import { User } from '@shared';
 import mongoose, { Schema, Types } from 'mongoose';
 
-export interface IUserDocument {
+export interface IUserDocument extends Omit<User, 'id'> {
 	_id: Types.ObjectId;
-	email: string;
-	name: string;
-	role: 'USER' | 'ADMIN';
 	passwordHash: string;
-	createdAt: Date;
-	updatedAt: Date;
 }
 
 const UserSchema: Schema = new Schema<IUserDocument>(

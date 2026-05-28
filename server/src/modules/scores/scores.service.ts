@@ -1,44 +1,19 @@
+import {
+	AllianceScoreInput,
+	SaveMatchScoreInput,
+	AllianceScoreResponse,
+	MatchScoreResponse,
+	ScoreStatus
+} from '@shared';
 import { AppError } from '../../core/errors';
 import { MatchModel } from '../matches/matches.model';
-import { MatchScoreModel, ScoreStatus } from './scores.model';
-
-export type AllianceScoreInput = {
-	teleIndependent: number;
-	sharedScore: number;
-	penalties: number;
-	endgame: number;
-	endgameMultiplier: number;
-};
-
-export type SaveMatchScoreInput = {
-	red: AllianceScoreInput;
-	blue: AllianceScoreInput;
-	status?: 'draft' | 'submitted';
-};
-
-export type AllianceScoreResponse = AllianceScoreInput & {
-	total: number;
-};
-
-export type MatchScoreResponse = {
-	id: string;
-	matchId: string;
-	red: AllianceScoreResponse;
-	blue: AllianceScoreResponse;
-	status: ScoreStatus;
-	submittedAt?: Date;
-	finalizedAt?: Date;
-	createdAt: Date;
-	updatedAt: Date;
-};
+import { MatchScoreModel } from './scores.model';
 
 function calculateAllianceTotal(score: AllianceScoreInput): number {
 	return (
-		score.teleIndependent +
-		score.sharedScore -
-		score.penalties +
-		score.endgame
-	) * score.endgameMultiplier;
+		(score.teleIndependent + score.sharedScore - score.penalties + score.endgame) *
+		score.endgameMultiplier
+	);
 }
 
 function buildAllianceScore(score: AllianceScoreInput): AllianceScoreResponse {

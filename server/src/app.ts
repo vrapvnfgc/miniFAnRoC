@@ -9,6 +9,8 @@ import { fieldsRouter } from './modules/fields/fields.routes';
 import { matchesRouter } from './modules/matches/matches.routes';
 import { scoresRouter } from './modules/scores/scores.routes';
 import { rankingsRouter } from './modules/rankings/rankings.routes';
+import { authRouter } from './modules/auth/auth.routes';
+
 const app = express();
 
 app.use(cors());
@@ -17,6 +19,7 @@ app.use(requestLogger);
 
 app.use('/api/v1/health', healthRouter);
 app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/teams', teamsRouter);
 app.use('/api/v1/fields', fieldsRouter);
 app.use('/api/v1/matches', matchesRouter);

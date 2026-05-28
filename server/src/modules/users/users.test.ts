@@ -63,7 +63,14 @@ describe('Users API Endpoints (/api/v1/users)', () => {
 	it('should list all registered users', async () => {
 		await request(app).post('/api/v1/users').send(validUserPayload);
 
-		const res = await request(app).get('/api/v1/users');
+		const adminToken = require('jsonwebtoken').sign(
+			{ id: '000000000000000000000001', email: 'admin@example.com', role: 'ADMIN' },
+			config.jwtSecret
+		);
+
+		const res = await request(app)
+			.get('/api/v1/users')
+			.set('Authorization', `Bearer ${adminToken}`);
 
 		expect(res.status).toBe(200);
 		expect(res.body.status).toBe('success');
@@ -79,7 +86,14 @@ describe('Users API Endpoints (/api/v1/users)', () => {
 		});
 		const createdUserId = createRes.body.data.user.id;
 
-		const res = await request(app).get(`/api/v1/users/${createdUserId}`);
+		const userToken = require('jsonwebtoken').sign(
+			{ id: createdUserId, email: 'findme@example.com', role: 'USER' },
+			config.jwtSecret
+		);
+
+		const res = await request(app)
+			.get(`/api/v1/users/${createdUserId}`)
+			.set('Authorization', `Bearer ${userToken}`);
 		expect(res.status).toBe(200);
 		expect(res.body.status).toBe('success');
 		expect(res.body.data.user.id).toBe(createdUserId);
@@ -87,7 +101,14 @@ describe('Users API Endpoints (/api/v1/users)', () => {
 	});
 
 	it('should return 400 validation error for non-ObjectId user ID path param', async () => {
-		const res = await request(app).get('/api/v1/users/not-a-valid-objectid');
+		const userToken = require('jsonwebtoken').sign(
+			{ id: '000000000000000000000002', email: 'test@example.com', role: 'USER' },
+			config.jwtSecret
+		);
+
+		const res = await request(app)
+			.get('/api/v1/users/not-a-valid-objectid')
+			.set('Authorization', `Bearer ${userToken}`);
 
 		expect(res.status).toBe(400);
 		expect(res.body.status).toBe('fail');
@@ -97,7 +118,13 @@ describe('Users API Endpoints (/api/v1/users)', () => {
 
 	it('should return 404 for non-existent ObjectId user ID', async () => {
 		const randomObjectId = '000000000000000000000000';
-		const res = await request(app).get(`/api/v1/users/${randomObjectId}`);
+		const userToken = require('jsonwebtoken').sign(
+			{ id: '000000000000000000000002', email: 'test@example.com', role: 'USER' },
+			config.jwtSecret
+		);
+		const res = await request(app)
+			.get(`/api/v1/users/${randomObjectId}`)
+			.set('Authorization', `Bearer ${userToken}`);
 
 		expect(res.status).toBe(404);
 		expect(res.body.status).toBe('fail');

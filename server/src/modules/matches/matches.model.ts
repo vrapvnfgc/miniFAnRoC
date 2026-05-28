@@ -1,28 +1,5 @@
+import { MatchPhase, MatchStatus, IMatch } from '@shared';
 import mongoose, { Schema, HydratedDocument } from 'mongoose';
-
-export type MatchPhase = 'qualification' | 'semifinal' | 'final';
-
-export type MatchStatus =
-	| 'queued'
-	| 'scheduled'
-	| 'in_progress'
-	| 'finished'
-	| 'terminated';
-
-export interface IMatch {
-	matchNumber: number;
-	phase: MatchPhase;
-	fieldId: string;
-	redTeamIds: string[];
-	blueTeamIds: string[];
-	status: MatchStatus;
-	scheduledTime?: Date;
-	startTime?: Date;
-	endTime?: Date;
-	notes?: string;
-	createdAt: Date;
-	updatedAt: Date;
-}
 
 export type IMatchDocument = HydratedDocument<IMatch>;
 

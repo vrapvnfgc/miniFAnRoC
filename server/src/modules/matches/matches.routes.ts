@@ -5,21 +5,13 @@ import { matchesService } from './matches.service';
 
 const router = Router();
 
-const ObjectIdSchema = z
-	.string()
-	.regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId');
+const ObjectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId');
 
 const MatchIdParamSchema = z.object({
 	id: ObjectIdSchema
 });
 
-const MatchStatusSchema = z.enum([
-	'queued',
-	'scheduled',
-	'in_progress',
-	'finished',
-	'terminated'
-]);
+const MatchStatusSchema = z.enum(['queued', 'scheduled', 'in_progress', 'finished', 'terminated']);
 
 const MatchPhaseSchema = z.enum(['qualification', 'semifinal', 'final']);
 

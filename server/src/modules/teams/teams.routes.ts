@@ -5,9 +5,7 @@ import { teamsService } from './teams.service';
 
 const router = Router();
 
-const ObjectIdSchema = z
-	.string()
-	.regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId');
+const ObjectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId');
 
 const TeamIdParamSchema = z.object({
 	id: ObjectIdSchema

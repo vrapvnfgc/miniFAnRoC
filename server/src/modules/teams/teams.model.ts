@@ -1,15 +1,5 @@
+import { ITeam } from '@shared';
 import mongoose, { Schema, HydratedDocument } from 'mongoose';
-
-export interface ITeam {
-	teamNumber: string;
-	name: string;
-	school: string;
-	coach?: string;
-	robotName?: string;
-	members?: string[];
-	createdAt: Date;
-	updatedAt: Date;
-}
 
 export type ITeamDocument = HydratedDocument<ITeam>;
 

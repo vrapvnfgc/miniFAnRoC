@@ -1,26 +1,5 @@
+import { ScoreStatus, IAllianceScore, IMatchScore } from '@shared';
 import mongoose, { Schema, HydratedDocument } from 'mongoose';
-
-export type ScoreStatus = 'draft' | 'submitted' | 'finalized';
-
-export interface IAllianceScore {
-	teleIndependent: number;
-	sharedScore: number;
-	penalties: number;
-	endgame: number;
-	endgameMultiplier: number;
-	total: number;
-}
-
-export interface IMatchScore {
-	matchId: string;
-	red: IAllianceScore;
-	blue: IAllianceScore;
-	status: ScoreStatus;
-	submittedAt?: Date;
-	finalizedAt?: Date;
-	createdAt: Date;
-	updatedAt: Date;
-}
 
 export type IMatchScoreDocument = HydratedDocument<IMatchScore>;
 

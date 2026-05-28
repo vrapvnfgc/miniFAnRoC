@@ -80,7 +80,7 @@ const architecturePlugin = {
 						const importedModule = importedModuleMatch[1];
 						if (currentModule !== importedModule) {
 							const importedFileName = path.basename(resolvedPath);
-							
+
 							const allowedPattern = new RegExp(`^${importedModule}\\.service(?:\\.ts)?$`);
 							if (!allowedPattern.test(importedFileName)) {
 								context.report({

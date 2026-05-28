@@ -1,38 +1,8 @@
+import { CreateMatch, UpdateMatch, MatchResponse, MatchPhase, MatchStatus } from '@shared';
 import { AppError } from '../../core/errors';
-import { MatchModel, MatchPhase, MatchStatus } from './matches.model';
+import { MatchModel } from './matches.model';
 import { TeamModel } from '../teams/teams.model';
 import { FieldModel } from '../fields/fields.model';
-
-export type CreateMatch = {
-	matchNumber: number;
-	phase: MatchPhase;
-	fieldId: string;
-	redTeamIds: string[];
-	blueTeamIds: string[];
-	status?: MatchStatus;
-	scheduledTime?: string | Date;
-	startTime?: string | Date;
-	endTime?: string | Date;
-	notes?: string;
-};
-
-export type UpdateMatch = Partial<CreateMatch>;
-
-export type MatchResponse = {
-	id: string;
-	matchNumber: number;
-	phase: MatchPhase;
-	fieldId: string;
-	redTeamIds: string[];
-	blueTeamIds: string[];
-	status: MatchStatus;
-	scheduledTime?: Date;
-	startTime?: Date;
-	endTime?: Date;
-	notes?: string;
-	createdAt: Date;
-	updatedAt: Date;
-};
 
 function mapMatch(match: any): MatchResponse {
 	return {
@@ -52,7 +22,11 @@ function mapMatch(match: any): MatchResponse {
 	};
 }
 
-async function validateMatchReferences(fieldId: string, redTeamIds: string[], blueTeamIds: string[]) {
+async function validateMatchReferences(
+	fieldId: string,
+	redTeamIds: string[],
+	blueTeamIds: string[]
+) {
 	const field = await FieldModel.findById(fieldId);
 
 	if (!field) {

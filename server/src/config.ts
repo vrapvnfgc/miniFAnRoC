@@ -8,5 +8,8 @@ export const config = {
 	port: parseInt(process.env.PORT || '3001', 10),
 	nodeEnv: process.env.NODE_ENV || 'development',
 	isDev: (process.env.NODE_ENV || 'development') === 'development',
-	mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/minifanroc'
+	mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/minifanroc',
+	jwtSecret: process.env.JWT_SECRET || 'super-secret-dev-key-12345-abcde',
+	adminEmail: process.env.ADMIN_EMAIL || 'admin@minifanroc.com',
+	adminPassword: process.env.ADMIN_PASSWORD || 'admin123'
 };
