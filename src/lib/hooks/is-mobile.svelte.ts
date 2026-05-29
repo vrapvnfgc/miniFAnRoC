@@ -1,29 +1,22 @@
-/**
- * Mobile detection hook using media queries
- * Returns a reactive object with a `current` property
- * that tracks whether the viewport is mobile (< 768px)
- */
+import { onMount } from 'svelte';
+
+const MOBILE_BREAKPOINT = 768;
+
 export class IsMobile {
-	current = $state<boolean>(false);
-	private mediaQuery: MediaQueryList | null = null;
+	current = $state(false);
 
-	constructor(breakpoint = 768) {
-		if (typeof window !== 'undefined') {
-			this.mediaQuery = window.matchMedia(`(max-width: ${breakpoint}px)`);
-			this.current = this.mediaQuery.matches;
+	constructor() {
+		$effect(() => {
+			const checkMobile = () => {
+				this.current = window.innerWidth < MOBILE_BREAKPOINT;
+			};
 
-			// Listen for changes
-			this.mediaQuery.addEventListener('change', this.handleChange.bind(this));
-		}
-	}
+			checkMobile();
+			window.addEventListener('resize', checkMobile);
 
-	private handleChange = (e: MediaQueryListEvent) => {
-		this.current = e.matches;
-	};
-
-	destroy() {
-		if (this.mediaQuery) {
-			this.mediaQuery.removeEventListener('change', this.handleChange);
-		}
+			return () => {
+				window.removeEventListener('resize', checkMobile);
+			};
+		});
 	}
 }

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { Clock, MapPin, ArrowRight, Zap } from 'lucide-svelte';
-  import * as m from '$lib/paraglide/messages';
-  import { api } from '$lib/api/client';
-  import type { MatchResponse, MatchStatus } from '$lib/api/matches.api';
-  import type { MatchScoreResponse } from '$lib/api/scores.api';
-  import type { TeamResponse } from '$lib/api/teams.api';
-  import type { FieldResponse } from '$lib/api/fields.api';
-  import { onMount } from 'svelte';
+	import { Clock, MapPin, ArrowRight, Zap } from 'lucide-svelte';
+	import * as m from '$lib/paraglide/messages';
+	import { api } from '$lib/api/client';
+	import type { MatchResponse, MatchStatus } from '$lib/api/matches.api';
+	import type { MatchScoreResponse } from '$lib/api/scores.api';
+	import type { TeamResponse } from '$lib/api/teams.api';
+	import type { FieldResponse } from '$lib/api/fields.api';
+	import { onMount } from 'svelte';
 
 	let recentMatches = $state<
 		Array<{
@@ -32,43 +32,47 @@
 		}>
 	>([]);
 
-  let loading = $state(true);
-  let error = $state<string | null>(null);
+	let loading = $state(true);
+	let error = $state<string | null>(null);
 
-  async function loadMatches() {
-    try {
-      loading = true;
-      error = null;
+	async function loadMatches() {
+		try {
+			loading = true;
+			error = null;
 
-      // Fetch all matches, teams, and fields
-      const [matchesRes, teamsRes, fieldsRes] = await Promise.all([
-        api.matches.getAll(),
-        api.teams.getAll(),
-        api.fields.getAll()
-      ]);
+			// Fetch all matches, teams, and fields
+			const [matchesRes, teamsRes, fieldsRes] = await Promise.all([
+				api.matches.getAll(),
+				api.teams.getAll(),
+				api.fields.getAll()
+			]);
 
-      if (!matchesRes.data?.matches || !teamsRes.data?.teams || !fieldsRes.data?.fields) {
-        throw new Error('Invalid API response');
-      }
+			if (!matchesRes.data?.matches || !teamsRes.data?.teams || !fieldsRes.data?.fields) {
+				throw new Error('Invalid API response');
+			}
 
-      const matches = matchesRes.data.matches;
-      const teams = teamsRes.data.teams;
-      const fields = fieldsRes.data.fields;
-      const teamMap = new Map<string, TeamResponse>(teams.map((t) => [t.id, t]));
-      const fieldMap = new Map<string, FieldResponse>(fields.map((f) => [f.id, f]));
+			const matches = matchesRes.data.matches;
+			const teams = teamsRes.data.teams;
+			const fields = fieldsRes.data.fields;
+			const teamMap = new Map<string, TeamResponse>(teams.map((t) => [t.id, t]));
+			const fieldMap = new Map<string, FieldResponse>(fields.map((f) => [f.id, f]));
 
-      // Get finished matches (last 2)
-      const finishedMatches = matches
-        .filter((m) => m.status === 'finished')
-        .sort((a, b) => new Date(b.endTime || b.updatedAt).getTime() - new Date(a.endTime || a.updatedAt).getTime())
-        .slice(0, 2);
+			// Get finished matches (last 2)
+			const finishedMatches = matches
+				.filter((m) => m.status === 'finished')
+				.sort(
+					(a, b) =>
+						new Date(b.endTime || b.updatedAt).getTime() -
+						new Date(a.endTime || a.updatedAt).getTime()
+				)
+				.slice(0, 2);
 
-      // Fetch scores and format recent matches
-      const recentMatchesData = await Promise.all(
-        finishedMatches.map(async (match) => {
-          try {
-            const scoreRes = await api.scores.getByMatchId(match.id);
-            const score = scoreRes.data?.score;
+			// Fetch scores and format recent matches
+			const recentMatchesData = await Promise.all(
+				finishedMatches.map(async (match) => {
+					try {
+						const scoreRes = await api.scores.getByMatchId(match.id);
+						const score = scoreRes.data?.score;
 
 						const redTeams = match.redTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
 						const blueTeams = match.blueTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
@@ -76,10 +80,14 @@
 						const scoreB = score?.blue?.total || 0;
 						const region = fieldMap.get(match.fieldId)?.name || 'N/A';
 
-            const result: 'red' | 'blue' | 'draw' = scoreA > scoreB ? 'red' : scoreB > scoreA ? 'blue' : 'draw';
+						const result: 'red' | 'blue' | 'draw' =
+							scoreA > scoreB ? 'red' : scoreB > scoreA ? 'blue' : 'draw';
 
-            const endTime = match.endTime ? new Date(match.endTime) : new Date(match.updatedAt);
-            const time = endTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+						const endTime = match.endTime ? new Date(match.endTime) : new Date(match.updatedAt);
+						const time = endTime.toLocaleTimeString('en-US', {
+							hour: '2-digit',
+							minute: '2-digit'
+						});
 
 						return {
 							id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
@@ -111,26 +119,29 @@
 				})
 			);
 
-      recentMatches = recentMatchesData;
+			recentMatches = recentMatchesData;
 
-      // Get upcoming matches (next 3 queued or scheduled)
-      const upcomingMatchesList = matches
-        .filter((m) => m.status === 'queued' || m.status === 'scheduled')
-        .sort((a, b) => {
-          const timeA = a.scheduledTime ? new Date(a.scheduledTime).getTime() : Infinity;
-          const timeB = b.scheduledTime ? new Date(b.scheduledTime).getTime() : Infinity;
-          return timeA - timeB;
-        })
-        .slice(0, 3);
+			// Get upcoming matches (next 3 queued or scheduled)
+			const upcomingMatchesList = matches
+				.filter((m) => m.status === 'queued' || m.status === 'scheduled')
+				.sort((a, b) => {
+					const timeA = a.scheduledTime ? new Date(a.scheduledTime).getTime() : Infinity;
+					const timeB = b.scheduledTime ? new Date(b.scheduledTime).getTime() : Infinity;
+					return timeA - timeB;
+				})
+				.slice(0, 3);
 
 			const upcomingMatchesData = upcomingMatchesList.map((match) => {
 				const redTeams = match.redTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
 				const blueTeams = match.blueTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
 				const region = fieldMap.get(match.fieldId)?.name || 'N/A';
 
-        const scheduledDate = match.scheduledTime ? new Date(match.scheduledTime) : new Date();
-        const date = scheduledDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        const time = scheduledDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+				const scheduledDate = match.scheduledTime ? new Date(match.scheduledTime) : new Date();
+				const date = scheduledDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+				const time = scheduledDate.toLocaleTimeString('en-US', {
+					hour: '2-digit',
+					minute: '2-digit'
+				});
 
 				return {
 					id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
@@ -179,22 +190,30 @@
 		}
 	}
 
-  onMount(() => {
-    loadMatches();
-  });
+	onMount(() => {
+		loadMatches();
+	});
 </script>
 
 <section class="px-6 py-28">
-  <div class="mx-auto max-w-7xl">
-    <div class="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-      <div>
-        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">{m.matches_label()}</p>
-        <h2 class="text-4xl font-black text-slate-900 dark:text-white">{m.matches_title()}</h2>
-      </div>
-      <a href="/matches" class="group inline-flex items-center gap-2 rounded-2xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-white transition hover:bg-slate-100 dark:hover:bg-white/10">
-        {m.btn_view_all_matches()} <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
-      </a>
-    </div>
+	<div class="mx-auto max-w-7xl">
+		<div class="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+			<div>
+				<p
+					class="mb-3 text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400"
+				>
+					{m.matches_label()}
+				</p>
+				<h2 class="text-4xl font-black text-slate-900 dark:text-white">{m.matches_title()}</h2>
+			</div>
+			<a
+				href="/matches"
+				class="group inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+			>
+				{m.btn_view_all_matches()}
+				<ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+			</a>
+		</div>
 
 		<!-- Recent -->
 		<h3
