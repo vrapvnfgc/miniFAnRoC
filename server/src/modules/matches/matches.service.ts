@@ -72,7 +72,7 @@ class MatchesService {
 				fieldId: data.fieldId,
 				redTeamIds: data.redTeamIds,
 				blueTeamIds: data.blueTeamIds,
-				status: data.status || 'queued',
+				status: data.status || 'scheduled',
 				scheduledTime: data.scheduledTime,
 				startTime: data.startTime,
 				endTime: data.endTime,

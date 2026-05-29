@@ -15,6 +15,7 @@
 	import SettingsIcon from '@tabler/icons-svelte/icons/settings';
 	import UsersIcon from '@tabler/icons-svelte/icons/users';
 	import UsersGroupIcon from '@tabler/icons-svelte/icons/users-group';
+	import CalendarEventIcon from '@tabler/icons-svelte/icons/calendar-event';
 	import NavDocuments from './nav-documents.svelte';
 	import NavMain from './nav-main.svelte';
 	import NavSecondary from './nav-secondary.svelte';
@@ -53,6 +54,11 @@
 				title: 'Teams',
 				url: '/admin/teams',
 				icon: UsersGroupIcon
+			},
+			{
+				title: 'Matches',
+				url: '/admin/matches',
+				icon: CalendarEventIcon
 			},
 			{
 				title: 'Users',
