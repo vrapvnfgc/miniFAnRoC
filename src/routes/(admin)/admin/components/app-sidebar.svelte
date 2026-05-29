@@ -14,6 +14,7 @@
 	import SearchIcon from '@tabler/icons-svelte/icons/search';
 	import SettingsIcon from '@tabler/icons-svelte/icons/settings';
 	import UsersIcon from '@tabler/icons-svelte/icons/users';
+	import UsersGroupIcon from '@tabler/icons-svelte/icons/users-group';
 	import NavDocuments from './nav-documents.svelte';
 	import NavMain from './nav-main.svelte';
 	import NavSecondary from './nav-secondary.svelte';
@@ -47,6 +48,11 @@
 				title: 'Projects',
 				url: '#',
 				icon: FolderIcon
+			},
+			{
+				title: 'Teams',
+				url: '/admin/teams',
+				icon: UsersGroupIcon
 			},
 			{
 				title: 'Users',
