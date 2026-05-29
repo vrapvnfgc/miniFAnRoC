@@ -1,17 +1,165 @@
 <script lang="ts">
   import { Clock, MapPin, ArrowRight, Zap } from 'lucide-svelte';
   import * as m from '$lib/paraglide/messages';
+  import { api } from '$lib/api/client';
+  import type { MatchResponse, MatchStatus } from '$lib/api/matches.api';
+  import type { MatchScoreResponse } from '$lib/api/scores.api';
+  import type { TeamResponse } from '$lib/api/teams.api';
+  import type { FieldResponse } from '$lib/api/fields.api';
+  import { onMount } from 'svelte';
 
-  const recentMatches = [
-    { id: 'QF-01', teamA: 'Team Volt',  teamB: 'Team Helix', scoreA: 142, scoreB: 118, region: 'Hanoi Regional',   time: '08:30 AM', result: 'red'  },
-    { id: 'QF-02', teamA: 'Team Axiom', teamB: 'Team Pulse', scoreA: 96,  scoreB: 130, region: 'Da Nang Regional', time: '09:00 AM', result: 'blue' },
-  ];
+  let recentMatches = $state<Array<{
+    id: string;
+    teamA: string;
+    teamB: string;
+    scoreA: number;
+    scoreB: number;
+    region: string;
+    time: string;
+    result: 'red' | 'blue' | 'draw';
+  }>>([]);
 
-  const upcomingMatches = [
-    { id: 'QF-03', teamA: 'Team Alpha',   teamB: 'Team Nova',  region: 'Hanoi Regional',   time: '09:30 AM', date: 'Sep 14' },
-    { id: 'QF-04', teamA: 'Team Phoenix', teamB: 'Team Orbit', region: 'Da Nang Regional', time: '10:15 AM', date: 'Sep 14' },
-    { id: 'QF-05', teamA: 'Team Nexus',   teamB: 'Team Spark', region: 'Can Tho Regional', time: '11:00 AM', date: 'Sep 14' },
-  ];
+  let upcomingMatches = $state<Array<{
+    id: string;
+    teamA: string;
+    teamB: string;
+    region: string;
+    time: string;
+    date: string;
+  }>>([]);
+
+  let loading = $state(true);
+  let error = $state<string | null>(null);
+
+  async function loadMatches() {
+    try {
+      loading = true;
+      error = null;
+
+      // Fetch all matches, teams, and fields
+      const [matchesRes, teamsRes, fieldsRes] = await Promise.all([
+        api.matches.getAll(),
+        api.teams.getAll(),
+        api.fields.getAll()
+      ]);
+
+      if (!matchesRes.data?.matches || !teamsRes.data?.teams || !fieldsRes.data?.fields) {
+        throw new Error('Invalid API response');
+      }
+
+      const matches = matchesRes.data.matches;
+      const teams = teamsRes.data.teams;
+      const fields = fieldsRes.data.fields;
+      const teamMap = new Map<string, TeamResponse>(teams.map((t) => [t.id, t]));
+      const fieldMap = new Map<string, FieldResponse>(fields.map((f) => [f.id, f]));
+
+      // Get finished matches (last 2)
+      const finishedMatches = matches
+        .filter((m) => m.status === 'finished')
+        .sort((a, b) => new Date(b.endTime || b.updatedAt).getTime() - new Date(a.endTime || a.updatedAt).getTime())
+        .slice(0, 2);
+
+      // Fetch scores and format recent matches
+      const recentMatchesData = await Promise.all(
+        finishedMatches.map(async (match) => {
+          try {
+            const scoreRes = await api.scores.getByMatchId(match.id);
+            const score = scoreRes.data?.score;
+
+            const teamA = teamMap.get(match.redTeamIds[0])?.name || 'N/A';
+            const teamB = teamMap.get(match.blueTeamIds[0])?.name || 'N/A';
+            const scoreA = score?.red?.total || 0;
+            const scoreB = score?.blue?.total || 0;
+            const region = fieldMap.get(match.fieldId)?.name || 'N/A';
+
+            const result: 'red' | 'blue' | 'draw' = scoreA > scoreB ? 'red' : scoreB > scoreA ? 'blue' : 'draw';
+
+            const endTime = match.endTime ? new Date(match.endTime) : new Date(match.updatedAt);
+            const time = endTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+            return {
+              id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
+              teamA,
+              teamB,
+              scoreA,
+              scoreB,
+              region,
+              time,
+              result
+            };
+          } catch (err) {
+            console.error(`Error fetching score for match ${match.id}:`, err);
+            const teamA = teamMap.get(match.redTeamIds[0])?.name || 'N/A';
+            const teamB = teamMap.get(match.blueTeamIds[0])?.name || 'N/A';
+            const region = fieldMap.get(match.fieldId)?.name || 'N/A';
+
+            return {
+              id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
+              teamA,
+              teamB,
+              scoreA: 0,
+              scoreB: 0,
+              region,
+              time: 'N/A',
+              result: 'draw' as const
+            };
+          }
+        })
+      );
+
+      recentMatches = recentMatchesData;
+
+      // Get upcoming matches (next 3 queued or scheduled)
+      const upcomingMatchesList = matches
+        .filter((m) => m.status === 'queued' || m.status === 'scheduled')
+        .sort((a, b) => {
+          const timeA = a.scheduledTime ? new Date(a.scheduledTime).getTime() : Infinity;
+          const timeB = b.scheduledTime ? new Date(b.scheduledTime).getTime() : Infinity;
+          return timeA - timeB;
+        })
+        .slice(0, 3);
+
+      const upcomingMatchesData = upcomingMatchesList.map((match) => {
+        const teamA = teamMap.get(match.redTeamIds[0])?.name || 'N/A';
+        const teamB = teamMap.get(match.blueTeamIds[0])?.name || 'N/A';
+        const region = fieldMap.get(match.fieldId)?.name || 'N/A';
+
+        const scheduledDate = match.scheduledTime ? new Date(match.scheduledTime) : new Date();
+        const date = scheduledDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const time = scheduledDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+        return {
+          id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
+          teamA,
+          teamB,
+          region,
+          time,
+          date
+        };
+      });
+
+      upcomingMatches = upcomingMatchesData;
+    } catch (err) {
+      console.error('Error loading matches:', err);
+      error = err instanceof Error ? err.message : 'Failed to load matches';
+      // Set default values on error
+      recentMatches = [
+        { id: 'N/A', teamA: 'N/A', teamB: 'N/A', scoreA: 0, scoreB: 0, region: 'N/A', time: 'N/A', result: 'draw' },
+        { id: 'N/A', teamA: 'N/A', teamB: 'N/A', scoreA: 0, scoreB: 0, region: 'N/A', time: 'N/A', result: 'draw' }
+      ];
+      upcomingMatches = [
+        { id: 'N/A', teamA: 'N/A', teamB: 'N/A', region: 'N/A', time: 'N/A', date: 'N/A' },
+        { id: 'N/A', teamA: 'N/A', teamB: 'N/A', region: 'N/A', time: 'N/A', date: 'N/A' },
+        { id: 'N/A', teamA: 'N/A', teamB: 'N/A', region: 'N/A', time: 'N/A', date: 'N/A' }
+      ];
+    } finally {
+      loading = false;
+    }
+  }
+
+  onMount(() => {
+    loadMatches();
+  });
 </script>
 
 <section class="px-6 py-28">
