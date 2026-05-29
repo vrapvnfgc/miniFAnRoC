@@ -3,32 +3,46 @@
 	import type { Award as AwardType } from '$lib/data';
 	import { t } from '$lib/i18n';
 
-	export let award: AwardType;
+	let { award }: { award: AwardType } = $props();
 
 	const iconMap: Record<string, typeof Trophy> = {
-		trophy: Trophy, medal: Medal, award: Award,
-		lightbulb: Lightbulb, heart: Heart, sprout: Sprout
+		trophy: Trophy,
+		medal: Medal,
+		award: Award,
+		lightbulb: Lightbulb,
+		heart: Heart,
+		sprout: Sprout
 	};
 
-	$: Icon = iconMap[award.icon] ?? Trophy;
-	$: isTop3 = award.rank <= 3;
+	let Icon = $derived(iconMap[award.icon] ?? Trophy);
+	let isTop3 = $derived(award.rank <= 3);
 </script>
 
 <article
-	class="glass-card-hover p-6 flex flex-col items-center text-center group"
+	class="glass-card-hover group flex flex-col items-center p-6 text-center"
 	aria-label={$t(award.titleKey)}
 >
 	<!-- Icon with gradient bg -->
 	<div
-		class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
-		style="background: linear-gradient(135deg, {award.color.includes('yellow') ? '#fbbf24, #f59e0b' : award.color.includes('slate') ? '#94a3b8, #64748b' : award.color.includes('amber') ? '#d97706, #b45309' : award.color.includes('cyber') ? '#00b4e6, #8b47ff' : award.color.includes('pink') ? '#ec4899, #f43f5e' : '#22c55e, #10b981'});"
+		class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
+		style="background: linear-gradient(135deg, {award.color.includes('yellow')
+			? '#fbbf24, #f59e0b'
+			: award.color.includes('slate')
+				? '#94a3b8, #64748b'
+				: award.color.includes('amber')
+					? '#d97706, #b45309'
+					: award.color.includes('cyber')
+						? '#00b4e6, #8b47ff'
+						: award.color.includes('pink')
+							? '#ec4899, #f43f5e'
+							: '#22c55e, #10b981'});"
 	>
-		<svelte:component this={Icon} size={28} class="text-white drop-shadow-lg" />
+		<Icon size={28} class="text-white drop-shadow-lg" />
 	</div>
 
 	<!-- Title -->
 	<h3
-		class="font-display font-bold text-lg mb-1 transition-all duration-300"
+		class="font-display mb-1 text-lg font-bold transition-all duration-300"
 		class:text-gradient-gold={award.rank === 1}
 		class:text-gradient={award.rank !== 1}
 	>
@@ -36,16 +50,13 @@
 	</h3>
 
 	<!-- Prize -->
-	<div
-		class="font-mono font-bold text-base"
-		style="color: var(--accent-cyan);"
-	>
+	<div class="font-mono text-base font-bold" style="color: var(--accent-cyan);">
 		{award.prize}
 	</div>
 
 	{#if isTop3}
 		<div
-			class="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold font-mono"
+			class="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full font-mono text-xs font-bold"
 			style="background: linear-gradient(135deg, #00b4e6, #8b47ff); color: white;"
 		>
 			{award.rank}

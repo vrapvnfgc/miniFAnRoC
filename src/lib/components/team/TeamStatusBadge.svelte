@@ -2,7 +2,7 @@
 	import type { TeamStatus } from '$lib/stores/teams';
 	import { t } from '$lib/i18n';
 
-	export let status: TeamStatus;
+	let { status }: { status: TeamStatus } = $props();
 </script>
 
 {#if status === 'active'}

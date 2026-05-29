@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { Search, Plus, Users, Trophy, ChevronUp, ChevronDown as ChevronDownIcon } from 'lucide-svelte';
+	import {
+		Search,
+		Plus,
+		Users,
+		Trophy,
+		ChevronUp,
+		ChevronDown as ChevronDownIcon
+	} from 'lucide-svelte';
 	import { t } from '$lib/i18n';
 	import { teamStore } from '$lib/stores/teams';
 	import { uiStore } from '$lib/stores/ui';
@@ -12,14 +19,16 @@
 	type SortField = 'rank' | 'name' | 'memberCount' | 'score';
 	type SortDir = 'asc' | 'desc';
 
-	let sortField: SortField = 'rank';
-	let sortDir: SortDir = 'asc';
+	let sortField: SortField = $state('rank');
+	let sortDir: SortDir = $state('asc');
 
-	$: sorted = [...$filteredTeams].sort((a, b) => {
-		const mul = sortDir === 'asc' ? 1 : -1;
-		if (sortField === 'name') return mul * a.name.localeCompare(b.name);
-		return mul * ((a[sortField] as number) - (b[sortField] as number));
-	});
+	let sorted = $derived(
+		[...$filteredTeams].sort((a, b) => {
+			const mul = sortDir === 'asc' ? 1 : -1;
+			if (sortField === 'name') return mul * a.name.localeCompare(b.name);
+			return mul * ((a[sortField] as number) - (b[sortField] as number));
+		})
+	);
 
 	function toggleSort(field: SortField) {
 		if (sortField === field) {
@@ -40,10 +49,14 @@
 
 <div class="flex flex-col gap-4" in:fade={{ duration: 300 }}>
 	<!-- Toolbar -->
-	<div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+	<div class="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
 		<!-- Search -->
-		<div class="relative flex-1 max-w-sm">
-			<Search size={15} class="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" style="color: var(--accent-cyan);" />
+		<div class="relative max-w-sm flex-1">
+			<Search
+				size={15}
+				class="absolute top-1/2 left-3 -translate-y-1/2 opacity-50"
+				style="color: var(--accent-cyan);"
+			/>
 			<input
 				class="input-field !pl-9"
 				type="text"
@@ -55,8 +68,8 @@
 
 		<!-- Add team button -->
 		<button
-			on:click={() => switchTab('register')}
-			class="btn-primary gap-2 justify-center"
+			onclick={() => switchTab('register')}
+			class="btn-primary justify-center gap-2"
 			aria-label={$t('teams.add_team')}
 		>
 			<Plus size={16} />
@@ -78,46 +91,54 @@
 						<tr>
 							<th scope="col">
 								<button
-									class="flex items-center gap-1 hover:text-white transition-colors duration-150"
-									on:click={() => toggleSort('rank')}
+									class="flex items-center gap-1 transition-colors duration-150 hover:text-white"
+									onclick={() => toggleSort('rank')}
 									aria-label="Sort by rank"
 								>
 									{$t('teams.columns.rank')}
 									{#if sortField === 'rank'}
-										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon size={12} />{/if}
+										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon
+												size={12}
+											/>{/if}
 									{/if}
 								</button>
 							</th>
 							<th scope="col">
 								<button
-									class="flex items-center gap-1 hover:text-white transition-colors duration-150"
-									on:click={() => toggleSort('name')}
+									class="flex items-center gap-1 transition-colors duration-150 hover:text-white"
+									onclick={() => toggleSort('name')}
 								>
 									{$t('teams.columns.name')}
 									{#if sortField === 'name'}
-										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon size={12} />{/if}
+										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon
+												size={12}
+											/>{/if}
 									{/if}
 								</button>
 							</th>
 							<th scope="col" class="hidden sm:table-cell">
 								<button
-									class="flex items-center gap-1 hover:text-white transition-colors duration-150"
-									on:click={() => toggleSort('memberCount')}
+									class="flex items-center gap-1 transition-colors duration-150 hover:text-white"
+									onclick={() => toggleSort('memberCount')}
 								>
 									{$t('teams.columns.members')}
 									{#if sortField === 'memberCount'}
-										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon size={12} />{/if}
+										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon
+												size={12}
+											/>{/if}
 									{/if}
 								</button>
 							</th>
 							<th scope="col">
 								<button
-									class="flex items-center gap-1 hover:text-white transition-colors duration-150"
-									on:click={() => toggleSort('score')}
+									class="flex items-center gap-1 transition-colors duration-150 hover:text-white"
+									onclick={() => toggleSort('score')}
 								>
 									{$t('teams.columns.score')}
 									{#if sortField === 'score'}
-										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon size={12} />{/if}
+										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon
+												size={12}
+											/>{/if}
 									{/if}
 								</button>
 							</th>
@@ -126,9 +147,7 @@
 					</thead>
 					<tbody>
 						{#each sorted as team, i (team.id)}
-							<tr
-								in:fly={{ y: 10, duration: 200, delay: i * 30 }}
-							>
+							<tr in:fly={{ y: 10, duration: 200, delay: i * 30 }}>
 								<!-- Rank -->
 								<td class="w-16">
 									<div class="flex items-center gap-1.5">
@@ -144,7 +163,7 @@
 								<!-- Team name + captain -->
 								<td>
 									<div class="flex flex-col">
-										<span class="font-semibold text-sm" style="color: var(--text-primary);">
+										<span class="text-sm font-semibold" style="color: var(--text-primary);">
 											{team.name}
 										</span>
 										<span class="text-xs" style="color: var(--text-secondary);">
@@ -163,7 +182,12 @@
 
 								<!-- Score -->
 								<td>
-									<span class="font-mono font-bold text-sm" style="color: {team.score > 0 ? 'var(--accent-cyan)' : 'var(--text-secondary)'};">
+									<span
+										class="font-mono text-sm font-bold"
+										style="color: {team.score > 0
+											? 'var(--accent-cyan)'
+											: 'var(--text-secondary)'};"
+									>
 										{team.score > 0 ? team.score.toLocaleString() : '—'}
 									</span>
 								</td>
@@ -182,15 +206,16 @@
 		<!-- Footer count -->
 		{#if sorted.length > 0}
 			<div
-				class="px-4 py-3 border-t flex items-center justify-between"
+				class="flex items-center justify-between border-t px-4 py-3"
 				style="border-color: var(--border-color);"
 			>
-				<span class="text-xs font-mono" style="color: var(--text-secondary);">
-					{sorted.length} {$t('teams.title').toLowerCase()}
+				<span class="font-mono text-xs" style="color: var(--text-secondary);">
+					{sorted.length}
+					{$t('teams.title').toLowerCase()}
 				</span>
 				<div class="flex items-center gap-1.5">
-					<div class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-					<span class="text-xs font-mono" style="color: var(--text-secondary);">LIVE</span>
+					<div class="h-1.5 w-1.5 animate-pulse rounded-full bg-green-400"></div>
+					<span class="font-mono text-xs" style="color: var(--text-secondary);">LIVE</span>
 				</div>
 			</div>
 		{/if}
