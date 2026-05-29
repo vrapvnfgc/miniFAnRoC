@@ -18,7 +18,7 @@ function createLanguageStore() {
 
 		document.cookie = `${cookieName}=${newLocale}; path=/; max-age=34560000; SameSite=Lax`;
 		const nextUrl = localizeHref(page.url.pathname, { locale: newLocale });
-		
+
 		// Use location.href for a full page reload to ensure Paraglide middleware updates the locale
 		window.location.href = nextUrl;
 	}

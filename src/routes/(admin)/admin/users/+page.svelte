@@ -44,7 +44,7 @@
 
 	<div class="rounded-md border p-4">
 		<h2 class="mb-4 text-lg font-semibold">Add User</h2>
-		<form method="POST" action="?/create" class="flex flex-col gap-4 max-w-sm">
+		<form method="POST" action="?/create" class="flex max-w-sm flex-col gap-4">
 			<div class="grid gap-2">
 				<Label for="name">Name</Label>
 				<Input id="name" name="name" required />

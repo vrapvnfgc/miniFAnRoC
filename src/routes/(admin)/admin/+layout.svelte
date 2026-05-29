@@ -2,7 +2,7 @@
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import AppSidebar from './components/app-sidebar.svelte';
 	import SiteHeader from './components/site-header.svelte';
-	
+
 	let { children } = $props();
 </script>
 
