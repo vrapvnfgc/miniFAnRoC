@@ -4,6 +4,7 @@ import { validate } from '../../core/middlewares';
 import { usersService } from './users.service';
 import { z } from 'zod';
 import { requireAuth, requireAdmin } from '../../core/auth.middleware';
+import { auditLogger } from '../../core/audit.logger';
 
 const router = Router();
 
@@ -20,6 +21,15 @@ export { router as usersRouter };
 async function createUserHandler(req: Request, res: Response, next: NextFunction) {
 	try {
 		const user = await usersService.createUser(req.body);
+
+		await auditLogger.logAction({
+			req,
+			action: 'CREATE',
+			resource: 'USER',
+			resourceId: String(user.id),
+			details: req.body
+		});
+
 		res.status(201).json({
 			status: 'success',
 			data: { user }

@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { validate } from '../../core/middlewares';
 import { teamsService } from './teams.service';
+import { auditLogger } from '../../core/audit.logger';
 
 const router = Router();
 
@@ -37,6 +38,14 @@ export { router as teamsRouter };
 async function createTeamHandler(req: Request, res: Response, next: NextFunction) {
 	try {
 		const team = await teamsService.createTeam(req.body);
+
+		await auditLogger.logAction({
+			req,
+			action: 'CREATE',
+			resource: 'TEAM',
+			resourceId: String(team.id),
+			details: req.body
+		});
 
 		res.status(201).json({
 			status: 'success',
@@ -77,6 +86,14 @@ async function updateTeamHandler(req: Request, res: Response, next: NextFunction
 	try {
 		const team = await teamsService.updateTeam(req.params.id, req.body);
 
+		await auditLogger.logAction({
+			req,
+			action: 'UPDATE',
+			resource: 'TEAM',
+			resourceId: req.params.id,
+			details: req.body
+		});
+
 		res.status(200).json({
 			status: 'success',
 			data: { team }
@@ -89,6 +106,13 @@ async function updateTeamHandler(req: Request, res: Response, next: NextFunction
 async function deleteTeamHandler(req: Request, res: Response, next: NextFunction) {
 	try {
 		await teamsService.deleteTeam(req.params.id);
+
+		await auditLogger.logAction({
+			req,
+			action: 'DELETE',
+			resource: 'TEAM',
+			resourceId: req.params.id
+		});
 
 		res.status(204).send();
 	} catch (error) {
