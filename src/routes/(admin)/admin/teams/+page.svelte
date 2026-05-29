@@ -6,6 +6,7 @@
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import * as Alert from '$lib/components/ui/alert/index.js';
 	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -140,9 +141,21 @@
 					</div>
 					<div class="flex gap-2 justify-end">
 						<Button variant="outline" onclick={closeDeleteConfirm}>Cancel</Button>
-						<form method="POST" action="?/delete" class="inline">
+						<form 
+							method="POST" 
+							action="?/delete" 
+							use:enhance={() => {
+								return async ({ result }) => {
+									if (result.type === 'success') {
+										closeDeleteConfirm();
+										await invalidateAll();
+									}
+								};
+							}}
+							class="inline"
+						>
 							<input type="hidden" name="id" value={deleteTeamId} />
-							<Button variant="destructive" type="submit" onclick={closeDeleteConfirm}>Delete</Button>
+							<Button variant="destructive" type="submit">Delete</Button>
 						</form>
 					</div>
 				</div>
