@@ -152,5 +152,63 @@ export const actions: Actions = {
 				type: 'delete'
 			});
 		}
+	},
+
+	finishMatch: async ({ request }) => {
+		const data = await request.formData();
+		const matchId = data.get('matchId');
+
+		// Parse score inputs
+		const redTeleIndependent = parseFloat(data.get('redTeleIndependent')?.toString() || '0');
+		const redShared = parseFloat(data.get('redShared')?.toString() || '0');
+		const redPenalties = parseFloat(data.get('redPenalties')?.toString() || '0');
+		const redEndgame = parseFloat(data.get('redEndgame')?.toString() || '0');
+		const redEndgameMultiplier = parseFloat(data.get('redEndgameMultiplier')?.toString() || '1');
+
+		const blueTeleIndependent = parseFloat(data.get('blueTeleIndependent')?.toString() || '0');
+		const blueShared = parseFloat(data.get('blueShared')?.toString() || '0');
+		const bluePenalties = parseFloat(data.get('bluePenalties')?.toString() || '0');
+		const blueEndgame = parseFloat(data.get('blueEndgame')?.toString() || '0');
+		const blueEndgameMultiplier = parseFloat(data.get('blueEndgameMultiplier')?.toString() || '1');
+
+		if (!matchId) {
+			return fail(400, { missing: true, type: 'finishMatch' });
+		}
+
+		try {
+			// Save the match score
+			await api.scores.save(matchId.toString(), {
+				red: {
+					teleIndependent: redTeleIndependent,
+					sharedScore: redShared,
+					penalties: redPenalties,
+					endgame: redEndgame,
+					endgameMultiplier: redEndgameMultiplier
+				},
+				blue: {
+					teleIndependent: blueTeleIndependent,
+					sharedScore: blueShared,
+					penalties: bluePenalties,
+					endgame: blueEndgame,
+					endgameMultiplier: blueEndgameMultiplier
+				},
+				status: 'submitted'
+			});
+
+			// Update match status to finished
+			await api.matches.update(matchId.toString(), {
+				status: 'finished'
+			});
+
+			return { success: true, type: 'finishMatch' };
+		} catch (err) {
+			console.error('Finish match error:', err);
+			const apiError = err as { error?: { message?: string } };
+			return fail(400, {
+				success: false,
+				error: apiError?.error?.message || 'Failed to save score and finish match',
+				type: 'finishMatch'
+			});
+		}
 	}
 };

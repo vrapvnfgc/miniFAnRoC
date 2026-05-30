@@ -15,11 +15,26 @@
 
 	let isCreateSheetOpen = $state(false);
 	let isEditSheetOpen = $state(false);
+	let isScoreSheetOpen = $state(false);
 	let showDeleteConfirm = $state(false);
 	let deleteMatchId = $state<string | null>(null);
 	let deleteMatchNumber = $state(0);
 	let editingMatch = $state<any>(null);
+	let scoringMatch = $state<any>(null);
 	let matchScores = $state<Record<string, { redScore: number; blueScore: number }>>({});
+
+	// Score form state
+	let redTeleIndependent = $state(0);
+	let redShared = $state(0);
+	let redPenalties = $state(0);
+	let redEndgame = $state(0);
+	let redEndgameMultiplier = $state(1);
+
+	let blueTeleIndependent = $state(0);
+	let blueShared = $state(0);
+	let bluePenalties = $state(0);
+	let blueEndgame = $state(0);
+	let blueEndgameMultiplier = $state(1);
 
 	// Form fields
 	let formMatchNumber = $state('');
@@ -48,7 +63,9 @@
 	function closeSheets() {
 		isCreateSheetOpen = false;
 		isEditSheetOpen = false;
+		isScoreSheetOpen = false;
 		editingMatch = null;
+		scoringMatch = null;
 	}
 
 	async function submitForm(e: Event) {
@@ -59,6 +76,7 @@
 		const action = form.getAttribute('action') || window.location.pathname;
 		const method = (form.getAttribute('method') || 'POST').toUpperCase();
 		const formData = new FormData(form);
+		const matchId = formData.get('matchId')?.toString();
 
 		try {
 			console.log('submitForm called', action, method);
@@ -74,6 +92,17 @@
 			if (!res.ok) {
 				console.error('Form submit failed', res.status, text);
 				return;
+			}
+
+			// If this is a finishMatch action, fetch and display the score immediately
+			if (action.includes('finishMatch') && matchId) {
+				const scoreRes = await api.scores.getByMatchId(matchId);
+				if (scoreRes.data?.score) {
+					matchScores[matchId] = {
+						redScore: scoreRes.data.score.red.total || 0,
+						blueScore: scoreRes.data.score.blue.total || 0
+					};
+				}
 			}
 
 			await invalidateAll();
@@ -101,6 +130,21 @@
 		deleteMatchId = match.id;
 		deleteMatchNumber = match.matchNumber;
 		showDeleteConfirm = true;
+	}
+
+	function openScoreSheet(match: any) {
+		scoringMatch = match;
+		redTeleIndependent = 0;
+		redShared = 0;
+		redPenalties = 0;
+		redEndgame = 0;
+		redEndgameMultiplier = 1;
+		blueTeleIndependent = 0;
+		blueShared = 0;
+		bluePenalties = 0;
+		blueEndgame = 0;
+		blueEndgameMultiplier = 1;
+		isScoreSheetOpen = true;
 	}
 
 	function closeDeleteConfirm() {
@@ -288,6 +332,7 @@
 								<Table.Cell class="text-slate-300">{getFieldName(match.fieldId)}</Table.Cell>
 								<Table.Cell>
 									<div class="flex gap-2">
+										<Button onclick={() => openScoreSheet(match)} size="sm" class="bg-green-600/20 text-green-400 hover:bg-green-600/40 border border-green-600/50">Record Score</Button>
 										<Button onclick={() => openEditSheet(match)} size="sm" variant="outline" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 border-blue-600/50">Edit</Button>
 										<Button onclick={() => openDeleteConfirm(match)} size="sm" variant="destructive" class="bg-red-600 hover:bg-red-700 text-white">Delete</Button>
 									</div>
@@ -320,7 +365,7 @@
 			<form 
 				method="POST" 
 				action="?/create" 
-				on:submit|preventDefault={submitForm}
+				onsubmit={submitForm}
 				class="space-y-4 py-4"
 			>
 				<div class="grid gap-2">
@@ -476,7 +521,7 @@
 				<form 
 					method="POST" 
 					action="?/edit" 
-					on:submit|preventDefault={submitForm}
+					onsubmit={submitForm}
 					class="space-y-4 py-4"
 				>
 					<input type="hidden" name="matchId" value={editingMatch.id} />
@@ -617,6 +662,188 @@
 					<Button type="submit" class="flex-1">Update Match</Button>
 				</div>
 			</form>
+			{/if}
+		</Sheet.Content>
+	</Sheet.Root>
+
+	<!-- Score Sheet -->
+	<Sheet.Root open={isScoreSheetOpen} onOpenChange={(open) => isScoreSheetOpen = open}>
+		<Sheet.Content class="w-[400px] sm:w-[540px] max-h-screen overflow-y-auto">
+			<Sheet.Header>
+				<Sheet.Title>Record Match Score</Sheet.Title>
+				<Sheet.Description>
+					Enter the final scores for Match {scoringMatch?.matchNumber || ''} to finish the match.
+				</Sheet.Description>
+			</Sheet.Header>
+
+			{#if scoringMatch}
+				<form 
+					method="POST" 
+					action="?/finishMatch" 
+					onsubmit={submitForm}
+					class="space-y-6 py-4"
+				>
+					<input type="hidden" name="matchId" value={scoringMatch.id} />
+
+					<!-- Red Alliance -->
+					<div class="space-y-4 rounded-lg border border-red-700 bg-red-900/20 p-4">
+						<h3 class="font-semibold text-red-400">Red Alliance</h3>
+						
+						<div class="grid gap-3">
+							<div class="grid gap-2">
+								<Label for="redTeleIndependent" class="text-sm">Tele Independent Score</Label>
+								<Input 
+									id="redTeleIndependent" 
+									name="redTeleIndependent" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={redTeleIndependent}
+									class="bg-slate-700"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="redShared" class="text-sm">Shared Score</Label>
+								<Input 
+									id="redShared" 
+									name="redShared" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={redShared}
+									class="bg-slate-700"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="redPenalties" class="text-sm">Penalties</Label>
+								<Input 
+									id="redPenalties" 
+									name="redPenalties" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={redPenalties}
+									class="bg-slate-700"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="redEndgame" class="text-sm">Endgame Score</Label>
+								<Input 
+									id="redEndgame" 
+									name="redEndgame" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={redEndgame}
+									class="bg-slate-700"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="redEndgameMultiplier" class="text-sm">Endgame Multiplier</Label>
+								<Input 
+									id="redEndgameMultiplier" 
+									name="redEndgameMultiplier" 
+									type="number"
+									step="0.01"
+									min="1"
+									bind:value={redEndgameMultiplier}
+									class="bg-slate-700"
+									required 
+								/>
+							</div>
+						</div>
+					</div>
+
+					<!-- Blue Alliance -->
+					<div class="space-y-4 rounded-lg border border-blue-700 bg-blue-900/20 p-4">
+						<h3 class="font-semibold text-blue-400">Blue Alliance</h3>
+						
+						<div class="grid gap-3">
+							<div class="grid gap-2">
+								<Label for="blueTeleIndependent" class="text-sm">Tele Independent Score</Label>
+								<Input 
+									id="blueTeleIndependent" 
+									name="blueTeleIndependent" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={blueTeleIndependent}
+									class="bg-slate-700"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="blueShared" class="text-sm">Shared Score</Label>
+								<Input 
+									id="blueShared" 
+									name="blueShared" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={blueShared}
+									class="bg-slate-700"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="bluePenalties" class="text-sm">Penalties</Label>
+								<Input 
+									id="bluePenalties" 
+									name="bluePenalties" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={bluePenalties}
+									class="bg-slate-700"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="blueEndgame" class="text-sm">Endgame Score</Label>
+								<Input 
+									id="blueEndgame" 
+									name="blueEndgame" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={blueEndgame}
+									class="bg-slate-700"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="blueEndgameMultiplier" class="text-sm">Endgame Multiplier</Label>
+								<Input 
+									id="blueEndgameMultiplier" 
+									name="blueEndgameMultiplier" 
+									type="number"
+									step="0.01"
+									min="1"
+									bind:value={blueEndgameMultiplier}
+									class="bg-slate-700"
+									required 
+								/>
+							</div>
+						</div>
+					</div>
+
+					<div class="flex gap-2">
+						<Button type="button" variant="outline" onclick={closeSheets} class="flex-1">Cancel</Button>
+						<Button type="submit" class="flex-1 bg-green-600 hover:bg-green-700">Finish Match & Record Score</Button>
+					</div>
+				</form>
 			{/if}
 		</Sheet.Content>
 	</Sheet.Root>
