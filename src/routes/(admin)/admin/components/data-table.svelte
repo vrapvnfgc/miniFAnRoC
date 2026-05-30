@@ -105,9 +105,9 @@
 	import DataTableLimit from './data-table-limit.svelte';
 	import DataTableHeaderTarget from './data-table-header-target.svelte';
 	import DataTableHeaderLimit from './data-table-header-limit.svelte';
-	import { DragDropProvider } from '@dnd-kit-svelte/svelte';
+	import { DragDropProvider } from '@dnd-kit/svelte';
 	import { move } from '@dnd-kit/helpers';
-	import { useSortable } from '@dnd-kit-svelte/svelte/sortable';
+	import { createSortable } from '@dnd-kit/svelte/sortable';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 
 	let { data }: { data: Schema[] } = $props();
@@ -116,7 +116,6 @@
 	let columnFilters = $state<ColumnFiltersState>([]);
 	let rowSelection = $state<RowSelectionState>({});
 	let columnVisibility = $state<VisibilityState>({});
-
 	const table = createSvelteTable({
 		get data() {
 			return data;
@@ -400,21 +399,21 @@
 </Tabs.Root>
 
 {#snippet DraggableRow({ row }: { row: Row<Schema> })}
-	{@const { ref, isDragging, handleRef } = useSortable({
+	{@const sortable = createSortable({
 		id: row.original.id,
-		index: () => row.index
+		index: row.index
 	})}
 
 	<Table.Row
 		data-state={row.getIsSelected() && 'selected'}
-		data-dragging={isDragging.current}
+		data-dragging={sortable.isDragging}
 		class="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
-		{@attach ref}
+		{@attach sortable.attach}
 	>
 		{#each row.getVisibleCells() as cell (cell.id)}
 			<Table.Cell>
 				<FlexRender
-					attach={handleRef}
+					attach={sortable.attachHandle}
 					content={cell.column.columnDef.cell}
 					context={cell.getContext()}
 				/>
