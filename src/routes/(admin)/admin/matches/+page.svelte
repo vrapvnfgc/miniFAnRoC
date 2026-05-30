@@ -51,6 +51,38 @@
 		editingMatch = null;
 	}
 
+	async function submitForm(e: Event) {
+		e?.preventDefault();
+		const form = e.currentTarget as HTMLFormElement;
+		if (!form) return;
+
+		const action = form.getAttribute('action') || window.location.pathname;
+		const method = (form.getAttribute('method') || 'POST').toUpperCase();
+		const formData = new FormData(form);
+
+		try {
+			console.log('submitForm called', action, method);
+			const res = await fetch(action, {
+				method,
+				body: formData,
+				credentials: 'same-origin'
+			});
+			console.log('Form submit response status:', res.status);
+			const text = await res.text().catch(() => null);
+			console.log('Form submit response body:', text);
+
+			if (!res.ok) {
+				console.error('Form submit failed', res.status, text);
+				return;
+			}
+
+			await invalidateAll();
+			closeSheets();
+		} catch (err) {
+			console.error('Form submit error', err);
+		}
+	}
+
 	function openEditSheet(match: any) {
 		editingMatch = match;
 		formMatchNumber = match.matchNumber.toString();
@@ -120,6 +152,17 @@
 	});
 
 	onMount(async () => {
+		if (typeof window !== 'undefined') {
+			console.log('Matches page mounted (client)');
+			// listen for any submit events for debugging
+			document.addEventListener(
+				'submit',
+				(e) => {
+					console.log('document submit event', e.target);
+				},
+				true
+			);
+		}
 		// Load scores for finished matches
 		const scores: Record<string, { redScore: number; blueScore: number }> = {};
 		for (const match of finishedMatches) {
@@ -277,8 +320,7 @@
 			<form 
 				method="POST" 
 				action="?/create" 
-				use:enhance
-				onsubmit={() => closeSheets()}
+				on:submit|preventDefault={submitForm}
 				class="space-y-4 py-4"
 			>
 				<div class="grid gap-2">
@@ -434,8 +476,7 @@
 				<form 
 					method="POST" 
 					action="?/edit" 
-					use:enhance
-					onsubmit={() => closeSheets()}
+					on:submit|preventDefault={submitForm}
 					class="space-y-4 py-4"
 				>
 					<input type="hidden" name="matchId" value={editingMatch.id} />

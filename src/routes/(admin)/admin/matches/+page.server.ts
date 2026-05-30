@@ -63,7 +63,7 @@ export const actions: Actions = {
 				redTeamIds: [redTeam1.toString(), redTeam2.toString()],
 				blueTeamIds: [blueTeam1.toString(), blueTeam2.toString()],
 				status: 'scheduled',
-				scheduledTime: scheduledTime ? scheduledTime.toString() : undefined,
+				scheduledTime: scheduledTime ? new Date(scheduledTime.toString()).toISOString() : undefined,
 				notes: notes?.toString() || undefined
 			});
 
@@ -108,15 +108,17 @@ export const actions: Actions = {
 		}
 
 		try {
-			await api.matches.update(matchId.toString(), {
+			const updateRes = await api.matches.update(matchId.toString(), {
 				matchNumber: parseInt(matchNumber.toString()),
 				phase: phase as MatchPhase,
 				fieldId: fieldId.toString(),
 				redTeamIds: [redTeam1.toString(), redTeam2.toString()],
 				blueTeamIds: [blueTeam1.toString(), blueTeam2.toString()],
-				scheduledTime: scheduledTime ? scheduledTime.toString() : undefined,
+				scheduledTime: scheduledTime ? new Date(scheduledTime.toString()).toISOString() : undefined,
 				notes: notes?.toString() || undefined
 			});
+
+			console.log('Matches edit action - updateRes:', updateRes);
 
 			return { success: true, type: 'edit' };
 		} catch (err) {
