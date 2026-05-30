@@ -1,0 +1,46 @@
+import { BaseService, type ApiResponse } from './base';
+
+export type CompetitionStatus = 'upcoming' | 'active' | 'completed';
+
+export type CompetitionResponse = {
+	id: string;
+	name: string;
+	description?: string;
+	status: CompetitionStatus;
+	startDate?: string;
+	endDate?: string;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type CreateCompetition = {
+	name: string;
+	description?: string;
+	status?: CompetitionStatus;
+	startDate?: string;
+	endDate?: string;
+};
+
+export type UpdateCompetition = Partial<CreateCompetition>;
+
+export class CompetitionsService extends BaseService {
+	getAll(): Promise<ApiResponse<{ competitions: CompetitionResponse[] }>> {
+		return this.http.get<ApiResponse<{ competitions: CompetitionResponse[] }>>('/competitions');
+	}
+
+	getById(id: string): Promise<ApiResponse<{ competition: CompetitionResponse }>> {
+		return this.http.get<ApiResponse<{ competition: CompetitionResponse }>>(`/competitions/${id}`);
+	}
+
+	create(data: CreateCompetition): Promise<ApiResponse<{ competition: CompetitionResponse }>> {
+		return this.http.post<ApiResponse<{ competition: CompetitionResponse }>>('/competitions', data);
+	}
+
+	update(id: string, data: UpdateCompetition): Promise<ApiResponse<{ competition: CompetitionResponse }>> {
+		return this.http.patch<ApiResponse<{ competition: CompetitionResponse }>>(`/competitions/${id}`, data);
+	}
+
+	delete(id: string): Promise<void> {
+		return this.http.delete<void>(`/competitions/${id}`);
+	}
+}

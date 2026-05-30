@@ -6,6 +6,7 @@ export type ITeamDocument = HydratedDocument<ITeam>;
 const TeamSchema = new Schema<ITeam>(
 	{
 		teamNumber: { type: String, required: true, unique: true, trim: true },
+		competitionId: { type: String },
 		name: { type: String, required: true, trim: true },
 		school: { type: String, required: true, trim: true },
 		coach: { type: String, trim: true },

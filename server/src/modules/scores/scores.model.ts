@@ -1,4 +1,4 @@
-import { ScoreStatus, IAllianceScore, IMatchScore } from '@shared';
+import { IAllianceScore, IMatchScore } from '@shared';
 import mongoose, { Schema, HydratedDocument } from 'mongoose';
 
 export type IMatchScoreDocument = HydratedDocument<IMatchScore>;

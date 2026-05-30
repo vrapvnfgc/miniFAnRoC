@@ -6,6 +6,7 @@ export type IFieldDocument = HydratedDocument<IField>;
 const FieldSchema = new Schema<IField>(
 	{
 		name: { type: String, required: true, unique: true, trim: true },
+		competitionId: { type: String },
 		description: { type: String, trim: true },
 		status: { type: String, enum: ['ACTIVE', 'INACTIVE'], default: 'ACTIVE' }
 	},

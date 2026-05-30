@@ -10,6 +10,7 @@ import { matchesRouter } from './modules/matches/matches.routes';
 import { scoresRouter } from './modules/scores/scores.routes';
 import { rankingsRouter } from './modules/rankings/rankings.routes';
 import { authRouter } from './modules/auth/auth.routes';
+import { competitionsRouter } from './modules/competitions/competitions.routes';
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/v1/fields', fieldsRouter);
 app.use('/api/v1/matches', matchesRouter);
 app.use('/api/v1/matches', scoresRouter);
 app.use('/api/v1/rankings', rankingsRouter);
+app.use('/api/v1/competitions', competitionsRouter);
 
 if (process.env.NODE_ENV === 'production') {
 	try {

@@ -2,11 +2,10 @@ import {
 	AllianceScoreInput,
 	SaveMatchScoreInput,
 	AllianceScoreResponse,
-	MatchScoreResponse,
-	ScoreStatus
+	MatchScoreResponse
 } from '@shared';
 import { AppError } from '../../core/errors';
-import { MatchModel } from '../matches/matches.model';
+import { matchesService } from '../matches/matches.service';
 import { MatchScoreModel } from './scores.model';
 
 function calculateAllianceTotal(score: AllianceScoreInput): number {
@@ -43,11 +42,7 @@ function mapScore(score: any): MatchScoreResponse {
 
 class ScoresService {
 	async saveMatchScore(matchId: string, data: SaveMatchScoreInput): Promise<MatchScoreResponse> {
-		const match = await MatchModel.findById(matchId);
-
-		if (!match) {
-			throw AppError.notFound(`Match with ID "${matchId}" could not be found`);
-		}
+		await matchesService.getMatchById(matchId);
 
 		const existingScore = await MatchScoreModel.findOne({ matchId });
 
@@ -94,11 +89,7 @@ class ScoresService {
 	}
 
 	async finalizeScore(matchId: string): Promise<MatchScoreResponse> {
-		const match = await MatchModel.findById(matchId);
-
-		if (!match) {
-			throw AppError.notFound(`Match with ID "${matchId}" could not be found`);
-		}
+		const match = await matchesService.getMatchById(matchId);
 
 		const score = await MatchScoreModel.findOne({ matchId });
 
@@ -109,10 +100,11 @@ class ScoresService {
 		score.status = 'finalized';
 		score.finalizedAt = new Date();
 
-		match.status = 'finished';
-		match.endTime = match.endTime || new Date();
+		await matchesService.updateMatch(matchId, {
+			status: 'finished',
+			endTime: match.endTime || new Date()
+		});
 
-		await match.save();
 		const finalizedScore = await score.save();
 
 		return mapScore(finalizedScore);
