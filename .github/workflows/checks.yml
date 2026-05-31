@@ -2,6 +2,11 @@ name: Lint, Check & Build PR Checks
 
 on:
   pull_request:
+    types: 
+      - opened
+      - synchronize
+      - reopened
+    
     branches:
       - main
 
@@ -28,7 +33,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
 
       - run: pnpm run lint
