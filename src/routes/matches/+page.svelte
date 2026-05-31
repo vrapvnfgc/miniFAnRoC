@@ -137,6 +137,14 @@
 		return `${s.red.total} — ${s.blue.total}`;
 	}
 
+	function getMatchWinner(matchId: string) {
+		const s = scoresMap.get(matchId);
+		if (!s) return 'draw';
+		if (s.red.total > s.blue.total) return 'red';
+		if (s.blue.total > s.red.total) return 'blue';
+		return 'draw';
+	}
+
 	function totalPages(listLength: number) {
 		return Math.max(1, Math.ceil(listLength / PAGE_SIZE));
 	}
@@ -219,47 +227,50 @@
 					{#if scheduledList.length === 0}
 						<div class="py-8 text-center">No upcoming matches</div>
 					{:else}
-						<table class="w-full data-table">
-							<thead>
-								<tr>
-									<th>Match</th>
-									<th>Time</th>
-									<th>Field</th>
-									<th>Red</th>
-									<th>Blue</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each pageItems(scheduledList, scheduledPage) as match}
-									<tr>
-										<td class="font-mono">{formatMatchId(match)}</td>
-										<td>
-											{#if match.scheduledTime}
-												{new Date(match.scheduledTime).toLocaleString()}
-											{:else}
-												—
-											{/if}
-										</td>
-										<td>{fieldMap.get(match.fieldId)?.name || 'N/A'}</td>
-										<td>{getTeamNames(match.redTeamIds).join(' — ')}</td>
-										<td>{getTeamNames(match.blueTeamIds).join(' — ')}</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
+						<div class="grid gap-4 md:grid-cols-2">
+							{#each pageItems(scheduledList, scheduledPage) as match}
+								<article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-white/10 dark:bg-slate-900/80">
+									<div class="mb-4 flex items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
+										<span class="font-mono text-xs uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">{formatMatchId(match)}</span>
+										<div class="flex flex-wrap items-center gap-2">
+											<span>{fieldMap.get(match.fieldId)?.name || 'TBD'}</span>
+											<span>·</span>
+											<span>{match.scheduledTime ? new Date(match.scheduledTime).toLocaleString() : 'TBD'}</span>
+										</div>
+									</div>
+									<div class="grid gap-3 sm:grid-cols-2">
+										<div class="rounded-3xl bg-slate-50 p-4 dark:bg-slate-950/70">
+											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red alliance</p>
+											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
+												{#each getTeamNames(match.redTeamIds) as team}
+													<p>{team}</p>
+												{/each}
+											</div>
+										</div>
+										<div class="rounded-3xl bg-slate-50 p-4 dark:bg-slate-950/70">
+											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Blue alliance</p>
+											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
+												{#each getTeamNames(match.blueTeamIds) as team}
+													<p>{team}</p>
+												{/each}
+											</div>
+										</div>
+									</div>
+								</article>
+							{/each}
+						</div>
 
-						<!-- pagination -->
 						<div class="mt-4 flex items-center justify-end gap-2">
 							<button
 								onclick={() => (scheduledPage = Math.max(1, scheduledPage - 1))}
-								class="p-2 rounded border"
+								class="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-200"
 							>
 								<ChevronLeft size={16} />
 							</button>
-							<span class="mx-2">Page {scheduledPage} / {totalPages(scheduledList.length)}</span>
+							<span class="text-sm text-slate-600 dark:text-slate-400">Page {scheduledPage} / {totalPages(scheduledList.length)}</span>
 							<button
 								onclick={() => (scheduledPage = Math.min(totalPages(scheduledList.length), scheduledPage + 1))}
-								class="p-2 rounded border"
+								class="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-200"
 							>
 								<ChevronRight size={16} />
 							</button>
@@ -269,49 +280,58 @@
 					{#if finishedList.length === 0}
 						<div class="py-8 text-center">No results yet</div>
 					{:else}
-						<table class="w-full data-table">
-							<thead>
-								<tr>
-									<th>Match</th>
-									<th>Time</th>
-									<th>Field</th>
-									<th>Red</th>
-									<th>Blue</th>
-									<th>Score</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each pageItems(finishedList, resultsPage) as match}
-									<tr>
-										<td class="font-mono">{formatMatchId(match)}</td>
-										<td>{match.endTime ? new Date(match.endTime).toLocaleString() : 'N/A'}</td>
-										<td>{fieldMap.get(match.fieldId)?.name || 'N/A'}</td>
-										<td>{getTeamNames(match.redTeamIds).join(' — ')}</td>
-										<td>{getTeamNames(match.blueTeamIds).join(' — ')}</td>
-										<td>
-											{#if scoresMap.get(match.id)}
-												{getScore(match.id).red.total} — {getScore(match.id).blue.total}
-											{:else}
-												—
-											{/if}
-										</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
+						<div class="grid gap-4 md:grid-cols-2">
+							{#each pageItems(finishedList, resultsPage) as match}
+								<article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-white/10 dark:bg-slate-900/80">
+									<div class="mb-4 flex items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
+										<span class="font-mono text-xs uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">{formatMatchId(match)}</span>
+										<div class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-950/70 dark:text-slate-300">
+											{fieldMap.get(match.fieldId)?.name || 'N/A'}
+										</div>
+									</div>
+										<p class="mb-4 text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+											{match.endTime ? new Date(match.endTime).toLocaleString() : 'N/A'}
+										</p>
+								<div class="grid gap-3 sm:grid-cols-[1fr_auto_1fr] items-center">
+									<div class={`rounded-3xl p-4 ${getMatchWinner(match.id) === 'red' ? 'border-2 border-red-500 bg-red-50 dark:bg-red-500/10' : 'bg-slate-50 dark:bg-slate-950/70'}`}>
+										<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red alliance</p>
+										<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
+											{#each getTeamNames(match.redTeamIds) as team}
+												<p>{team}</p>
+											{/each}
+										</div>
+									</div>
+									<div class="flex flex-col items-center justify-center gap-2 rounded-3xl bg-slate-900 px-4 py-6 text-white dark:bg-white/10 dark:text-white">
+										<p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-300">Final</p>
+												<p class="text-xl font-black">{getScoreDisplay(match.id)}</p>
+										<p class={`text-xs font-semibold ${getMatchWinner(match.id) === 'red' ? 'text-red-400' : getMatchWinner(match.id) === 'blue' ? 'text-sky-400' : 'text-slate-400'}`}>
+											{getMatchWinner(match.id) === 'red' ? 'Red ✓' : getMatchWinner(match.id) === 'blue' ? 'Blue ✓' : 'Draw'}
+										</p>
+									</div>
+									<div class={`rounded-3xl p-4 ${getMatchWinner(match.id) === 'blue' ? 'border-2 border-sky-500 bg-blue-50 dark:bg-blue-500/10' : 'bg-slate-50 dark:bg-slate-950/70'}`}>
+										<p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Blue alliance</p>
+										<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
+											{#each getTeamNames(match.blueTeamIds) as team}
+												<p>{team}</p>
+											{/each}
+										</div>
+									</div>
+								</div>
+							</article>
+							{/each}
+						</div>
 
-						<!-- pagination -->
 						<div class="mt-4 flex items-center justify-end gap-2">
 							<button
 								onclick={async () => { resultsPage = Math.max(1, resultsPage - 1); await loadScoresForCurrentPage(); }}
-								class="p-2 rounded border"
+								class="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-200"
 							>
 								<ChevronLeft size={16} />
 							</button>
-							<span class="mx-2">Page {resultsPage} / {totalPages(finishedList.length)}</span>
+							<span class="text-sm text-slate-600 dark:text-slate-400">Page {resultsPage} / {totalPages(finishedList.length)}</span>
 							<button
 								onclick={async () => { resultsPage = Math.min(totalPages(finishedList.length), resultsPage + 1); await loadScoresForCurrentPage(); }}
-								class="p-2 rounded border"
+								class="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-200"
 							>
 								<ChevronRight size={16} />
 							</button>
@@ -326,60 +346,3 @@
 
 <Footer />
 
-<style>
-			.data-table {
-				width: 100%;
-				border-collapse: separate;
-				border-spacing: 0;
-			}
-			.data-table thead th {
-				text-align: left;
-				padding: 1rem 1.25rem;
-				font-size: 0.85rem;
-				font-weight: 700;
-				text-transform: uppercase;
-				letter-spacing: 0.1em;
-				color: #64748b;
-				border-bottom: 1px solid rgba(148,163,184,0.25);
-			}
-			.data-table tbody tr {
-				background: rgba(255,255,255,0.84);
-			}
-			:global(.dark) .data-table tbody tr {
-				background: rgba(15,23,42,0.85);
-			}
-			.data-table tbody tr:nth-child(odd) {
-				background: rgba(248,250,252,0.9);
-			}
-			:global(.dark) .data-table tbody tr:nth-child(odd) {
-				background: rgba(15,23,42,0.78);
-			}
-			.data-table tbody td {
-				padding: 1rem 1.25rem;
-				font-size: 0.95rem;
-				color: #0f172a;
-			}
-			:global(.dark) .data-table tbody td {
-				color: #e2e8f0;
-			}
-			.data-table tbody tr:hover td {
-				background: rgba(14,165,233,0.08);
-			}
-			:global(.dark) .data-table tbody tr:hover td {
-				background: rgba(56,189,248,0.12);
-			}
-			.data-table tbody td.font-mono {
-				letter-spacing: 0.08em;
-			}
-			.data-table th,
-			.data-table td {
-				border-right: 1px solid rgba(148,163,184,0.1);
-			}
-			.data-table th:last-child,
-			.data-table td:last-child {
-				border-right: none;
-			}
-			.data-table tbody tr:last-child td {
-				border-bottom: none;
-			}
-		</style>
