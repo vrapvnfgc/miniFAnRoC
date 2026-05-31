@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ArrowDown } from 'lucide-svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let hoveredRegion = $state<string | null>(null);
@@ -46,6 +47,12 @@
 		}
 	];
 
+	const finalRound = {
+		title: m.map_finals_title(),
+		venue: m.map_finals_venue(),
+		description: m.map_finals_desc()
+	};
+
 	function setHover(id: string | null) {
 		hoveredRegion = id;
 	}
@@ -65,269 +72,55 @@
 			</p>
 		</div>
 
-		<div class="grid items-start gap-8 lg:grid-cols-2">
-			<!-- Map -->
-			<div
-				class="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none"
-			>
-				<div
-					class="relative flex min-h-[520px] items-center justify-center overflow-hidden rounded-[28px] border border-dashed border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-slate-900/60"
-				>
-					<svg
-						viewBox="0 0 300 600"
-						class="h-full max-h-[480px] w-auto"
-						xmlns="http://www.w3.org/2000/svg"
-						aria-label="Vietnam regional competition map"
-					>
-						<g
-							role="button"
-							tabindex="0"
-							aria-label="Hanoi region"
-							onmouseenter={() => setHover('hanoi')}
-							onmouseleave={() => setHover(null)}
-							onfocus={() => setHover('hanoi')}
-							onblur={() => setHover(null)}
-						>
-							<rect
-								x="60"
-								y="20"
-								width="160"
-								height="140"
-								rx="16"
-								fill={hoveredRegion === 'hanoi' ? '#0ea5e940' : '#0ea5e920'}
-								stroke="#0ea5e950"
-								stroke-width="1.5"
-								style="cursor:pointer;transition:fill 0.2s"
-							/>
-							<text
-								x="140"
-								y="78"
-								text-anchor="middle"
-								fill="#0369a1"
-								font-size="10"
-								font-weight="600"
-								style="pointer-events:none">Northern VN</text
-							>
-							<text
-								x="140"
-								y="94"
-								text-anchor="middle"
-								fill="#0284c7"
-								font-size="9"
-								style="pointer-events:none">FSchool Hanoi</text
-							>
-							<circle
-								cx="140"
-								cy="115"
-								r="5"
-								fill="#0ea5e9"
-								opacity="0.8"
-								style="pointer-events:none"
-								><animate
-									attributeName="opacity"
-									values="0.8;0.3;0.8"
-									dur="2s"
-									repeatCount="indefinite"
-								/></circle
-							>
-						</g>
-						<g
-							role="button"
-							tabindex="0"
-							aria-label="Thanh Hoa region"
-							onmouseenter={() => setHover('thanhhoa')}
-							onmouseleave={() => setHover(null)}
-							onfocus={() => setHover('thanhhoa')}
-							onblur={() => setHover(null)}
-						>
-							<rect
-								x="70"
-								y="175"
-								width="140"
-								height="90"
-								rx="14"
-								fill={hoveredRegion === 'thanhhoa' ? '#f9731640' : '#f9731620'}
-								stroke="#f9731650"
-								stroke-width="1.5"
-								style="cursor:pointer;transition:fill 0.2s"
-							/>
-							<text
-								x="140"
-								y="212"
-								text-anchor="middle"
-								fill="#c2410c"
-								font-size="9"
-								font-weight="600"
-								style="pointer-events:none">Thanh Hoa · Nghe An</text
-							>
-							<text
-								x="140"
-								y="226"
-								text-anchor="middle"
-								fill="#ea580c"
-								font-size="8"
-								style="pointer-events:none">FSchool Thanh Hoa</text
-							>
-							<circle
-								cx="140"
-								cy="244"
-								r="4"
-								fill="#f97316"
-								opacity="0.8"
-								style="pointer-events:none"
-								><animate
-									attributeName="opacity"
-									values="0.8;0.3;0.8"
-									dur="2.2s"
-									repeatCount="indefinite"
-								/></circle
-							>
-						</g>
-						<g
-							role="button"
-							tabindex="0"
-							aria-label="Da Nang region"
-							onmouseenter={() => setHover('danang')}
-							onmouseleave={() => setHover(null)}
-							onfocus={() => setHover('danang')}
-							onblur={() => setHover(null)}
-						>
-							<rect
-								x="65"
-								y="280"
-								width="150"
-								height="110"
-								rx="14"
-								fill={hoveredRegion === 'danang' ? '#a855f740' : '#a855f720'}
-								stroke="#a855f750"
-								stroke-width="1.5"
-								style="cursor:pointer;transition:fill 0.2s"
-							/>
-							<text
-								x="140"
-								y="325"
-								text-anchor="middle"
-								fill="#7e22ce"
-								font-size="9"
-								font-weight="600"
-								style="pointer-events:none">Central Vietnam</text
-							>
-							<text
-								x="140"
-								y="340"
-								text-anchor="middle"
-								fill="#9333ea"
-								font-size="8"
-								style="pointer-events:none">FSchool Da Nang</text
-							>
-							<circle
-								cx="140"
-								cy="358"
-								r="4"
-								fill="#a855f7"
-								opacity="0.8"
-								style="pointer-events:none"
-								><animate
-									attributeName="opacity"
-									values="0.8;0.3;0.8"
-									dur="1.8s"
-									repeatCount="indefinite"
-								/></circle
-							>
-						</g>
-						<g
-							role="button"
-							tabindex="0"
-							aria-label="Can Tho region"
-							onmouseenter={() => setHover('cantho')}
-							onmouseleave={() => setHover(null)}
-							onfocus={() => setHover('cantho')}
-							onblur={() => setHover(null)}
-						>
-							<rect
-								x="55"
-								y="410"
-								width="170"
-								height="140"
-								rx="16"
-								fill={hoveredRegion === 'cantho' ? '#22c55e40' : '#22c55e20'}
-								stroke="#22c55e50"
-								stroke-width="1.5"
-								style="cursor:pointer;transition:fill 0.2s"
-							/>
-							<text
-								x="140"
-								y="470"
-								text-anchor="middle"
-								fill="#15803d"
-								font-size="10"
-								font-weight="600"
-								style="pointer-events:none">Southern VN</text
-							>
-							<text
-								x="140"
-								y="486"
-								text-anchor="middle"
-								fill="#16a34a"
-								font-size="9"
-								style="pointer-events:none">FSchool Can Tho</text
-							>
-							<circle
-								cx="140"
-								cy="508"
-								r="5"
-								fill="#22c55e"
-								opacity="0.8"
-								style="pointer-events:none"
-								><animate
-									attributeName="opacity"
-									values="0.8;0.3;0.8"
-									dur="2.5s"
-									repeatCount="indefinite"
-								/></circle
-							>
-						</g>
-						<text x="140" y="578" text-anchor="middle" fill="#94a3b8" font-size="8"
-							>{m.map_placeholder()}</text
-						>
-					</svg>
-
-					{#if hoveredRegion}
-						{@const region = regions.find((r) => r.id === hoveredRegion)}
-						{#if region}
-							<div
-								class="pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 rounded-xl border border-slate-200 bg-white/95 px-4 py-2 text-center text-sm shadow-lg backdrop-blur-sm dark:border-white/15 dark:bg-slate-950/90"
-							>
-								<p class="font-semibold {region.labelClass}">{region.venue}</p>
-								<p class="text-xs text-slate-500 dark:text-slate-400">{region.tooltip}</p>
-							</div>
-						{/if}
-					{/if}
-				</div>
-			</div>
-
-			<!-- Legend cards -->
-			<div class="space-y-4">
+		<div>
+			<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
 				{#each regions as r}
 					<button
-						class="w-full rounded-[24px] border text-left {r.bgClass} p-6 transition duration-200 hover:-translate-x-1 hover:shadow-md focus:outline-none dark:hover:shadow-none"
+						class="min-h-48 rounded-3xl border text-left {r.bgClass} p-6 transition duration-200 hover:-translate-y-1 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/60 dark:hover:shadow-none"
 						style={hoveredRegion === r.id ? `box-shadow:0 0 0 2px ${r.color}40` : ''}
 						onmouseenter={() => setHover(r.id)}
 						onmouseleave={() => setHover(null)}
+						onfocus={() => setHover(r.id)}
+						onblur={() => setHover(null)}
 					>
-						<div class="flex items-start justify-between gap-4">
-							<div>
-								<h3 class="mb-1 text-lg font-bold {r.labelClass}">{r.name}</h3>
-								<p class="text-sm text-slate-500 dark:text-slate-400">{r.subtitle}</p>
-							</div>
+						<div class="mb-5 flex items-start justify-between gap-4">
 							<div
-								class="mt-1.5 h-3 w-3 shrink-0 rounded-full"
-								style="background:{r.color}; box-shadow:0 0 10px {r.color}80"
+								class="h-3 w-3 shrink-0 rounded-full"
+								style="background:{r.color}; box-shadow:0 0 12px {r.color}80"
 							></div>
+							<span
+								class="rounded-full bg-white/70 px-3 py-1 text-xs font-semibold text-slate-500 dark:bg-white/10 dark:text-slate-300"
+							>
+								{r.venue}
+							</span>
 						</div>
-						<p class="mt-3 text-sm text-slate-500 dark:text-slate-500">{r.tooltip}</p>
+						<h3 class="mb-2 text-xl font-black {r.labelClass}">{r.name}</h3>
+						<p class="text-sm leading-6 text-slate-600 dark:text-slate-300">{r.subtitle}</p>
+						<p class="mt-4 text-sm leading-6 text-slate-500 dark:text-slate-400">{r.tooltip}</p>
 					</button>
 				{/each}
+			</div>
+
+			<div class="flex justify-center py-8" aria-hidden="true">
+				<div
+					class="flex h-16 w-16 items-center justify-center rounded-full border border-cyan-500/20 bg-white text-cyan-600 shadow-sm dark:bg-slate-950 dark:text-cyan-300"
+				>
+					<ArrowDown class="h-8 w-8" strokeWidth={2.4} />
+				</div>
+			</div>
+
+			<div
+				class="mx-auto max-w-3xl rounded-3xl border border-cyan-500/25 bg-cyan-50 p-7 text-center shadow-sm dark:bg-cyan-500/10"
+			>
+				<p
+					class="mb-2 text-xs font-semibold tracking-[0.2em] text-cyan-700 uppercase dark:text-cyan-300"
+				>
+					{finalRound.title}
+				</p>
+				<h3 class="text-2xl font-black text-slate-900 dark:text-white">{finalRound.venue}</h3>
+				<p class="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+					{finalRound.description}
+				</p>
 			</div>
 		</div>
 	</div>
