@@ -36,6 +36,7 @@
 	let refreshTimer: number | null = null;
 	const REFRESH_MS = 60_000;
 	let lastRefresh = 0;
+	let searchQuery = $state('');
 
 	async function loadAll() {
 		try {
@@ -155,6 +156,29 @@
 		return { match, score };
 	}
 
+	function getFilteredMatches(matchList: MatchResponse[]) {
+		if (!searchQuery.trim()) return matchList;
+
+		const query = searchQuery.toLowerCase();
+		const matchingTeamIds = new Set<string>();
+
+		// Find all teams that match the search query
+		teamMap.forEach((team) => {
+			if (team.name.toLowerCase().includes(query)) {
+				matchingTeamIds.add(team.id);
+			}
+		});
+
+		if (matchingTeamIds.size === 0) return [];
+
+		// Filter matches to only include those with matching teams
+		return matchList.filter((match) => {
+			const redHasTeam = match.redTeamIds.some((id) => matchingTeamIds.has(id));
+			const blueHasTeam = match.blueTeamIds.some((id) => matchingTeamIds.has(id));
+			return redHasTeam || blueHasTeam;
+		});
+	}
+
 	function totalPages(listLength: number) {
 		return Math.max(1, Math.ceil(listLength / PAGE_SIZE));
 	}
@@ -163,6 +187,13 @@
 		if (tab === 'results') {
 			loadScoresForCurrentPage();
 		}
+	});
+
+	$effect(() => {
+		// Reset pagination when search query changes
+		void searchQuery; // Access to create dependency
+		scheduledPage = 1;
+		resultsPage = 1;
 	});
 
 	function refreshData() {
@@ -225,6 +256,14 @@
 					<Check size={16} class="text-emerald-400" />
 					<span>Results</span>
 				</button>
+				<div class="flex-1 sm:ml-auto">
+					<input
+						type="text"
+						placeholder="Search by team name..."
+						bind:value={searchQuery}
+						class="w-full rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder-slate-500 transition focus:border-cyan-400 focus:outline-none dark:border-white/10 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+					/>
+				</div>
 			</div>
 			
 
@@ -236,9 +275,13 @@
 				{#if tab === 'scheduled'}
 					{#if scheduledList.length === 0}
 						<div class="py-8 text-center">No upcoming matches</div>
+					{:else if getFilteredMatches(scheduledList).length === 0}
+						<div class="py-8 text-center text-slate-500 dark:text-slate-400">
+							No matches found for "{searchQuery}"
+						</div>
 					{:else}
 						<div class="grid gap-4 md:grid-cols-2">
-							{#each pageItems(scheduledList, scheduledPage) as match}
+							{#each pageItems(getFilteredMatches(scheduledList), scheduledPage) as match}
 								<article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-white/10 dark:bg-slate-900/80">
 									<div class="mb-4 flex items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
 										<span class="font-mono text-xs uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">{formatMatchId(match)}</span>
@@ -277,9 +320,9 @@
 							>
 								<ChevronLeft size={16} />
 							</button>
-							<span class="text-sm text-slate-600 dark:text-slate-400">Page {scheduledPage} / {totalPages(scheduledList.length)}</span>
+							<span class="text-sm text-slate-600 dark:text-slate-400">Page {scheduledPage} / {totalPages(getFilteredMatches(scheduledList).length)}</span>
 							<button
-								onclick={() => (scheduledPage = Math.min(totalPages(scheduledList.length), scheduledPage + 1))}
+								onclick={() => (scheduledPage = Math.min(totalPages(getFilteredMatches(scheduledList).length), scheduledPage + 1))}
 								class="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-200"
 							>
 								<ChevronRight size={16} />
@@ -289,9 +332,13 @@
 				{:else}
 					{#if finishedList.length === 0}
 						<div class="py-8 text-center">No results yet</div>
-					{:else}
-						<div class="grid gap-4 md:grid-cols-2">
-							{#each pageItems(finishedList, resultsPage) as match}
+				{:else if getFilteredMatches(finishedList).length === 0}
+					<div class="py-8 text-center text-slate-500 dark:text-slate-400">
+						No results found for "{searchQuery}"
+					</div>
+				{:else}
+					<div class="grid gap-4 md:grid-cols-2">
+						{#each pageItems(getFilteredMatches(finishedList), resultsPage) as match}
 								<article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-white/10 dark:bg-slate-900/80">
 									<div class="mb-4 flex items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
 										<span class="font-mono text-xs uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">{formatMatchId(match)}</span>
@@ -346,9 +393,9 @@
 							>
 								<ChevronLeft size={16} />
 							</button>
-							<span class="text-sm text-slate-600 dark:text-slate-400">Page {resultsPage} / {totalPages(finishedList.length)}</span>
-							<button
-								onclick={async () => { resultsPage = Math.min(totalPages(finishedList.length), resultsPage + 1); await loadScoresForCurrentPage(); }}
+					<span class="text-sm text-slate-600 dark:text-slate-400">Page {resultsPage} / {totalPages(getFilteredMatches(finishedList).length)}</span>
+					<button
+						onclick={async () => { resultsPage = Math.min(totalPages(getFilteredMatches(finishedList).length), resultsPage + 1); await loadScoresForCurrentPage(); }}
 								class="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-200"
 							>
 								<ChevronRight size={16} />
