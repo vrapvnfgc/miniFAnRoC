@@ -30,6 +30,8 @@
 	let scheduledPage = $state(1);
 	let resultsPage = $state(1);
 
+	let selectedMatchId: string | null = $state(null);
+
 	let scoresMap = $state(new Map<string, MatchScoreResponse>());
 	let refreshTimer: number | null = null;
 	const REFRESH_MS = 60_000;
@@ -145,6 +147,14 @@
 		return 'draw';
 	}
 
+	function getSelectedMatchDetails() {
+		if (!selectedMatchId) return null;
+		const match = matches.find((m) => m.id === selectedMatchId);
+		const score = scoresMap.get(selectedMatchId);
+		if (!match || !score) return null;
+		return { match, score };
+	}
+
 	function totalPages(listLength: number) {
 		return Math.max(1, Math.ceil(listLength / PAGE_SIZE));
 	}
@@ -239,7 +249,7 @@
 										</div>
 									</div>
 									<div class="grid gap-3 sm:grid-cols-2">
-										<div class="rounded-3xl bg-slate-50 p-4 dark:bg-slate-950/70">
+												<div class="rounded-3xl bg-slate-50 p-4 transition hover:shadow-lg hover:shadow-red-500/50 dark:bg-slate-950/70">
 											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red alliance</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 												{#each getTeamNames(match.redTeamIds) as team}
@@ -247,7 +257,7 @@
 												{/each}
 											</div>
 										</div>
-										<div class="rounded-3xl bg-slate-50 p-4 dark:bg-slate-950/70">
+												<div class="rounded-3xl bg-slate-50 p-4 transition hover:shadow-lg hover:shadow-sky-500/50 dark:bg-slate-950/70">
 											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Blue alliance</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 												{#each getTeamNames(match.blueTeamIds) as team}
@@ -293,7 +303,7 @@
 											{match.endTime ? new Date(match.endTime).toLocaleString() : 'N/A'}
 										</p>
 								<div class="grid gap-3 sm:grid-cols-[1fr_auto_1fr] items-center">
-									<div class={`rounded-3xl p-4 ${getMatchWinner(match.id) === 'red' ? 'border-2 border-red-500 bg-red-50 dark:bg-red-500/10' : 'bg-slate-50 dark:bg-slate-950/70'}`}>
+											<div class={`rounded-3xl p-4 transition hover:shadow-lg hover:shadow-red-500/50 ${getMatchWinner(match.id) === 'red' ? 'border-2 border-red-500 bg-red-50 dark:bg-red-500/10' : 'bg-slate-50 dark:bg-slate-950/70'}`}>
 										<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red alliance</p>
 										<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 											{#each getTeamNames(match.redTeamIds) as team}
@@ -308,7 +318,7 @@
 											{getMatchWinner(match.id) === 'red' ? 'Red ✓' : getMatchWinner(match.id) === 'blue' ? 'Blue ✓' : 'Draw'}
 										</p>
 									</div>
-									<div class={`rounded-3xl p-4 ${getMatchWinner(match.id) === 'blue' ? 'border-2 border-sky-500 bg-blue-50 dark:bg-blue-500/10' : 'bg-slate-50 dark:bg-slate-950/70'}`}>
+											<div class={`rounded-3xl p-4 transition hover:shadow-lg hover:shadow-sky-500/50 ${getMatchWinner(match.id) === 'blue' ? 'border-2 border-sky-500 bg-blue-50 dark:bg-blue-500/10' : 'bg-slate-50 dark:bg-slate-950/70'}`}>
 										<p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Blue alliance</p>
 										<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 											{#each getTeamNames(match.blueTeamIds) as team}
@@ -316,6 +326,14 @@
 											{/each}
 										</div>
 									</div>
+								</div>
+								<div class="mt-4">
+									<button
+										onclick={() => (selectedMatchId = match.id)}
+										class="w-full rounded-lg bg-cyan-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-cyan-700 dark:bg-cyan-700 dark:hover:bg-cyan-600"
+									>
+										View Details
+									</button>
 								</div>
 							</article>
 							{/each}
@@ -341,6 +359,110 @@
 			{/if}
 		</div>
 	</div>
+
+	{#if selectedMatchId && getSelectedMatchDetails()}
+		{@const details = getSelectedMatchDetails()}
+		{#if details}
+		<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+			<div class="glass-card max-h-screen w-full max-w-2xl overflow-y-auto rounded-3xl border border-white/10 bg-white/90 p-6 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/85 dark:shadow-black/20 sm:p-8">
+				<div class="mb-6 flex items-center justify-between">
+					<div>
+						<p class="text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400">Match Details</p>
+						<h2 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">{formatMatchId(details.match)}</h2>
+					</div>
+					<button
+						onclick={() => (selectedMatchId = null)}
+						title="Close"
+						class="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-800"
+					>
+						<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+						</svg>
+					</button>
+				</div>
+
+				<div class="space-y-4">
+					<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
+						<div class="grid gap-4 sm:grid-cols-2">
+							<div>
+								<h3 class="mb-3 text-sm font-semibold text-red-600 dark:text-red-400">Red Alliance</h3>
+								<div class="space-y-2 text-sm">
+									<div class="flex justify-between">
+										<span class="text-slate-600 dark:text-slate-400">Tele Independent:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.teleIndependent ?? 'N/A'}</span>
+									</div>
+									<div class="flex justify-between">
+										<span class="text-slate-600 dark:text-slate-400">Shared:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.sharedScore ?? 'N/A'}</span>
+									</div>
+									<div class="flex justify-between">
+										<span class="text-slate-600 dark:text-slate-400">Penalties:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">-{details.score.red.penalties ?? 'N/A'}</span>
+									</div>
+									<div class="flex justify-between">
+										<span class="text-slate-600 dark:text-slate-400">Endgame:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.endgame ?? 'N/A'}</span>
+									</div>
+									<div class="flex justify-between">
+										<span class="text-slate-600 dark:text-slate-400">Endgame Mult:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">×{details.score.red.endgameMultiplier ?? 'N/A'}</span>
+									</div>
+									<div class="border-t border-slate-200 pt-2 dark:border-white/10">
+										<div class="flex justify-between">
+											<span class="font-semibold text-red-600 dark:text-red-400">Total:</span>
+											<span class="text-lg font-black text-red-600 dark:text-red-400">{details.score.red.total ?? 'N/A'}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div>
+								<h3 class="mb-3 text-sm font-semibold text-sky-600 dark:text-sky-400">Blue Alliance</h3>
+								<div class="space-y-2 text-sm">
+									<div class="flex justify-between">
+										<span class="text-slate-600 dark:text-slate-400">Tele Independent:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.teleIndependent ?? 'N/A'}</span>
+									</div>
+									<div class="flex justify-between">
+										<span class="text-slate-600 dark:text-slate-400">Shared:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.sharedScore ?? 'N/A'}</span>
+									</div>
+									<div class="flex justify-between">
+										<span class="text-slate-600 dark:text-slate-400">Penalties:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">-{details.score.blue.penalties ?? 'N/A'}</span>
+									</div>
+									<div class="flex justify-between">
+										<span class="text-slate-600 dark:text-slate-400">Endgame:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.endgame ?? 'N/A'}</span>
+									</div>
+									<div class="flex justify-between">
+										<span class="text-slate-600 dark:text-slate-400">Endgame Mult:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">×{details.score.blue.endgameMultiplier ?? 'N/A'}</span>
+									</div>
+									<div class="border-t border-slate-200 pt-2 dark:border-white/10">
+										<div class="flex justify-between">
+											<span class="font-semibold text-sky-600 dark:text-sky-400">Total:</span>
+											<span class="text-lg font-black text-sky-600 dark:text-sky-400">{details.score.blue.total ?? 'N/A'}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- <div class="mt-6">
+					<button
+						onclick={() => (selectedMatchId = null)}
+						class="w-full rounded-lg bg-slate-200 px-4 py-2 font-semibold text-slate-900 transition hover:bg-slate-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
+					>
+						Close
+					</button>
+				</div> -->
+			</div>
+		</div>
+		{/if}
+	{/if}
 </section>
 
 
