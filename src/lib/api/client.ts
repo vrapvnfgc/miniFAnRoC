@@ -7,9 +7,9 @@ import { RankingsService } from './rankings.api';
 import { AuthService } from './auth.api';
 import { UserService } from './user.api';
 import { CompetitionsService } from './competitions.api';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_BACKEND_API_URL } from '$env/static/public';
 
-const API_BASE_URL = env.PUBLIC_BACKEND_API_URL || 'http://localhost:3000/api/v1';
+const API_BASE_URL = PUBLIC_BACKEND_API_URL || 'http://localhost:3000/api/v1';
 
 export class APIClient {
 	readonly teams: TeamsService;

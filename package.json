@@ -4,14 +4,13 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"compile:i18n": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide",
 		"dev": "concurrently -n \"client,server\" -c \"cyan,magenta\" \"vite dev\" \"pnpm --filter server dev\"",
-		"build": "pnpm compile:i18n && vite build && pnpm --filter @mini-fanroc/server build",
+		"build": "vite build && pnpm --filter @mini-fanroc/server build",
 		"start": "pnpm --filter @mini-fanroc/server start",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"check": "pnpm compile:i18n && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "pnpm compile:i18n && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write ."
 	},
