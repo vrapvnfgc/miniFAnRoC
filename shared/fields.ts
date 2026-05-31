@@ -5,6 +5,7 @@ export type FieldStatus = (typeof fieldStatus)[number];
 
 export const IFieldSchema = z.object({
 	name: z.string().min(1, 'Name is required'),
+	competitionId: z.string().optional(),
 	description: z.string().optional(),
 	status: z.enum(fieldStatus).default('ACTIVE'),
 	createdAt: z.date(),
@@ -19,6 +20,7 @@ export type Field = z.infer<typeof FieldSchema>;
 
 export const CreateFieldSchema = z.object({
 	name: z.string().min(1, 'Name is required'),
+	competitionId: z.string().optional(),
 	description: z.string().optional(),
 	status: z.enum(fieldStatus).optional()
 });

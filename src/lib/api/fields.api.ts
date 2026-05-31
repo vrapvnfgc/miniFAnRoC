@@ -4,6 +4,7 @@ export type FieldStatus = 'ACTIVE' | 'INACTIVE';
 
 export type FieldResponse = {
 	id: string;
+	competitionId?: string;
 	name: string;
 	description?: string;
 	status: FieldStatus;
@@ -13,6 +14,7 @@ export type FieldResponse = {
 
 export type CreateField = {
 	name: string;
+	competitionId?: string;
 	description?: string;
 	status?: FieldStatus;
 };

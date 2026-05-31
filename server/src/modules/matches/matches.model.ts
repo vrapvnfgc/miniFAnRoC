@@ -22,6 +22,10 @@ const MatchSchema = new Schema<IMatch>(
 			required: true
 		},
 
+		competitionId: {
+			type: String
+		},
+
 		redTeamIds: {
 			type: [String],
 			required: true,

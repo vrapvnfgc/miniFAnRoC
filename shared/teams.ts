@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const ITeamSchema = z.object({
 	teamNumber: z.string().min(1, 'Team number is required'),
+	competitionId: z.string().optional(),
 	name: z.string().min(1, 'Name is required'),
 	school: z.string().min(1, 'School is required'),
 	coach: z.string().optional(),
@@ -19,6 +20,7 @@ export type Team = z.infer<typeof TeamSchema>;
 
 export const CreateTeamSchema = z.object({
 	teamNumber: z.string().min(1, 'Team number is required'),
+	competitionId: z.string().optional(),
 	name: z.string().min(1, 'Name is required'),
 	school: z.string().min(1, 'School is required'),
 	coach: z.string().optional(),

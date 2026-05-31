@@ -7,6 +7,7 @@ export type MatchStatus = 'queued' | 'scheduled' | 'in_progress' | 'finished' | 
 export type MatchResponse = {
 	id: string;
 	matchNumber: number;
+	competitionId?: string;
 	phase: MatchPhase;
 	fieldId: string;
 	redTeamIds: string[];
@@ -22,6 +23,7 @@ export type MatchResponse = {
 
 export type CreateMatch = {
 	matchNumber: number;
+	competitionId?: string;
 	phase: MatchPhase;
 	fieldId: string;
 	redTeamIds: string[];

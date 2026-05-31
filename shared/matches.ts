@@ -8,6 +8,7 @@ export type MatchStatus = (typeof matchStatuses)[number];
 
 export const IMatchSchema = z.object({
 	matchNumber: z.number().int().positive(),
+	competitionId: z.string().optional(),
 	phase: z.enum(matchPhases),
 	fieldId: z.string(),
 	redTeamIds: z.array(z.string()).length(2, 'Red alliance must have exactly 2 teams'),
@@ -29,6 +30,7 @@ export type Match = z.infer<typeof MatchSchema>;
 
 export const CreateMatchSchema = z.object({
 	matchNumber: z.number().int().positive(),
+	competitionId: z.string().optional(),
 	phase: z.enum(matchPhases),
 	fieldId: z.string(),
 	redTeamIds: z.array(z.string()).length(2, 'Red alliance must have exactly 2 teams'),
