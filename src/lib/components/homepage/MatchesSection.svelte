@@ -11,8 +11,8 @@
 	let recentMatches = $state<
 		Array<{
 			id: string;
-			teamA: string;
-			teamB: string;
+			redTeams: string[];
+			blueTeams: string[];
 			scoreA: number;
 			scoreB: number;
 			region: string;
@@ -24,8 +24,8 @@
 	let upcomingMatches = $state<
 		Array<{
 			id: string;
-			teamA: string;
-			teamB: string;
+			redTeams: string[];
+			blueTeams: string[];
 			region: string;
 			time: string;
 			date: string;
@@ -74,8 +74,8 @@
 						const scoreRes = await api.scores.getByMatchId(match.id);
 						const score = scoreRes.data?.score;
 
-						const teamA = teamMap.get(match.redTeamIds[0])?.name || 'N/A';
-						const teamB = teamMap.get(match.blueTeamIds[0])?.name || 'N/A';
+						const redTeams = match.redTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
+						const blueTeams = match.blueTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
 						const scoreA = score?.red?.total || 0;
 						const scoreB = score?.blue?.total || 0;
 						const region = fieldMap.get(match.fieldId)?.name || 'N/A';
@@ -91,8 +91,8 @@
 
 						return {
 							id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
-							teamA,
-							teamB,
+							redTeams,
+							blueTeams,
 							scoreA,
 							scoreB,
 							region,
@@ -101,14 +101,14 @@
 						};
 					} catch (err) {
 						console.error(`Error fetching score for match ${match.id}:`, err);
-						const teamA = teamMap.get(match.redTeamIds[0])?.name || 'N/A';
-						const teamB = teamMap.get(match.blueTeamIds[0])?.name || 'N/A';
+						const redTeams = match.redTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
+						const blueTeams = match.blueTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
 						const region = fieldMap.get(match.fieldId)?.name || 'N/A';
 
 						return {
 							id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
-							teamA,
-							teamB,
+							redTeams,
+							blueTeams,
 							scoreA: 0,
 							scoreB: 0,
 							region,
@@ -132,8 +132,8 @@
 				.slice(0, 3);
 
 			const upcomingMatchesData = upcomingMatchesList.map((match) => {
-				const teamA = teamMap.get(match.redTeamIds[0])?.name || 'N/A';
-				const teamB = teamMap.get(match.blueTeamIds[0])?.name || 'N/A';
+				const redTeams = match.redTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
+				const blueTeams = match.blueTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
 				const region = fieldMap.get(match.fieldId)?.name || 'N/A';
 
 				const scheduledDate = match.scheduledTime ? new Date(match.scheduledTime) : new Date();
@@ -145,8 +145,8 @@
 
 				return {
 					id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
-					teamA,
-					teamB,
+					redTeams,
+					blueTeams,
 					region,
 					time,
 					date
@@ -161,8 +161,8 @@
 			recentMatches = [
 				{
 					id: 'N/A',
-					teamA: 'N/A',
-					teamB: 'N/A',
+					redTeams: ['N/A', 'N/A'],
+					blueTeams: ['N/A', 'N/A'],
 					scoreA: 0,
 					scoreB: 0,
 					region: 'N/A',
@@ -171,8 +171,8 @@
 				},
 				{
 					id: 'N/A',
-					teamA: 'N/A',
-					teamB: 'N/A',
+					redTeams: ['N/A', 'N/A'],
+					blueTeams: ['N/A', 'N/A'],
 					scoreA: 0,
 					scoreB: 0,
 					region: 'N/A',
@@ -181,9 +181,9 @@
 				}
 			];
 			upcomingMatches = [
-				{ id: 'N/A', teamA: 'N/A', teamB: 'N/A', region: 'N/A', time: 'N/A', date: 'N/A' },
-				{ id: 'N/A', teamA: 'N/A', teamB: 'N/A', region: 'N/A', time: 'N/A', date: 'N/A' },
-				{ id: 'N/A', teamA: 'N/A', teamB: 'N/A', region: 'N/A', time: 'N/A', date: 'N/A' }
+				{ id: 'N/A', redTeams: ['N/A', 'N/A'], blueTeams: ['N/A', 'N/A'], region: 'N/A', time: 'N/A', date: 'N/A' },
+				{ id: 'N/A', redTeams: ['N/A', 'N/A'], blueTeams: ['N/A', 'N/A'], region: 'N/A', time: 'N/A', date: 'N/A' },
+				{ id: 'N/A', redTeams: ['N/A', 'N/A'], blueTeams: ['N/A', 'N/A'], region: 'N/A', time: 'N/A', date: 'N/A' }
 			];
 		} finally {
 			loading = false;
@@ -237,13 +237,17 @@
 					</div>
 					<div class="flex items-center justify-between gap-4">
 						<div class="flex-1 text-right">
-							<p
-								class="font-bold {match.result === 'red'
-									? 'text-green-600 dark:text-green-400'
-									: 'text-slate-700 dark:text-white'}"
-							>
-								{match.teamA}
-							</p>
+							<div class="mb-2 space-y-1">
+								{#each match.redTeams as team}
+									<p
+										class="text-sm font-bold {match.result === 'red'
+											? 'text-green-600 dark:text-green-400'
+											: 'text-slate-700 dark:text-white'}"
+									>
+										{team}
+									</p>
+								{/each}
+							</div>
 							<p
 								class="text-3xl font-black {match.result === 'red'
 									? 'text-green-600 dark:text-green-400'
@@ -261,13 +265,17 @@
 							</div>
 						</div>
 						<div class="flex-1">
-							<p
-								class="font-bold {match.result === 'blue'
-									? 'text-green-600 dark:text-green-400'
-									: 'text-slate-700 dark:text-white'}"
-							>
-								{match.teamB}
-							</p>
+							<div class="mb-2 space-y-1">
+								{#each match.blueTeams as team}
+									<p
+										class="text-sm font-bold {match.result === 'blue'
+											? 'text-green-600 dark:text-green-400'
+											: 'text-slate-700 dark:text-white'}"
+									>
+										{team}
+									</p>
+								{/each}
+							</div>
 							<p
 								class="text-3xl font-black {match.result === 'blue'
 									? 'text-green-600 dark:text-green-400'
@@ -310,7 +318,11 @@
 							>
 								<span class="text-xs font-bold text-red-600 dark:text-red-400">RED</span>
 							</div>
-							<p class="text-sm font-bold text-slate-800 dark:text-white">{match.teamA}</p>
+							<div class="space-y-1">
+								{#each match.redTeams as team}
+									<p class="text-xs font-bold text-slate-800 dark:text-white">{team}</p>
+								{/each}
+							</div>
 						</div>
 						<div class="text-lg font-black text-slate-300 dark:text-slate-600">VS</div>
 						<div class="flex-1">
@@ -319,7 +331,11 @@
 							>
 								<span class="text-xs font-bold text-blue-600 dark:text-blue-400">BLU</span>
 							</div>
-							<p class="text-sm font-bold text-slate-800 dark:text-white">{match.teamB}</p>
+							<div class="space-y-1">
+								{#each match.blueTeams as team}
+									<p class="text-xs font-bold text-slate-800 dark:text-white">{team}</p>
+								{/each}
+							</div>
 						</div>
 					</div>
 					<div

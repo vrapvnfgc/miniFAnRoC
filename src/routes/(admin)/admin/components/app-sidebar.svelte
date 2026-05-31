@@ -14,6 +14,8 @@
 	import SearchIcon from '@tabler/icons-svelte/icons/search';
 	import SettingsIcon from '@tabler/icons-svelte/icons/settings';
 	import UsersIcon from '@tabler/icons-svelte/icons/users';
+	import UsersGroupIcon from '@tabler/icons-svelte/icons/users-group';
+	import CalendarEventIcon from '@tabler/icons-svelte/icons/calendar-event';
 	import NavDocuments from './nav-documents.svelte';
 	import NavMain from './nav-main.svelte';
 	import NavSecondary from './nav-secondary.svelte';
@@ -47,6 +49,16 @@
 				title: 'Projects',
 				url: '#',
 				icon: FolderIcon
+			},
+			{
+				title: 'Teams',
+				url: '/admin/teams',
+				icon: UsersGroupIcon
+			},
+			{
+				title: 'Matches',
+				url: '/admin/matches',
+				icon: CalendarEventIcon
 			},
 			{
 				title: 'Users',
@@ -147,9 +159,9 @@
 			<Sidebar.MenuItem>
 				<Sidebar.MenuButton class="data-[slot=sidebar-menu-button]:!p-1.5">
 					{#snippet child({ props })}
-						<a href="##" {...props}>
+						<a href="/admin" {...props}>
 							<InnerShadowTopIcon class="!size-5" />
-							<span class="text-base font-semibold">Acme Inc.</span>
+							<span class="text-base font-semibold">miniFAnRoC</span>
 						</a>
 					{/snippet}
 				</Sidebar.MenuButton>
