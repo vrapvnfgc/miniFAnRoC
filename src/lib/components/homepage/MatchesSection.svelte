@@ -8,25 +8,29 @@
   import type { FieldResponse } from '$lib/api/fields.api';
   import { onMount } from 'svelte';
 
-  let recentMatches = $state<Array<{
-    id: string;
-    teamA: string;
-    teamB: string;
-    scoreA: number;
-    scoreB: number;
-    region: string;
-    time: string;
-    result: 'red' | 'blue' | 'draw';
-  }>>([]);
+	let recentMatches = $state<
+		Array<{
+			id: string;
+			redTeams: string[];
+			blueTeams: string[];
+			scoreA: number;
+			scoreB: number;
+			region: string;
+			time: string;
+			result: 'red' | 'blue' | 'draw';
+		}>
+	>([]);
 
-  let upcomingMatches = $state<Array<{
-    id: string;
-    teamA: string;
-    teamB: string;
-    region: string;
-    time: string;
-    date: string;
-  }>>([]);
+	let upcomingMatches = $state<
+		Array<{
+			id: string;
+			redTeams: string[];
+			blueTeams: string[];
+			region: string;
+			time: string;
+			date: string;
+		}>
+	>([]);
 
   let loading = $state(true);
   let error = $state<string | null>(null);
@@ -66,46 +70,46 @@
             const scoreRes = await api.scores.getByMatchId(match.id);
             const score = scoreRes.data?.score;
 
-            const teamA = teamMap.get(match.redTeamIds[0])?.name || 'N/A';
-            const teamB = teamMap.get(match.blueTeamIds[0])?.name || 'N/A';
-            const scoreA = score?.red?.total || 0;
-            const scoreB = score?.blue?.total || 0;
-            const region = fieldMap.get(match.fieldId)?.name || 'N/A';
+						const redTeams = match.redTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
+						const blueTeams = match.blueTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
+						const scoreA = score?.red?.total || 0;
+						const scoreB = score?.blue?.total || 0;
+						const region = fieldMap.get(match.fieldId)?.name || 'N/A';
 
             const result: 'red' | 'blue' | 'draw' = scoreA > scoreB ? 'red' : scoreB > scoreA ? 'blue' : 'draw';
 
             const endTime = match.endTime ? new Date(match.endTime) : new Date(match.updatedAt);
             const time = endTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-            return {
-              id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
-              teamA,
-              teamB,
-              scoreA,
-              scoreB,
-              region,
-              time,
-              result
-            };
-          } catch (err) {
-            console.error(`Error fetching score for match ${match.id}:`, err);
-            const teamA = teamMap.get(match.redTeamIds[0])?.name || 'N/A';
-            const teamB = teamMap.get(match.blueTeamIds[0])?.name || 'N/A';
-            const region = fieldMap.get(match.fieldId)?.name || 'N/A';
+						return {
+							id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
+							redTeams,
+							blueTeams,
+							scoreA,
+							scoreB,
+							region,
+							time,
+							result
+						};
+					} catch (err) {
+						console.error(`Error fetching score for match ${match.id}:`, err);
+						const redTeams = match.redTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
+						const blueTeams = match.blueTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
+						const region = fieldMap.get(match.fieldId)?.name || 'N/A';
 
-            return {
-              id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
-              teamA,
-              teamB,
-              scoreA: 0,
-              scoreB: 0,
-              region,
-              time: 'N/A',
-              result: 'draw' as const
-            };
-          }
-        })
-      );
+						return {
+							id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
+							redTeams,
+							blueTeams,
+							scoreA: 0,
+							scoreB: 0,
+							region,
+							time: 'N/A',
+							result: 'draw' as const
+						};
+					}
+				})
+			);
 
       recentMatches = recentMatchesData;
 
@@ -119,43 +123,61 @@
         })
         .slice(0, 3);
 
-      const upcomingMatchesData = upcomingMatchesList.map((match) => {
-        const teamA = teamMap.get(match.redTeamIds[0])?.name || 'N/A';
-        const teamB = teamMap.get(match.blueTeamIds[0])?.name || 'N/A';
-        const region = fieldMap.get(match.fieldId)?.name || 'N/A';
+			const upcomingMatchesData = upcomingMatchesList.map((match) => {
+				const redTeams = match.redTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
+				const blueTeams = match.blueTeamIds.map(id => teamMap.get(id)?.name || 'N/A');
+				const region = fieldMap.get(match.fieldId)?.name || 'N/A';
 
         const scheduledDate = match.scheduledTime ? new Date(match.scheduledTime) : new Date();
         const date = scheduledDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         const time = scheduledDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-        return {
-          id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
-          teamA,
-          teamB,
-          region,
-          time,
-          date
-        };
-      });
+				return {
+					id: `${match.phase.toUpperCase()}-${String(match.matchNumber).padStart(2, '0')}`,
+					redTeams,
+					blueTeams,
+					region,
+					time,
+					date
+				};
+			});
 
-      upcomingMatches = upcomingMatchesData;
-    } catch (err) {
-      console.error('Error loading matches:', err);
-      error = err instanceof Error ? err.message : 'Failed to load matches';
-      // Set default values on error
-      recentMatches = [
-        { id: 'N/A', teamA: 'N/A', teamB: 'N/A', scoreA: 0, scoreB: 0, region: 'N/A', time: 'N/A', result: 'draw' },
-        { id: 'N/A', teamA: 'N/A', teamB: 'N/A', scoreA: 0, scoreB: 0, region: 'N/A', time: 'N/A', result: 'draw' }
-      ];
-      upcomingMatches = [
-        { id: 'N/A', teamA: 'N/A', teamB: 'N/A', region: 'N/A', time: 'N/A', date: 'N/A' },
-        { id: 'N/A', teamA: 'N/A', teamB: 'N/A', region: 'N/A', time: 'N/A', date: 'N/A' },
-        { id: 'N/A', teamA: 'N/A', teamB: 'N/A', region: 'N/A', time: 'N/A', date: 'N/A' }
-      ];
-    } finally {
-      loading = false;
-    }
-  }
+			upcomingMatches = upcomingMatchesData;
+		} catch (err) {
+			console.error('Error loading matches:', err);
+			error = err instanceof Error ? err.message : 'Failed to load matches';
+			// Set default values on error
+			recentMatches = [
+				{
+					id: 'N/A',
+					redTeams: ['N/A', 'N/A'],
+					blueTeams: ['N/A', 'N/A'],
+					scoreA: 0,
+					scoreB: 0,
+					region: 'N/A',
+					time: 'N/A',
+					result: 'draw'
+				},
+				{
+					id: 'N/A',
+					redTeams: ['N/A', 'N/A'],
+					blueTeams: ['N/A', 'N/A'],
+					scoreA: 0,
+					scoreB: 0,
+					region: 'N/A',
+					time: 'N/A',
+					result: 'draw'
+				}
+			];
+			upcomingMatches = [
+				{ id: 'N/A', redTeams: ['N/A', 'N/A'], blueTeams: ['N/A', 'N/A'], region: 'N/A', time: 'N/A', date: 'N/A' },
+				{ id: 'N/A', redTeams: ['N/A', 'N/A'], blueTeams: ['N/A', 'N/A'], region: 'N/A', time: 'N/A', date: 'N/A' },
+				{ id: 'N/A', redTeams: ['N/A', 'N/A'], blueTeams: ['N/A', 'N/A'], region: 'N/A', time: 'N/A', date: 'N/A' }
+			];
+		} finally {
+			loading = false;
+		}
+	}
 
   onMount(() => {
     loadMatches();
@@ -174,72 +196,141 @@
       </a>
     </div>
 
-    <!-- Recent -->
-    <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">{m.matches_recent_results()}</h3>
-    <div class="mb-10 grid gap-4 md:grid-cols-2">
-      {#each recentMatches as match}
-        <div class="rounded-[24px] border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] p-6 shadow-sm dark:shadow-none">
-          <div class="mb-4 flex items-center justify-between">
-            <span class="rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-mono text-slate-500 dark:text-slate-400">{match.id}</span>
-            <div class="flex items-center gap-1.5 text-xs text-slate-400">
-              <MapPin class="h-3.5 w-3.5" />{match.region}
-            </div>
-          </div>
-          <div class="flex items-center justify-between gap-4">
-            <div class="text-right flex-1">
-              <p class="font-bold {match.result === 'red' ? 'text-green-600 dark:text-green-400' : 'text-slate-700 dark:text-white'}">{match.teamA}</p>
-              <p class="text-3xl font-black {match.result === 'red' ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-slate-500'}">{match.scoreA}</p>
-            </div>
-            <div class="text-center shrink-0">
-              <div class="rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-3 py-1.5">
-                <p class="text-xs text-slate-400">FINAL</p>
-                <p class="text-lg font-black text-slate-600 dark:text-white">VS</p>
-              </div>
-            </div>
-            <div class="flex-1">
-              <p class="font-bold {match.result === 'blue' ? 'text-green-600 dark:text-green-400' : 'text-slate-700 dark:text-white'}">{match.teamB}</p>
-              <p class="text-3xl font-black {match.result === 'blue' ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-slate-500'}">{match.scoreB}</p>
-            </div>
-          </div>
-          <div class="mt-4 flex items-center gap-1.5 text-xs text-slate-400">
-            <Clock class="h-3.5 w-3.5" />{match.time}
-          </div>
-        </div>
-      {/each}
-    </div>
+		<!-- Recent -->
+		<h3
+			class="mb-5 text-sm font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500"
+		>
+			{m.matches_recent_results()}
+		</h3>
+		<div class="mb-10 grid gap-4 md:grid-cols-2">
+			{#each recentMatches as match}
+				<div
+					class="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/[0.02] dark:shadow-none"
+				>
+					<div class="mb-4 flex items-center justify-between">
+						<span
+							class="rounded-full bg-slate-100 px-3 py-1 font-mono text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+							>{match.id}</span
+						>
+						<div class="flex items-center gap-1.5 text-xs text-slate-400">
+							<MapPin class="h-3.5 w-3.5" />{match.region}
+						</div>
+					</div>
+					<div class="flex items-center justify-between gap-4">
+						<div class="flex-1 text-right">
+							<div class="mb-2 space-y-1">
+								{#each match.redTeams as team}
+									<p
+										class="text-sm font-bold {match.result === 'red'
+											? 'text-green-600 dark:text-green-400'
+											: 'text-slate-700 dark:text-white'}"
+									>
+										{team}
+									</p>
+								{/each}
+							</div>
+							<p
+								class="text-3xl font-black {match.result === 'red'
+									? 'text-green-600 dark:text-green-400'
+									: 'text-slate-400 dark:text-slate-500'}"
+							>
+								{match.scoreA}
+							</p>
+						</div>
+						<div class="shrink-0 text-center">
+							<div
+								class="rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 dark:border-white/10 dark:bg-white/5"
+							>
+								<p class="text-xs text-slate-400">FINAL</p>
+								<p class="text-lg font-black text-slate-600 dark:text-white">VS</p>
+							</div>
+						</div>
+						<div class="flex-1">
+							<div class="mb-2 space-y-1">
+								{#each match.blueTeams as team}
+									<p
+										class="text-sm font-bold {match.result === 'blue'
+											? 'text-green-600 dark:text-green-400'
+											: 'text-slate-700 dark:text-white'}"
+									>
+										{team}
+									</p>
+								{/each}
+							</div>
+							<p
+								class="text-3xl font-black {match.result === 'blue'
+									? 'text-green-600 dark:text-green-400'
+									: 'text-slate-400 dark:text-slate-500'}"
+							>
+								{match.scoreB}
+							</p>
+						</div>
+					</div>
+					<div class="mt-4 flex items-center gap-1.5 text-xs text-slate-400">
+						<Clock class="h-3.5 w-3.5" />{match.time}
+					</div>
+				</div>
+			{/each}
+		</div>
 
-    <!-- Upcoming -->
-    <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">{m.matches_upcoming()}</h3>
-    <div class="grid gap-5 lg:grid-cols-3">
-      {#each upcomingMatches as match}
-        <div class="rounded-[24px] border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] p-6 shadow-sm dark:shadow-none transition hover:-translate-y-1 hover:border-slate-300 dark:hover:border-white/20">
-          <div class="mb-5 flex items-center justify-between">
-            <div class="inline-flex items-center gap-1.5 rounded-full bg-green-100 dark:bg-green-500/15 px-3 py-1.5 text-xs font-semibold text-green-700 dark:text-green-400">
-              <Zap class="h-3 w-3" /> Upcoming
-            </div>
-            <span class="font-mono text-sm text-slate-400">{match.id}</span>
-          </div>
-          <div class="mb-5 flex items-center justify-between gap-2 text-center">
-            <div class="flex-1">
-              <div class="mb-2 flex h-10 w-10 mx-auto items-center justify-center rounded-xl border border-red-300 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10">
-                <span class="text-xs font-bold text-red-600 dark:text-red-400">RED</span>
-              </div>
-              <p class="text-sm font-bold text-slate-800 dark:text-white">{match.teamA}</p>
-            </div>
-            <div class="text-lg font-black text-slate-300 dark:text-slate-600">VS</div>
-            <div class="flex-1">
-              <div class="mb-2 flex h-10 w-10 mx-auto items-center justify-center rounded-xl border border-blue-300 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10">
-                <span class="text-xs font-bold text-blue-600 dark:text-blue-400">BLU</span>
-              </div>
-              <p class="text-sm font-bold text-slate-800 dark:text-white">{match.teamB}</p>
-            </div>
-          </div>
-          <div class="space-y-2 border-t border-slate-100 dark:border-white/5 pt-4 text-xs text-slate-400">
-            <div class="flex items-center gap-1.5"><MapPin class="h-3.5 w-3.5" />{match.region}</div>
-            <div class="flex items-center gap-1.5"><Clock class="h-3.5 w-3.5" />{match.date} · {match.time}</div>
-          </div>
-        </div>
-      {/each}
-    </div>
-  </div>
+		<!-- Upcoming -->
+		<h3
+			class="mb-5 text-sm font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500"
+		>
+			{m.matches_upcoming()}
+		</h3>
+		<div class="grid gap-5 lg:grid-cols-3">
+			{#each upcomingMatches as match}
+				<div
+					class="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.02] dark:shadow-none dark:hover:border-white/20"
+				>
+					<div class="mb-5 flex items-center justify-between">
+						<div
+							class="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1.5 text-xs font-semibold text-green-700 dark:bg-green-500/15 dark:text-green-400"
+						>
+							<Zap class="h-3 w-3" /> Upcoming
+						</div>
+						<span class="font-mono text-sm text-slate-400">{match.id}</span>
+					</div>
+					<div class="mb-5 flex items-center justify-between gap-2 text-center">
+						<div class="flex-1">
+							<div
+								class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl border border-red-300 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10"
+							>
+								<span class="text-xs font-bold text-red-600 dark:text-red-400">RED</span>
+							</div>
+							<div class="space-y-1">
+								{#each match.redTeams as team}
+									<p class="text-xs font-bold text-slate-800 dark:text-white">{team}</p>
+								{/each}
+							</div>
+						</div>
+						<div class="text-lg font-black text-slate-300 dark:text-slate-600">VS</div>
+						<div class="flex-1">
+							<div
+								class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl border border-blue-300 bg-blue-50 dark:border-blue-500/30 dark:bg-blue-500/10"
+							>
+								<span class="text-xs font-bold text-blue-600 dark:text-blue-400">BLU</span>
+							</div>
+							<div class="space-y-1">
+								{#each match.blueTeams as team}
+									<p class="text-xs font-bold text-slate-800 dark:text-white">{team}</p>
+								{/each}
+							</div>
+						</div>
+					</div>
+					<div
+						class="space-y-2 border-t border-slate-100 pt-4 text-xs text-slate-400 dark:border-white/5"
+					>
+						<div class="flex items-center gap-1.5">
+							<MapPin class="h-3.5 w-3.5" />{match.region}
+						</div>
+						<div class="flex items-center gap-1.5">
+							<Clock class="h-3.5 w-3.5" />{match.date} · {match.time}
+						</div>
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
 </section>
