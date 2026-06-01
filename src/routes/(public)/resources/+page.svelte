@@ -1,8 +1,6 @@
 <script lang="ts">
 	import ComingSoon from '$lib/components/layout/ComingSoon.svelte';
+	import * as m from '$lib/paraglide/messages';
 </script>
 
-<ComingSoon
-	title="Team resources are being built"
-	description="Guides, templates, and team support materials will be added here soon."
-/>
+<ComingSoon title={m.placeholder_resources_title()} description={m.placeholder_resources_desc()} />

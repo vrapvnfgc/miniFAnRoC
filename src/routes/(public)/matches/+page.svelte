@@ -1,8 +1,6 @@
 <script lang="ts">
 	import ComingSoon from '$lib/components/layout/ComingSoon.svelte';
+	import * as m from '$lib/paraglide/messages';
 </script>
 
-<ComingSoon
-	title="Match schedule is being built"
-	description="Public match information will be available here once the competition schedule is ready."
-/>
+<ComingSoon title={m.placeholder_matches_title()} description={m.placeholder_matches_desc()} />

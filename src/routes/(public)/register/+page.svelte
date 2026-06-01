@@ -1,18 +1,23 @@
 <script lang="ts">
 	import { CheckCircle, Loader2, Mail, Shield, User, Users } from 'lucide-svelte';
+	import * as m from '$lib/paraglide/messages';
 
 	type FormState = {
 		email: string;
 		teamName: string;
 		representativeName: string;
-		memberCount: number;
+		studentCount: number;
+		mentorName: string;
+		mentorEmail: string;
 	};
 
 	let form: FormState = $state({
 		email: '',
 		teamName: '',
 		representativeName: '',
-		memberCount: 3
+		studentCount: 4,
+		mentorName: '',
+		mentorEmail: ''
 	});
 	let errors: Partial<Record<keyof FormState, string>> = $state({});
 	let submitting = $state(false);
@@ -22,15 +27,23 @@
 		errors = {};
 		const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-		if (!form.email) errors.email = 'Representative email is required.';
-		else if (!emailRe.test(form.email)) errors.email = 'Enter a valid email address.';
+		if (!form.email) errors.email = m.register_email_required();
+		else if (!emailRe.test(form.email)) errors.email = m.register_email_invalid();
 
-		if (!form.teamName) errors.teamName = 'Team name is required.';
-		else if (form.teamName.length < 3) errors.teamName = 'Team name must be at least 3 characters.';
+		if (!form.teamName) errors.teamName = m.register_team_name_required();
+		else if (form.teamName.length < 3) errors.teamName = m.register_team_name_min();
 
-		if (!form.representativeName) errors.representativeName = 'Representative name is required.';
-		if (form.memberCount < 2 || form.memberCount > 6)
-			errors.memberCount = 'Team size must be from 2 to 6 members.';
+		if (!form.representativeName)
+			errors.representativeName = m.register_representative_name_required();
+
+		if (form.studentCount < 1 || form.studentCount > 4)
+			errors.studentCount = m.register_student_count_range();
+
+		if (!form.mentorName) errors.mentorName = m.register_mentor_name_required();
+
+		if (!form.mentorEmail) errors.mentorEmail = m.register_mentor_email_required();
+		else if (!emailRe.test(form.mentorEmail))
+			errors.mentorEmail = m.register_mentor_email_invalid();
 
 		return Object.keys(errors).length === 0;
 	}
@@ -46,8 +59,8 @@
 </script>
 
 <svelte:head>
-	<title>Register | miniFAnRoC</title>
-	<meta name="description" content="Register one representative account for a miniFAnRoC team." />
+	<title>{m.register_page_title()}</title>
+	<meta name="description" content={m.register_page_description()} />
 </svelte:head>
 
 <main class="px-4 pt-32 pb-24 sm:px-6">
@@ -56,14 +69,13 @@
 			<p
 				class="mb-3 text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400"
 			>
-				Team registration
+				{m.register_label()}
 			</p>
 			<h1 class="text-4xl leading-tight font-black text-slate-900 sm:text-5xl dark:text-white">
-				Register with one representative account
+				{m.register_heading()}
 			</h1>
 			<p class="mt-5 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300">
-				Use the email of the team representative. This account will be the contact point for
-				competition updates and team registration details.
+				{m.register_description()}
 			</p>
 		</div>
 
@@ -77,10 +89,11 @@
 					>
 						<CheckCircle class="h-8 w-8" />
 					</div>
-					<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Registration received</h2>
+					<h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+						{m.register_success_title()}
+					</h2>
 					<p class="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-600 dark:text-slate-300">
-						Your team information has been captured locally. Backend submission can be connected
-						when the registration API is ready.
+						{m.register_success_desc()}
 					</p>
 				</div>
 			{:else}
@@ -98,7 +111,7 @@
 							class="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
 						>
 							<Mail class="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
-							Representative email
+							{m.register_email_label()}
 						</label>
 						<input
 							id="email"
@@ -117,7 +130,7 @@
 							class="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
 						>
 							<Shield class="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
-							Team name
+							{m.register_team_name_label()}
 						</label>
 						<input
 							id="teamName"
@@ -135,7 +148,7 @@
 							class="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
 						>
 							<User class="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
-							Representative name
+							{m.register_representative_name_label()}
 						</label>
 						<input
 							id="representativeName"
@@ -152,30 +165,68 @@
 
 					<div class="grid gap-2">
 						<label
-							for="memberCount"
+							for="studentCount"
 							class="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
 						>
 							<Users class="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
-							Team members
+							{m.register_student_count_label()}
 						</label>
 						<div class="flex items-center gap-4">
 							<input
-								id="memberCount"
+								id="studentCount"
 								type="range"
-								min="2"
-								max="6"
+								min="1"
+								max="4"
 								step="1"
-								bind:value={form.memberCount}
+								bind:value={form.studentCount}
 								class="w-full accent-cyan-500"
-								aria-invalid={!!errors.memberCount}
+								aria-invalid={!!errors.studentCount}
 							/>
 							<span
 								class="flex h-11 w-12 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-lg font-bold text-cyan-700 dark:text-cyan-300"
 							>
-								{form.memberCount}
+								{form.studentCount}
 							</span>
 						</div>
-						{#if errors.memberCount}<p class="text-sm text-red-500">{errors.memberCount}</p>{/if}
+						{#if errors.studentCount}<p class="text-sm text-red-500">{errors.studentCount}</p>{/if}
+					</div>
+
+					<div class="grid gap-2">
+						<label
+							for="mentorName"
+							class="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
+						>
+							<User class="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+							{m.register_mentor_name_label()}
+						</label>
+						<input
+							id="mentorName"
+							type="text"
+							bind:value={form.mentorName}
+							autocomplete="name"
+							class="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 dark:border-white/10 dark:bg-white/5 dark:text-white"
+							aria-invalid={!!errors.mentorName}
+						/>
+						{#if errors.mentorName}<p class="text-sm text-red-500">{errors.mentorName}</p>{/if}
+					</div>
+
+					<div class="grid gap-2">
+						<label
+							for="mentorEmail"
+							class="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
+						>
+							<Mail class="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+							{m.register_mentor_email_label()}
+						</label>
+						<input
+							id="mentorEmail"
+							type="email"
+							bind:value={form.mentorEmail}
+							autocomplete="email"
+							class="rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 dark:border-white/10 dark:bg-white/5 dark:text-white"
+							aria-invalid={!!errors.mentorEmail}
+						/>
+						{#if errors.mentorEmail}<p class="text-sm text-red-500">{errors.mentorEmail}</p>{/if}
 					</div>
 
 					<button
@@ -185,9 +236,9 @@
 					>
 						{#if submitting}
 							<Loader2 class="h-4 w-4 animate-spin" />
-							Submitting
+							{m.register_submitting()}
 						{:else}
-							Register
+							{m.register_submit()}
 						{/if}
 					</button>
 				</form>

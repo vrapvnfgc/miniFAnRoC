@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Construction, ArrowLeft } from 'lucide-svelte';
+	import * as m from '$lib/paraglide/messages';
 
 	type Props = {
 		title: string;
@@ -19,7 +20,7 @@
 		<p
 			class="mb-3 text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400"
 		>
-			Coming soon
+			{m.coming_soon_label()}
 		</p>
 		<h1 class="text-4xl leading-tight font-black text-slate-900 sm:text-5xl dark:text-white">
 			{title}
@@ -32,7 +33,7 @@
 			class="mt-8 inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
 		>
 			<ArrowLeft class="h-4 w-4" />
-			Back to homepage
+			{m.coming_soon_back_home()}
 		</a>
 	</section>
 </main>
