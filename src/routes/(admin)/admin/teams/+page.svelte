@@ -83,33 +83,33 @@
 			<Button onclick={openCreateSheet} class="bg-cyan-600 hover:bg-cyan-700 text-white">Create Team</Button>
 		</div>
 	{:else}
-		<div class="overflow-hidden rounded-lg border border-slate-700 bg-slate-900 shadow-lg">
+		<div class="overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-lg">
 			<Table.Root>
 				<Table.Header>
-					<Table.Row class="border-b border-slate-700 bg-slate-800 hover:bg-slate-800">
-						<Table.Head class="font-semibold text-slate-100">Team #</Table.Head>
-						<Table.Head class="font-semibold text-slate-100">Team Name</Table.Head>
-						<Table.Head class="font-semibold text-slate-100">School</Table.Head>
-						<Table.Head class="font-semibold text-slate-100">Coach</Table.Head>
-						<Table.Head class="font-semibold text-slate-100">Robot Name</Table.Head>
-						<Table.Head class="text-right font-semibold text-slate-100">Actions</Table.Head>
+					<Table.Row class="border-b border-zinc-700 bg-zinc-800/70 hover:bg-zinc-800/70">
+						<Table.Head class="font-semibold text-zinc-100">Team #</Table.Head>
+						<Table.Head class="font-semibold text-zinc-100">Team Name</Table.Head>
+						<Table.Head class="font-semibold text-zinc-100">School</Table.Head>
+						<Table.Head class="font-semibold text-zinc-100">Coach</Table.Head>
+						<Table.Head class="font-semibold text-zinc-100">Robot Name</Table.Head>
+						<Table.Head class="text-right font-semibold text-zinc-100">Actions</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
 					{#each data.teams as team (team.id)}
-						<Table.Row class="border-b border-slate-700 hover:bg-slate-800 transition-colors">
+						<Table.Row class="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
 							<Table.Cell class="font-mono font-medium text-cyan-400">{team.teamNumber}</Table.Cell>
-							<Table.Cell class="font-medium text-slate-100">{team.name}</Table.Cell>
-							<Table.Cell class="text-slate-300">{team.school}</Table.Cell>
-							<Table.Cell class="text-slate-400">{team.coach || '—'}</Table.Cell>
-							<Table.Cell class="text-slate-400">{team.robotName || '—'}</Table.Cell>
+							<Table.Cell class="font-medium text-zinc-100">{team.name}</Table.Cell>
+							<Table.Cell class="text-zinc-400">{team.school}</Table.Cell>
+							<Table.Cell class="text-zinc-500">{team.coach || '—'}</Table.Cell>
+							<Table.Cell class="text-zinc-500">{team.robotName || '—'}</Table.Cell>
 							<Table.Cell class="text-right">
 								<div class="flex gap-2 justify-end">
 									<Button 
 										variant="outline" 
 										size="sm" 
 										onclick={() => openEditSheet(team)}
-										class="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
+									class="border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
 									>
 										Edit
 									</Button>

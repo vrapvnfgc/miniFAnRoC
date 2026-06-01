@@ -16,10 +16,13 @@
 	let isCreateSheetOpen = $state(false);
 	let isEditSheetOpen = $state(false);
 	let isScoreSheetOpen = $state(false);
+	let isEditFinishedMatchOpen = $state(false);
 	let showDeleteConfirm = $state(false);
 	let deleteMatchId = $state<string | null>(null);
 	let deleteMatchNumber = $state(0);
+	let deleteIsFinished = $state(false);
 	let editingMatch = $state<any>(null);
+	let editingFinishedMatch = $state<any>(null);
 	let scoringMatch = $state<any>(null);
 	let matchScores = $state<Record<string, { redScore: number; blueScore: number }>>({});
 
@@ -63,8 +66,10 @@
 	function closeSheets() {
 		isCreateSheetOpen = false;
 		isEditSheetOpen = false;
+		isEditFinishedMatchOpen = false;
 		isScoreSheetOpen = false;
 		editingMatch = null;
+		editingFinishedMatch = null;
 		scoringMatch = null;
 	}
 
@@ -106,10 +111,35 @@
 			}
 
 			await invalidateAll();
+			
+			// Reload all scores after invalidation
+			await loadScores();
+			
 			closeSheets();
 		} catch (err) {
 			console.error('Form submit error', err);
 		}
+	}
+
+	async function loadScores() {
+		const scores: Record<string, { redScore: number; blueScore: number }> = {};
+		for (const match of finishedMatches) {
+			try {
+				const scoreRes = await api.scores.getByMatchId(match.id);
+				if (scoreRes.data && scoreRes.data.score) {
+					scores[match.id] = {
+						redScore: scoreRes.data.score.red.total || 0,
+						blueScore: scoreRes.data.score.blue.total || 0
+					};
+				} else {
+					scores[match.id] = { redScore: 0, blueScore: 0 };
+				}
+			} catch (err) {
+				console.error('Failed to load score for match:', match.id, err);
+				scores[match.id] = { redScore: 0, blueScore: 0 };
+			}
+		}
+		matchScores = scores;
 	}
 
 	function openEditSheet(match: any) {
@@ -129,7 +159,43 @@
 	function openDeleteConfirm(match: any) {
 		deleteMatchId = match.id;
 		deleteMatchNumber = match.matchNumber;
+		deleteIsFinished = match.status === 'finished';
 		showDeleteConfirm = true;
+	}
+
+	async function openEditFinishedMatchSheet(match: any) {
+		editingFinishedMatch = match;
+		formMatchNumber = match.matchNumber.toString();
+		formPhase = match.phase;
+		formFieldId = match.fieldId;
+		formRedTeam1 = match.redTeamIds[0];
+		formRedTeam2 = match.redTeamIds[1];
+		formBlueTeam1 = match.blueTeamIds[0];
+		formBlueTeam2 = match.blueTeamIds[1];
+		formScheduledTime = match.scheduledTime ? new Date(match.scheduledTime).toISOString().slice(0, 16) : '';
+		formNotes = match.notes || '';
+
+		// Load the score for this match
+		try {
+			const scoreRes = await api.scores.getByMatchId(match.id);
+			if (scoreRes.data?.score) {
+				redTeleIndependent = scoreRes.data.score.red.teleIndependent || 0;
+				redShared = scoreRes.data.score.red.sharedScore || 0;
+				redPenalties = scoreRes.data.score.red.penalties || 0;
+				redEndgame = scoreRes.data.score.red.endgame || 0;
+				redEndgameMultiplier = scoreRes.data.score.red.endgameMultiplier || 1;
+
+				blueTeleIndependent = scoreRes.data.score.blue.teleIndependent || 0;
+				blueShared = scoreRes.data.score.blue.sharedScore || 0;
+				bluePenalties = scoreRes.data.score.blue.penalties || 0;
+				blueEndgame = scoreRes.data.score.blue.endgame || 0;
+				blueEndgameMultiplier = scoreRes.data.score.blue.endgameMultiplier || 1;
+			}
+		} catch (err) {
+			console.error('Failed to load score:', err);
+		}
+
+		isEditFinishedMatchOpen = true;
 	}
 
 	function openScoreSheet(match: any) {
@@ -208,19 +274,7 @@
 			);
 		}
 		// Load scores for finished matches
-		const scores: Record<string, { redScore: number; blueScore: number }> = {};
-		for (const match of finishedMatches) {
-			const scoreRes = await api.scores.getByMatchId(match.id);
-			if (scoreRes.data && scoreRes.data.score) {
-				scores[match.id] = {
-					redScore: scoreRes.data.score.red.total || 0,
-					blueScore: scoreRes.data.score.blue.total || 0
-				};
-			} else {
-				scores[match.id] = { redScore: 0, blueScore: 0 };
-			}
-		}
-		matchScores = scores;
+		await loadScores();
 	});
 </script>
 
@@ -243,21 +297,22 @@
 	{#if finishedMatches.length > 0}
 		<div class="space-y-2">
 			<h2 class="text-xl font-semibold text-slate-100">Finished Matches</h2>
-			<div class="overflow-hidden rounded-lg border border-slate-700 bg-slate-900 shadow-lg">
+			<div class="overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-lg">
 				<Table.Root>
 					<Table.Header>
-						<Table.Row class="border-b border-slate-700 bg-slate-800 hover:bg-slate-800">
-							<Table.Head class="font-semibold text-slate-100">Match #</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Phase</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Red Alliance</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Score</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Blue Alliance</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Location</Table.Head>
+						<Table.Row class="border-b border-zinc-700 bg-zinc-800/70 hover:bg-zinc-800/70">
+							<Table.Head class="font-semibold text-zinc-100">Match #</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Phase</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Red Alliance</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Score</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Blue Alliance</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Location</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Actions</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{#each finishedMatches as match (match.id)}
-							<Table.Row class="border-b border-slate-700 hover:bg-slate-800 transition-colors">
+							<Table.Row class="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
 								<Table.Cell class="font-mono font-medium text-cyan-400">{match.matchNumber}</Table.Cell>
 								<Table.Cell class="text-slate-300 capitalize">{match.phase}</Table.Cell>
 								<Table.Cell class="text-slate-100">
@@ -280,6 +335,12 @@
 									</div>
 								</Table.Cell>
 								<Table.Cell class="text-slate-300">{getFieldName(match.fieldId)}</Table.Cell>
+								<Table.Cell>
+									<div class="flex gap-2">
+										<Button onclick={() => openEditFinishedMatchSheet(match)} size="sm" variant="outline" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 border-blue-600/50">Edit</Button>
+										<Button onclick={() => openDeleteConfirm(match)} size="sm" variant="destructive" class="bg-red-600 hover:bg-red-700 text-white">Delete</Button>
+									</div>
+								</Table.Cell>
 							</Table.Row>
 						{/each}
 					</Table.Body>
@@ -292,23 +353,23 @@
 	{#if unplayedMatches.length > 0}
 		<div class="space-y-2">
 			<h2 class="text-xl font-semibold text-slate-100">Upcoming Matches</h2>
-			<div class="overflow-hidden rounded-lg border border-slate-700 bg-slate-900 shadow-lg">
+			<div class="overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-lg">
 				<Table.Root>
 					<Table.Header>
-						<Table.Row class="border-b border-slate-700 bg-slate-800 hover:bg-slate-800">
-							<Table.Head class="font-semibold text-slate-100">Match #</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Phase</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Red Alliance</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Blue Alliance</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Status</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Scheduled Time</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Location</Table.Head>
-							<Table.Head class="font-semibold text-slate-100">Actions</Table.Head>
+						<Table.Row class="border-b border-zinc-700 bg-zinc-800/70 hover:bg-zinc-800/70">
+							<Table.Head class="font-semibold text-zinc-100">Match #</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Phase</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Red Alliance</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Blue Alliance</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Status</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Scheduled Time</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Location</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Actions</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{#each unplayedMatches as match (match.id)}
-							<Table.Row class="border-b border-slate-700 hover:bg-slate-800 transition-colors">
+							<Table.Row class="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
 								<Table.Cell class="font-mono font-medium text-cyan-400">{match.matchNumber}</Table.Cell>
 								<Table.Cell class="text-slate-300 capitalize">{match.phase}</Table.Cell>
 								<Table.Cell class="text-slate-100">
@@ -848,6 +909,323 @@
 		</Sheet.Content>
 	</Sheet.Root>
 
+	<!-- Edit Finished Match Sheet -->
+	<Sheet.Root open={isEditFinishedMatchOpen} onOpenChange={(open) => isEditFinishedMatchOpen = open}>
+		<Sheet.Content class="w-[400px] sm:w-[540px] max-h-screen overflow-y-auto">
+			<Sheet.Header>
+				<Sheet.Title>Edit Finished Match</Sheet.Title>
+				<Sheet.Description>
+					Update match details and/or edit the recorded score.
+				</Sheet.Description>
+			</Sheet.Header>
+
+			{#if editingFinishedMatch}
+				<form 
+					method="POST" 
+					action="?/editFinished" 
+					onsubmit={submitForm}
+					class="space-y-4 py-4"
+				>
+					<input type="hidden" name="matchId" value={editingFinishedMatch.id} />
+
+					<!-- Match Details Section -->
+					<div class="space-y-3 rounded-lg border border-zinc-700 bg-zinc-800/50 p-3">
+						<h3 class="font-semibold text-zinc-100">Match Details</h3>
+						
+						<div class="grid gap-2">
+							<Label for="editFinMatchNumber">Match Number *</Label>
+							<Input 
+								id="editFinMatchNumber" 
+								name="matchNumber" 
+								type="number"
+								placeholder="e.g., 1"
+								bind:value={formMatchNumber}
+								required 
+							/>
+						</div>
+
+						<div class="grid gap-2">
+							<Label for="editFinPhase">Phase *</Label>
+							<select 
+								id="editFinPhase" 
+								name="phase" 
+								bind:value={formPhase}
+								class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+								required
+							>
+								<option value="qualification">Qualification</option>
+								<option value="semifinal">Semifinal</option>
+								<option value="final">Final</option>
+							</select>
+						</div>
+
+						<div class="grid gap-2">
+							<Label for="editFinFieldId">Location *</Label>
+							<select 
+								id="editFinFieldId" 
+								name="fieldId" 
+								bind:value={formFieldId}
+								class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+								required
+							>
+								<option value="">Select a location...</option>
+								{#each data.fields as field}
+									<option value={field.id}>{field.name}</option>
+								{/each}
+							</select>
+						</div>
+
+						<div class="space-y-2 rounded-lg border border-zinc-700 bg-zinc-900/50 p-2">
+							<h4 class="text-sm font-semibold text-zinc-100">Red Alliance *</h4>
+							<div class="grid gap-2">
+								<Label for="editFinRedTeam1" class="text-xs">Team 1</Label>
+								<select 
+									id="editFinRedTeam1" 
+									name="redTeam1" 
+									bind:value={formRedTeam1}
+									class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+									required
+								>
+									<option value="">Select a team...</option>
+									{#each data.teams as team}
+										<option value={team.id}>{team.teamNumber} - {team.name}</option>
+									{/each}
+								</select>
+							</div>
+							<div class="grid gap-2">
+								<Label for="editFinRedTeam2" class="text-xs">Team 2</Label>
+								<select 
+									id="editFinRedTeam2" 
+									name="redTeam2" 
+									bind:value={formRedTeam2}
+									class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+									required
+								>
+									<option value="">Select a team...</option>
+									{#each data.teams as team}
+										<option value={team.id}>{team.teamNumber} - {team.name}</option>
+									{/each}
+								</select>
+							</div>
+						</div>
+
+						<div class="space-y-2 rounded-lg border border-zinc-700 bg-zinc-900/50 p-2">
+							<h4 class="text-sm font-semibold text-zinc-100">Blue Alliance *</h4>
+							<div class="grid gap-2">
+								<Label for="editFinBlueTeam1" class="text-xs">Team 1</Label>
+								<select 
+									id="editFinBlueTeam1" 
+									name="blueTeam1" 
+									bind:value={formBlueTeam1}
+									class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+									required
+								>
+									<option value="">Select a team...</option>
+									{#each data.teams as team}
+										<option value={team.id}>{team.teamNumber} - {team.name}</option>
+									{/each}
+								</select>
+							</div>
+							<div class="grid gap-2">
+								<Label for="editFinBlueTeam2" class="text-xs">Team 2</Label>
+								<select 
+									id="editFinBlueTeam2" 
+									name="blueTeam2" 
+									bind:value={formBlueTeam2}
+									class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+									required
+								>
+									<option value="">Select a team...</option>
+									{#each data.teams as team}
+										<option value={team.id}>{team.teamNumber} - {team.name}</option>
+									{/each}
+								</select>
+							</div>
+						</div>
+
+						<div class="grid gap-2">
+							<Label for="editFinScheduledTime">Scheduled Time</Label>
+							<Input 
+								id="editFinScheduledTime" 
+								name="scheduledTime" 
+								type="datetime-local"
+								bind:value={formScheduledTime}
+							/>
+						</div>
+
+						<div class="grid gap-2">
+							<Label for="editFinNotes">Notes</Label>
+							<Input 
+								id="editFinNotes" 
+								name="notes" 
+								placeholder="Any additional notes..."
+								bind:value={formNotes}
+							/>
+						</div>
+					</div>
+
+					<!-- Score Section -->
+					<div class="space-y-4 rounded-lg border border-red-700 bg-red-900/20 p-3">
+						<h3 class="font-semibold text-red-400">Red Alliance Score</h3>
+						
+						<div class="grid gap-3">
+							<div class="grid gap-2">
+								<Label for="editFinRedTeleIndependent" class="text-sm">Tele Independent Score</Label>
+								<Input 
+									id="editFinRedTeleIndependent" 
+									name="redTeleIndependent" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={redTeleIndependent}
+									class="bg-zinc-800 text-zinc-100"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="editFinRedShared" class="text-sm">Shared Score</Label>
+								<Input 
+									id="editFinRedShared" 
+									name="redShared" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={redShared}
+									class="bg-zinc-800 text-zinc-100"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="editFinRedPenalties" class="text-sm">Penalties</Label>
+								<Input 
+									id="editFinRedPenalties" 
+									name="redPenalties" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={redPenalties}
+									class="bg-zinc-800 text-zinc-100"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="editFinRedEndgame" class="text-sm">Endgame Score</Label>
+								<Input 
+									id="editFinRedEndgame" 
+									name="redEndgame" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={redEndgame}
+									class="bg-zinc-800 text-zinc-100"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="editFinRedEndgameMultiplier" class="text-sm">Endgame Multiplier</Label>
+								<Input 
+									id="editFinRedEndgameMultiplier" 
+									name="redEndgameMultiplier" 
+									type="number"
+									step="0.01"
+									min="1"
+									bind:value={redEndgameMultiplier}
+									class="bg-zinc-800 text-zinc-100"
+									required 
+								/>
+							</div>
+						</div>
+					</div>
+
+					<div class="space-y-4 rounded-lg border border-blue-700 bg-blue-900/20 p-3">
+						<h3 class="font-semibold text-blue-400">Blue Alliance Score</h3>
+						
+						<div class="grid gap-3">
+							<div class="grid gap-2">
+								<Label for="editFinBlueTeleIndependent" class="text-sm">Tele Independent Score</Label>
+								<Input 
+									id="editFinBlueTeleIndependent" 
+									name="blueTeleIndependent" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={blueTeleIndependent}
+									class="bg-zinc-800 text-zinc-100"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="editFinBlueShared" class="text-sm">Shared Score</Label>
+								<Input 
+									id="editFinBlueShared" 
+									name="blueShared" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={blueShared}
+									class="bg-zinc-800 text-zinc-100"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="editFinBluePenalties" class="text-sm">Penalties</Label>
+								<Input 
+									id="editFinBluePenalties" 
+									name="bluePenalties" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={bluePenalties}
+									class="bg-zinc-800 text-zinc-100"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="editFinBlueEndgame" class="text-sm">Endgame Score</Label>
+								<Input 
+									id="editFinBlueEndgame" 
+									name="blueEndgame" 
+									type="number"
+									step="0.5"
+									min="0"
+									bind:value={blueEndgame}
+									class="bg-zinc-800 text-zinc-100"
+									required 
+								/>
+							</div>
+
+							<div class="grid gap-2">
+								<Label for="editFinBlueEndgameMultiplier" class="text-sm">Endgame Multiplier</Label>
+								<Input 
+									id="editFinBlueEndgameMultiplier" 
+									name="blueEndgameMultiplier" 
+									type="number"
+									step="0.01"
+									min="1"
+									bind:value={blueEndgameMultiplier}
+									class="bg-zinc-800 text-zinc-100"
+									required 
+								/>
+							</div>
+						</div>
+					</div>
+
+					<div class="flex gap-2">
+						<Button type="button" variant="outline" onclick={closeSheets} class="flex-1">Cancel</Button>
+						<Button type="submit" class="flex-1">Update Match & Score</Button>
+					</div>
+				</form>
+			{/if}
+		</Sheet.Content>
+	</Sheet.Root>
+
 	<!-- Delete Confirmation Modal -->
 	{#if showDeleteConfirm}
 		<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -855,7 +1233,13 @@
 				<div class="flex flex-col gap-4">
 					<div>
 						<h2 class="text-lg font-semibold">Delete Match</h2>
-						<p class="text-sm text-muted-foreground">Are you sure you want to delete <strong>Match #{deleteMatchNumber}</strong>? This action cannot be undone.</p>
+						<p class="text-sm text-muted-foreground">
+							Are you sure you want to delete <strong>Match #{deleteMatchNumber}</strong>
+							{#if deleteIsFinished}
+								and its recorded score
+							{/if}
+							? This action cannot be undone.
+						</p>
 					</div>
 					<div class="flex gap-2 justify-end">
 						<Button variant="outline" onclick={closeDeleteConfirm}>Cancel</Button>
