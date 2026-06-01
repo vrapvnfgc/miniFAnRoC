@@ -296,7 +296,7 @@
 	<!-- Finished Matches Section -->
 	{#if finishedMatches.length > 0}
 		<div class="space-y-2">
-			<h2 class="text-xl font-semibold text-slate-100">Finished Matches</h2>
+			<h2 class="text-xl font-semibold text-slate-100">Results</h2>
 			<div class="overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-lg">
 				<Table.Root>
 					<Table.Header>
