@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { api } from '$lib/api/client';
 	import * as m from '$lib/paraglide/messages';
 	import Navbar from '$lib/components/layout/Navbar.svelte';
@@ -233,6 +234,13 @@
 		return ids.map((id) => teamMap.get(id)?.name || 'N/A');
 	}
 
+	async function navigateToTeam(teamId: string) {
+		const team = teamMap.get(teamId);
+		if (team) {
+			await goto(`/teams/${team.teamNumber}`);
+		}
+	}
+
 	function totalPages(listLength: number) {
 		return Math.max(1, Math.ceil(listLength / PAGE_SIZE));
 	}
@@ -243,13 +251,18 @@
 	}
 
 	$effect(() => {
+		if (data.teamNumber) {
+			loadAll();
+		}
+	});
+
+	$effect(() => {
 		if (tab === 'results') {
 			loadScoresForCurrentPage();
 		}
 	});
 
 	onMount(() => {
-		loadAll();
 		refreshTimer = window.setInterval(refreshData, REFRESH_MS);
 	});
 
@@ -423,8 +436,24 @@
 										<div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-950/70">
 											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red alliance</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
-												{#each getTeamNames(match.redTeamIds) as teamName}
-													<p>{teamName}</p>
+												{#each match.redTeamIds as teamId}
+														<div
+															onclick={(e) => {
+																e.stopPropagation();
+																navigateToTeam(teamId);
+															}}
+															onkeydown={(e) => {
+																if (e.key === 'Enter' || e.key === ' ') {
+																	e.stopPropagation();
+																	navigateToTeam(teamId);
+																}
+															}}
+															role="button"
+															tabindex="0"
+															class="block cursor-pointer text-left transition hover:text-cyan-600 dark:hover:text-cyan-400"
+														>
+															{teamMap.get(teamId)?.name || 'N/A'}
+														</div>
 												{/each}
 											</div>
 										</div>
@@ -436,8 +465,24 @@
 										<div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-950/70">
 											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Blue alliance</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
-												{#each getTeamNames(match.blueTeamIds) as teamName}
-													<p>{teamName}</p>
+												{#each match.blueTeamIds as teamId}
+														<div
+															onclick={(e) => {
+																e.stopPropagation();
+																navigateToTeam(teamId);
+															}}
+															onkeydown={(e) => {
+																if (e.key === 'Enter' || e.key === ' ') {
+																	e.stopPropagation();
+																	navigateToTeam(teamId);
+																}
+															}}
+															role="button"
+															tabindex="0"
+															class="block cursor-pointer text-left transition hover:text-cyan-600 dark:hover:text-cyan-400"
+														>
+															{teamMap.get(teamId)?.name || 'N/A'}
+														</div>
 												{/each}
 											</div>
 										</div>
@@ -500,8 +545,24 @@
 												Red alliance
 											</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
-												{#each getTeamNames(match.redTeamIds) as teamName}
-													<p>{teamName}</p>
+												{#each match.redTeamIds as teamId}
+													<div
+														onclick={(e) => {
+															e.stopPropagation();
+															navigateToTeam(teamId);
+														}}
+														onkeydown={(e) => {
+															if (e.key === 'Enter' || e.key === ' ') {
+																e.stopPropagation();
+																navigateToTeam(teamId);
+															}
+														}}
+														role="button"
+														tabindex="0"
+														class="block cursor-pointer text-left transition hover:text-cyan-600 dark:hover:text-cyan-400"
+													>
+														{teamMap.get(teamId)?.name || 'N/A'}
+													</div>
 												{/each}
 											</div>
 										</div>
@@ -532,8 +593,24 @@
 												Blue alliance
 											</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
-												{#each getTeamNames(match.blueTeamIds) as teamName}
-													<p>{teamName}</p>
+												{#each match.blueTeamIds as teamId}
+													<div
+														onclick={(e) => {
+															e.stopPropagation();
+															navigateToTeam(teamId);
+														}}
+														onkeydown={(e) => {
+															if (e.key === 'Enter' || e.key === ' ') {
+																e.stopPropagation();
+																navigateToTeam(teamId);
+															}
+														}}
+														role="button"
+														tabindex="0"
+														class="block cursor-pointer text-left transition hover:text-cyan-600 dark:hover:text-cyan-400"
+													>
+														{teamMap.get(teamId)?.name || 'N/A'}
+													</div>
 												{/each}
 											</div>
 										</div>

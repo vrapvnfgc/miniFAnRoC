@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { api } from '$lib/api/client';
 	import * as m from '$lib/paraglide/messages';
 	import Navbar from '$lib/components/layout/Navbar.svelte';
@@ -75,6 +76,17 @@
 
 	function getTeamNames(ids: string[]) {
 		return ids.map((id) => teamMap.get(id)?.name || 'N/A');
+	}
+
+	function getTeamById(id: string) {
+		return teamMap.get(id) || null;
+	}
+
+	async function navigateToTeam(teamId: string) {
+		const team = getTeamById(teamId);
+		if (team) {
+			await goto(`/teams/${team.teamNumber}`);
+		}
 	}
 
 	function scheduledMatchesSorted() {
@@ -295,16 +307,28 @@
 												<div class="rounded-3xl bg-slate-50 p-4 transition hover:shadow-lg hover:shadow-red-500/50 dark:bg-slate-950/70">
 											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red alliance</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
-												{#each getTeamNames(match.redTeamIds) as team}
-													<p>{team}</p>
+												{#each match.redTeamIds as teamId}
+													<button
+														type="button"
+														onclick={() => navigateToTeam(teamId)}
+														class="block text-left transition hover:text-cyan-600 dark:hover:text-cyan-400"
+													>
+														{teamMap.get(teamId)?.name || 'N/A'}
+													</button>
 												{/each}
 											</div>
 										</div>
 												<div class="rounded-3xl bg-slate-50 p-4 transition hover:shadow-lg hover:shadow-sky-500/50 dark:bg-slate-950/70">
 											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Blue alliance</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
-												{#each getTeamNames(match.blueTeamIds) as team}
-													<p>{team}</p>
+												{#each match.blueTeamIds as teamId}
+													<button
+														type="button"
+														onclick={() => navigateToTeam(teamId)}
+														class="block text-left transition hover:text-cyan-600 dark:hover:text-cyan-400"
+													>
+														{teamMap.get(teamId)?.name || 'N/A'}
+													</button>
 												{/each}
 											</div>
 										</div>
@@ -353,8 +377,14 @@
 											<div class={`rounded-3xl p-4 transition hover:shadow-lg hover:shadow-red-500/50 ${getMatchWinner(match.id) === 'red' ? 'border-2 border-red-500 bg-red-50 dark:bg-red-500/10' : 'bg-slate-50 dark:bg-slate-950/70'}`}>
 										<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red alliance</p>
 										<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
-											{#each getTeamNames(match.redTeamIds) as team}
-												<p>{team}</p>
+											{#each match.redTeamIds as teamId}
+												<button
+													type="button"
+													onclick={() => navigateToTeam(teamId)}
+													class="block text-left transition hover:text-cyan-600 dark:hover:text-cyan-400"
+												>
+													{teamMap.get(teamId)?.name || 'N/A'}
+												</button>
 											{/each}
 										</div>
 									</div>
@@ -368,8 +398,14 @@
 											<div class={`rounded-3xl p-4 transition hover:shadow-lg hover:shadow-sky-500/50 ${getMatchWinner(match.id) === 'blue' ? 'border-2 border-sky-500 bg-blue-50 dark:bg-blue-500/10' : 'bg-slate-50 dark:bg-slate-950/70'}`}>
 										<p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Blue alliance</p>
 										<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
-											{#each getTeamNames(match.blueTeamIds) as team}
-												<p>{team}</p>
+											{#each match.blueTeamIds as teamId}
+												<button
+													type="button"
+													onclick={() => navigateToTeam(teamId)}
+													class="block text-left transition hover:text-cyan-600 dark:hover:text-cyan-400"
+												>
+													{teamMap.get(teamId)?.name || 'N/A'}
+												</button>
 											{/each}
 										</div>
 									</div>
