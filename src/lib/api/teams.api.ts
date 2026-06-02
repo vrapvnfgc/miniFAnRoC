@@ -2,7 +2,7 @@ import { BaseService, type ApiResponse } from './base';
 
 export type TeamResponse = {
 	id: string;
-	competitionId?: string;
+	competitionIds?: string[];
 	teamNumber: string;
 	name: string;
 	school: string;
@@ -15,7 +15,7 @@ export type TeamResponse = {
 
 export type CreateTeam = {
 	teamNumber: string;
-	competitionId?: string;
+	competitionIds?: string[];
 	name: string;
 	school: string;
 	coach?: string;

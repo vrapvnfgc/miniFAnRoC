@@ -4,14 +4,16 @@ import { api } from '$lib/api';
 
 export const load: PageServerLoad = async () => {
 	try {
-		const res = await api.teams.getAll();
+		const [teamsRes, competitionsRes] = await Promise.all([api.teams.getAll(), api.competitions.getAll()]);
 		return {
-			teams: res.data?.teams || []
+			teams: teamsRes.data?.teams || [],
+			competitions: competitionsRes.data?.competitions || []
 		};
 	} catch (err) {
 		console.error('Teams loader error:', err);
 		return {
 			teams: [],
+			competitions: [],
 			error: 'Could not fetch teams'
 		};
 	}
@@ -31,12 +33,14 @@ export const actions: Actions = {
 		}
 
 		try {
+			const competitionIds = data.getAll('competitionIds') as string[];
 			await api.teams.create({
 				teamNumber: teamNumber.toString(),
 				name: name.toString(),
 				school: school.toString(),
 				coach: coach?.toString() || undefined,
-				robotName: robotName?.toString() || undefined
+				robotName: robotName?.toString() || undefined,
+				competitionIds: competitionIds.map((c) => c.toString())
 			});
 
 			return { success: true, type: 'create' };
@@ -87,13 +91,15 @@ export const actions: Actions = {
 		}
 
 		try {
-			await api.teams.update(id.toString(), {
-				teamNumber: teamNumber.toString(),
-				name: name.toString(),
-				school: school.toString(),
-				coach: coach?.toString() || undefined,
-				robotName: robotName?.toString() || undefined
-			});
+				const competitionIds = data.getAll('competitionIds') as string[];
+				await api.teams.update(id.toString(), {
+					teamNumber: teamNumber.toString(),
+					name: name.toString(),
+					school: school.toString(),
+					coach: coach?.toString() || undefined,
+					robotName: robotName?.toString() || undefined,
+					competitionIds: competitionIds.map((c) => c.toString())
+				});
 
 			return { success: true, type: 'update' };
 		} catch (err) {

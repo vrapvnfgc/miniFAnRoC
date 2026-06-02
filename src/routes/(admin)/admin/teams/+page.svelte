@@ -3,6 +3,8 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import CaretDownIcon from 'phosphor-svelte/lib/CaretDown';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import * as Alert from '$lib/components/ui/alert/index.js';
 	import { enhance } from '$app/forms';
@@ -24,6 +26,7 @@
 	let formSchool = $state('');
 	let formCoach = $state('');
 	let formRobotName = $state('');
+	let formCompetitionIds = $state<string[]>([]);
 
 	function openCreateSheet() {
 		formTeamNumber = '';
@@ -31,6 +34,7 @@
 		formSchool = '';
 		formCoach = '';
 		formRobotName = '';
+		formCompetitionIds = [];
 		isCreateSheetOpen = true;
 	}
 
@@ -41,6 +45,7 @@
 		formSchool = team.school;
 		formCoach = team.coach || '';
 		formRobotName = team.robotName || '';
+		formCompetitionIds = team.competitionIds || [];
 		isEditSheetOpen = true;
 	}
 
@@ -59,6 +64,16 @@
 		showDeleteConfirm = false;
 		deleteTeamId = null;
 		deleteTeamName = '';
+	}
+
+	function getCompetitionNames(ids: string[] | undefined): string {
+		if (!ids || ids.length === 0) return '—';
+		return ids
+			.map((id) => {
+				const c = data.competitions.find((comp) => comp.id === id);
+				return c ? c.name : 'Unknown';
+			})
+			.join(', ');
 	}
 </script>
 
@@ -92,6 +107,7 @@
 						<Table.Head class="font-semibold text-zinc-100">School</Table.Head>
 						<Table.Head class="font-semibold text-zinc-100">Coach</Table.Head>
 						<Table.Head class="font-semibold text-zinc-100">Robot Name</Table.Head>
+						<Table.Head class="font-semibold text-zinc-100">Competitions</Table.Head>
 						<Table.Head class="text-right font-semibold text-zinc-100">Actions</Table.Head>
 					</Table.Row>
 				</Table.Header>
@@ -103,6 +119,7 @@
 							<Table.Cell class="text-zinc-400">{team.school}</Table.Cell>
 							<Table.Cell class="text-zinc-500">{team.coach || '—'}</Table.Cell>
 							<Table.Cell class="text-zinc-500">{team.robotName || '—'}</Table.Cell>
+							<Table.Cell class="text-zinc-400">{getCompetitionNames(team.competitionIds)}</Table.Cell>
 							<Table.Cell class="text-right">
 								<div class="flex gap-2 justify-end">
 									<Button 
@@ -208,6 +225,34 @@
 				</div>
 
 				<div class="grid gap-2">
+					<Label for="competitionIds">Competitions</Label>
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger class="w-full">
+							{#snippet child({ props })}
+								<button
+									type="button"
+									{...props}
+									class="dark:bg-input/30 border-input h-8 rounded-none border bg-transparent px-2.5 py-1 text-xs text-slate-100 w-full flex items-center justify-between"
+								>
+									<span class="truncate">{formCompetitionIds && formCompetitionIds.length ? getCompetitionNames(formCompetitionIds) : 'Select competitions'}</span>
+									<CaretDownIcon class="text-muted-foreground size-4" />
+								</button>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content class="w-60">
+							<DropdownMenu.CheckboxGroup bind:value={formCompetitionIds}>
+								{#each data.competitions as comp}
+									<DropdownMenu.CheckboxItem value={comp.id}>{comp.name}</DropdownMenu.CheckboxItem>
+								{/each}
+							</DropdownMenu.CheckboxGroup>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+					{#each formCompetitionIds as id}
+						<input type="hidden" name="competitionIds" value={id} />
+					{/each}
+				</div>
+
+				<div class="grid gap-2">
 					<Label for="coach">Coach Name</Label>
 					<Input 
 						id="coach" 
@@ -280,6 +325,34 @@
 							bind:value={formSchool}
 							required 
 						/>
+					</div>
+
+					<div class="grid gap-2">
+						<Label for="editCompetitionIds">Competitions</Label>
+						<DropdownMenu.Root>
+							<DropdownMenu.Trigger class="w-full">
+								{#snippet child({ props })}
+									<button
+										type="button"
+										{...props}
+										class="dark:bg-input/30 border-input h-8 rounded-none border bg-transparent px-2.5 py-1 text-xs text-slate-100 w-full flex items-center justify-between"
+									>
+										<span class="truncate">{formCompetitionIds && formCompetitionIds.length ? getCompetitionNames(formCompetitionIds) : 'Select competitions'}</span>
+										<CaretDownIcon class="text-muted-foreground size-4" />
+									</button>
+								{/snippet}
+							</DropdownMenu.Trigger>
+							<DropdownMenu.Content class="w-60">
+								<DropdownMenu.CheckboxGroup bind:value={formCompetitionIds}>
+									{#each data.competitions as comp}
+										<DropdownMenu.CheckboxItem value={comp.id}>{comp.name}</DropdownMenu.CheckboxItem>
+									{/each}
+								</DropdownMenu.CheckboxGroup>
+							</DropdownMenu.Content>
+						</DropdownMenu.Root>
+						{#each formCompetitionIds as id}
+							<input type="hidden" name="competitionIds" value={id} />
+						{/each}
 					</div>
 
 					<div class="grid gap-2">
