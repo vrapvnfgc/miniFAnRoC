@@ -43,6 +43,7 @@
 	let formMatchNumber = $state('');
 	let formPhase = $state('qualification');
 	let formFieldId = $state('');
+	let formCompetitionId = $state('');
 	let formRedTeam1 = $state('');
 	let formRedTeam2 = $state('');
 	let formBlueTeam1 = $state('');
@@ -54,6 +55,7 @@
 		formMatchNumber = '';
 		formPhase = 'qualification';
 		formFieldId = '';
+		formCompetitionId = '';
 		formRedTeam1 = '';
 		formRedTeam2 = '';
 		formBlueTeam1 = '';
@@ -84,7 +86,6 @@
 		const matchId = formData.get('matchId')?.toString();
 
 		try {
-			console.log('submitForm called', action, method);
 			const res = await fetch(action, {
 				method,
 				body: formData,
@@ -147,6 +148,7 @@
 		formMatchNumber = match.matchNumber.toString();
 		formPhase = match.phase;
 		formFieldId = match.fieldId;
+		formCompetitionId = match.competitionId || '';
 		formRedTeam1 = match.redTeamIds[0];
 		formRedTeam2 = match.redTeamIds[1];
 		formBlueTeam1 = match.blueTeamIds[0];
@@ -168,6 +170,7 @@
 		formMatchNumber = match.matchNumber.toString();
 		formPhase = match.phase;
 		formFieldId = match.fieldId;
+		formCompetitionId = match.competitionId || '';
 		formRedTeam1 = match.redTeamIds[0];
 		formRedTeam2 = match.redTeamIds[1];
 		formBlueTeam1 = match.blueTeamIds[0];
@@ -229,6 +232,12 @@
 		return field ? field.name : 'Unknown Field';
 	}
 
+	function getCompetitionName(competitionId: string | undefined): string {
+		if (!competitionId) return '—';
+		const competition = data.competitions.find(c => c.id === competitionId);
+		return competition ? competition.name : 'Unknown Competition';
+	}
+
 	function formatDateTime(date: string | Date | undefined): string {
 		if (!date) return 'Not scheduled';
 		const d = new Date(date);
@@ -262,17 +271,6 @@
 	});
 
 	onMount(async () => {
-		if (typeof window !== 'undefined') {
-			console.log('Matches page mounted (client)');
-			// listen for any submit events for debugging
-			document.addEventListener(
-				'submit',
-				(e) => {
-					console.log('document submit event', e.target);
-				},
-				true
-			);
-		}
 		// Load scores for finished matches
 		await loadScores();
 	});
@@ -303,6 +301,7 @@
 						<Table.Row class="border-b border-zinc-700 bg-zinc-800/70 hover:bg-zinc-800/70">
 							<Table.Head class="font-semibold text-zinc-100">Match #</Table.Head>
 							<Table.Head class="font-semibold text-zinc-100">Phase</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Competition</Table.Head>
 							<Table.Head class="font-semibold text-zinc-100">Red Alliance</Table.Head>
 							<Table.Head class="font-semibold text-zinc-100">Score</Table.Head>
 							<Table.Head class="font-semibold text-zinc-100">Blue Alliance</Table.Head>
@@ -315,6 +314,7 @@
 							<Table.Row class="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
 								<Table.Cell class="font-mono font-medium text-cyan-400">{match.matchNumber}</Table.Cell>
 								<Table.Cell class="text-slate-300 capitalize">{match.phase}</Table.Cell>
+								<Table.Cell class="text-slate-400">{getCompetitionName(match.competitionId)}</Table.Cell>
 								<Table.Cell class="text-slate-100">
 									<div class="space-y-1">
 										<div>{getTeamName(match.redTeamIds[0])}</div>
@@ -359,6 +359,7 @@
 						<Table.Row class="border-b border-zinc-700 bg-zinc-800/70 hover:bg-zinc-800/70">
 							<Table.Head class="font-semibold text-zinc-100">Match #</Table.Head>
 							<Table.Head class="font-semibold text-zinc-100">Phase</Table.Head>
+							<Table.Head class="font-semibold text-zinc-100">Competition</Table.Head>
 							<Table.Head class="font-semibold text-zinc-100">Red Alliance</Table.Head>
 							<Table.Head class="font-semibold text-zinc-100">Blue Alliance</Table.Head>
 							<Table.Head class="font-semibold text-zinc-100">Status</Table.Head>
@@ -372,6 +373,7 @@
 							<Table.Row class="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
 								<Table.Cell class="font-mono font-medium text-cyan-400">{match.matchNumber}</Table.Cell>
 								<Table.Cell class="text-slate-300 capitalize">{match.phase}</Table.Cell>
+								<Table.Cell class="text-slate-400">{getCompetitionName(match.competitionId)}</Table.Cell>
 								<Table.Cell class="text-slate-100">
 									<div class="space-y-1">
 										<div>{getTeamName(match.redTeamIds[0])}</div>
@@ -453,6 +455,21 @@
 						<option value="qualification">Qualification</option>
 						<option value="semifinal">Semifinal</option>
 						<option value="final">Final</option>
+					</select>
+				</div>
+
+				<div class="grid gap-2">
+					<Label for="competitionId">Competition</Label>
+					<select 
+						id="competitionId" 
+						name="competitionId" 
+						bind:value={formCompetitionId}
+						class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+					>
+						<option value="">No Competition (Optional)</option>
+						{#each data.competitions as competition}
+							<option value={competition.id}>{competition.name}</option>
+						{/each}
 					</select>
 				</div>
 
@@ -611,6 +628,21 @@
 						<option value="qualification">Qualification</option>
 						<option value="semifinal">Semifinal</option>
 						<option value="final">Final</option>
+					</select>
+				</div>
+
+				<div class="grid gap-2">
+					<Label for="editCompetitionId">Competition</Label>
+					<select 
+						id="editCompetitionId" 
+						name="competitionId" 
+						bind:value={formCompetitionId}
+						class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+					>
+						<option value="">No Competition (Optional)</option>
+						{#each data.competitions as competition}
+							<option value={competition.id}>{competition.name}</option>
+						{/each}
 					</select>
 				</div>
 
@@ -956,6 +988,21 @@
 								<option value="qualification">Qualification</option>
 								<option value="semifinal">Semifinal</option>
 								<option value="final">Final</option>
+							</select>
+						</div>
+
+						<div class="grid gap-2">
+							<Label for="editFinCompetitionId">Competition</Label>
+							<select 
+								id="editFinCompetitionId" 
+								name="competitionId" 
+								bind:value={formCompetitionId}
+								class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+							>
+								<option value="">No Competition (Optional)</option>
+								{#each data.competitions as competition}
+									<option value={competition.id}>{competition.name}</option>
+								{/each}
 							</select>
 						</div>
 

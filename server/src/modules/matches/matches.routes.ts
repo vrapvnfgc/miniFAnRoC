@@ -19,7 +19,8 @@ const MatchPhaseSchema = z.enum(['qualification', 'semifinal', 'final']);
 const CreateMatchSchema = z.object({
 	matchNumber: z.number().int().positive('Match number must be positive'),
 	phase: MatchPhaseSchema,
-	fieldId: ObjectIdSchema,
+		fieldId: ObjectIdSchema,
+		competitionId: ObjectIdSchema.optional(),
 	redTeamIds: z.array(ObjectIdSchema).length(2, 'Red alliance must have exactly 2 teams'),
 	blueTeamIds: z.array(ObjectIdSchema).length(2, 'Blue alliance must have exactly 2 teams'),
 	status: MatchStatusSchema.optional(),

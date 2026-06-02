@@ -5,16 +5,18 @@ import type { MatchPhase } from '@shared';
 
 export const load: PageServerLoad = async () => {
 	try {
-		const [matchesRes, teamsRes, fieldsRes] = await Promise.all([
+		const [matchesRes, teamsRes, fieldsRes, competitionsRes] = await Promise.all([
 			api.matches.getAll(),
 			api.teams.getAll(),
-			api.fields.getAll()
+			api.fields.getAll(),
+			api.competitions.getAll()
 		]);
 
 		return {
 			matches: matchesRes.data?.matches || [],
 			teams: teamsRes.data?.teams || [],
-			fields: fieldsRes.data?.fields || []
+			fields: fieldsRes.data?.fields || [],
+			competitions: competitionsRes.data?.competitions || []
 		};
 	} catch (err) {
 		console.error('Matches loader error:', err);
@@ -22,6 +24,7 @@ export const load: PageServerLoad = async () => {
 			matches: [],
 			teams: [],
 			fields: [],
+			competitions: [],
 			error: 'Could not fetch data'
 		};
 	}
@@ -33,6 +36,7 @@ export const actions: Actions = {
 		const matchNumber = data.get('matchNumber');
 		const phase = data.get('phase');
 		const fieldId = data.get('fieldId');
+		const competitionId = data.get('competitionId');
 		const redTeam1 = data.get('redTeam1');
 		const redTeam2 = data.get('redTeam2');
 		const blueTeam1 = data.get('blueTeam1');
@@ -60,6 +64,7 @@ export const actions: Actions = {
 				matchNumber: parseInt(matchNumber.toString()),
 				phase: phase as MatchPhase,
 				fieldId: fieldId.toString(),
+				competitionId: competitionId?.toString() || undefined,
 				redTeamIds: [redTeam1.toString(), redTeam2.toString()],
 				blueTeamIds: [blueTeam1.toString(), blueTeam2.toString()],
 				status: 'scheduled',
@@ -85,6 +90,7 @@ export const actions: Actions = {
 		const matchNumber = data.get('matchNumber');
 		const phase = data.get('phase');
 		const fieldId = data.get('fieldId');
+		const competitionId = data.get('competitionId');
 		const redTeam1 = data.get('redTeam1');
 		const redTeam2 = data.get('redTeam2');
 		const blueTeam1 = data.get('blueTeam1');
@@ -112,6 +118,7 @@ export const actions: Actions = {
 				matchNumber: parseInt(matchNumber.toString()),
 				phase: phase as MatchPhase,
 				fieldId: fieldId.toString(),
+				competitionId: competitionId?.toString() || undefined,
 				redTeamIds: [redTeam1.toString(), redTeam2.toString()],
 				blueTeamIds: [blueTeam1.toString(), blueTeam2.toString()],
 				scheduledTime: scheduledTime ? new Date(scheduledTime.toString()).toISOString() : undefined,
@@ -218,6 +225,7 @@ export const actions: Actions = {
 		const matchNumber = data.get('matchNumber');
 		const phase = data.get('phase');
 		const fieldId = data.get('fieldId');
+		const competitionId = data.get('competitionId');
 		const redTeam1 = data.get('redTeam1');
 		const redTeam2 = data.get('redTeam2');
 		const blueTeam1 = data.get('blueTeam1');
@@ -259,6 +267,7 @@ export const actions: Actions = {
 				matchNumber: parseInt(matchNumber.toString()),
 				phase: phase as MatchPhase,
 				fieldId: fieldId.toString(),
+				competitionId: competitionId?.toString() || undefined,
 				redTeamIds: [redTeam1.toString(), redTeam2.toString()],
 				blueTeamIds: [blueTeam1.toString(), blueTeam2.toString()],
 				scheduledTime: scheduledTime ? new Date(scheduledTime.toString()).toISOString() : undefined,
