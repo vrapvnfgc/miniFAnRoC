@@ -3,6 +3,7 @@
 	import SettingsIcon from '@tabler/icons-svelte/icons/settings';
 	import UsersGroupIcon from '@tabler/icons-svelte/icons/users-group';
 	import CalendarEventIcon from '@tabler/icons-svelte/icons/calendar-event';
+	import TrophyIcon from '@tabler/icons-svelte/icons/trophy';
 	import InnerShadowTopIcon from '@tabler/icons-svelte/icons/inner-shadow-top';
 	import NavMain from './nav-main.svelte';
 	import NavSecondary from './nav-secondary.svelte';
@@ -26,6 +27,11 @@
 				title: 'Teams',
 				url: '/admin/teams',
 				icon: UsersGroupIcon
+			},
+			{
+				title: 'Competitions',
+				url: '/admin/competitions',
+				icon: TrophyIcon
 			},
 			{
 				title: 'Matches',
