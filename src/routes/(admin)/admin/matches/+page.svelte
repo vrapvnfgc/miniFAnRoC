@@ -44,6 +44,8 @@
 	let formPhase = $state('qualification');
 	let formFieldId = $state('');
 	let formCompetitionId = $state('');
+	// Page filter: show matches for a specific competition ('' = All)
+	let filterCompetitionId = $state('');
 	let formRedTeam1 = $state('');
 	let formRedTeam2 = $state('');
 	let formBlueTeam1 = $state('');
@@ -251,7 +253,7 @@
 
 	const finishedMatches = $derived.by(() => {
 		return data.matches
-			.filter((m: any) => m.status === 'finished')
+			.filter((m: any) => m.status === 'finished' && (!filterCompetitionId || m.competitionId === filterCompetitionId))
 			.sort((a: any, b: any) => {
 				const timeA = new Date(b.endTime || b.updatedAt).getTime();
 				const timeB = new Date(a.endTime || a.updatedAt).getTime();
@@ -261,7 +263,7 @@
 
 	const unplayedMatches = $derived.by(() => {
 		return data.matches
-			.filter((m: any) => m.status !== 'finished')
+			.filter((m: any) => m.status !== 'finished' && (!filterCompetitionId || m.competitionId === filterCompetitionId))
 			.sort((a: any, b: any) => {
 				if (!a.scheduledTime && !b.scheduledTime) return 0;
 				if (!a.scheduledTime) return 1;
@@ -283,6 +285,20 @@
 			<p class="text-muted-foreground">Manage matches and schedule tournaments.</p>
 		</div>
 		<Button onclick={openCreateSheet} size="lg">+ Add Match</Button>
+	</div>
+
+	<div class="flex items-center gap-3">
+		<Label for="filterCompetition">Competition</Label>
+		<select
+			id="filterCompetition"
+			bind:value={filterCompetitionId}
+			class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+		>
+			<option value="">All</option>
+			{#each data.competitions as comp}
+				<option value={comp.id}>{comp.name}</option>
+			{/each}
+		</select>
 	</div>
 
 	{#if data.error}

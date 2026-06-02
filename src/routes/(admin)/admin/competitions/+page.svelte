@@ -124,7 +124,9 @@
 				<Table.Body>
 					{#each data.competitions as competition (competition.id)}
 						<Table.Row class="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-							<Table.Cell class="font-medium text-zinc-100">{competition.name}</Table.Cell>
+							<Table.Cell class="font-medium text-zinc-100">
+								<a href={`/admin/competitions/${competition.id}`} class="text-zinc-100 hover:underline">{competition.name}</a>
+							</Table.Cell>
 							<Table.Cell class="text-zinc-400 max-w-xs truncate">{competition.description || '—'}</Table.Cell>
 							<Table.Cell>
 								<span class={`inline-block px-2 py-1 rounded border text-xs font-medium ${getStatusColor(competition.status)}`}>
