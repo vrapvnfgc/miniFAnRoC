@@ -2,6 +2,7 @@
 	import * as Table from '$lib/components/ui/table/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
+	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import CaretDownIcon from 'phosphor-svelte/lib/CaretDown';
@@ -27,6 +28,29 @@
 	let formCoach = $state('');
 	let formRobotName = $state('');
 	let formCompetitionIds = $state<string[]>([]);
+	let competitionSearch = $state('');
+
+	function toggleCompetition(id: string) {
+		if (formCompetitionIds.includes(id)) {
+			formCompetitionIds = formCompetitionIds.filter((c) => c !== id);
+		} else {
+			formCompetitionIds = [...formCompetitionIds, id];
+		}
+	}
+
+	function selectAll() {
+		formCompetitionIds = data.competitions.map((c) => c.id);
+	}
+
+	function clearAll() {
+		formCompetitionIds = [];
+	}
+
+	const filteredCompetitions = $derived.by(() => {
+		return (data.competitions || []).filter((c) =>
+			!competitionSearch || c.name.toLowerCase().includes(competitionSearch.toLowerCase()) || c.id.includes(competitionSearch)
+		);
+	});
 
 	function openCreateSheet() {
 		formTeamNumber = '';
@@ -240,11 +264,24 @@
 							{/snippet}
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content class="w-60">
-							<DropdownMenu.CheckboxGroup bind:value={formCompetitionIds}>
-								{#each data.competitions as comp}
-									<DropdownMenu.CheckboxItem value={comp.id}>{comp.name}</DropdownMenu.CheckboxItem>
-								{/each}
-							</DropdownMenu.CheckboxGroup>
+							<div class="p-2 w-60">
+								<Input placeholder="Search competitions..." bind:value={competitionSearch} onclick={(e) => e.stopPropagation()} />
+								<div class="mt-2 max-h-48 overflow-auto">
+									{#each filteredCompetitions as comp}
+										<label class="flex items-center gap-2 p-2 rounded hover:bg-slate-800 cursor-pointer" onclick={(e) => { e.stopPropagation(); toggleCompetition(comp.id); }}>
+											<Checkbox checked={formCompetitionIds.includes(comp.id)} />
+											<span class="text-sm text-slate-100">{comp.name}</span>
+										</label>
+									{/each}
+									{#if filteredCompetitions.length === 0}
+										<div class="p-2 text-sm text-slate-400">No competitions</div>
+									{/if}
+								</div>
+								<div class="mt-2 flex justify-between gap-2">
+									<Button variant="ghost" size="sm" type="button" onclick={(e) => { e.stopPropagation(); selectAll(); }}>Select all</Button>
+									<Button variant="ghost" size="sm" type="button" onclick={(e) => { e.stopPropagation(); clearAll(); }}>Clear</Button>
+								</div>
+							</div>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
 					{#each formCompetitionIds as id}
@@ -343,11 +380,24 @@
 								{/snippet}
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content class="w-60">
-								<DropdownMenu.CheckboxGroup bind:value={formCompetitionIds}>
-									{#each data.competitions as comp}
-										<DropdownMenu.CheckboxItem value={comp.id}>{comp.name}</DropdownMenu.CheckboxItem>
-									{/each}
-								</DropdownMenu.CheckboxGroup>
+								<div class="p-2 w-60">
+									<Input placeholder="Search competitions..." bind:value={competitionSearch} onclick={(e) => e.stopPropagation()} />
+									<div class="mt-2 max-h-48 overflow-auto">
+										{#each filteredCompetitions as comp}
+											<label class="flex items-center gap-2 p-2 rounded hover:bg-slate-800 cursor-pointer" onclick={(e) => { e.stopPropagation(); toggleCompetition(comp.id); }}>
+												<Checkbox checked={formCompetitionIds.includes(comp.id)} />
+												<span class="text-sm text-slate-100">{comp.name}</span>
+											</label>
+										{/each}
+										{#if filteredCompetitions.length === 0}
+											<div class="p-2 text-sm text-slate-400">No competitions</div>
+										{/if}
+									</div>
+									<div class="mt-2 flex justify-between gap-2">
+										<Button variant="ghost" size="sm" type="button" onclick={(e) => { e.stopPropagation(); selectAll(); }}>Select all</Button>
+										<Button variant="ghost" size="sm" type="button" onclick={(e) => { e.stopPropagation(); clearAll(); }}>Clear</Button>
+									</div>
+								</div>
 							</DropdownMenu.Content>
 						</DropdownMenu.Root>
 						{#each formCompetitionIds as id}
