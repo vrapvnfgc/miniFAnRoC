@@ -13,7 +13,7 @@
 		</div>
 
 		<!-- Statistics Cards -->
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
 			<div class="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 backdrop-blur-sm">
 				<div class="flex items-center justify-between">
 					<div>
@@ -73,12 +73,25 @@
 					</svg>
 				</div>
 			</div>
+
+			<div class="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 backdrop-blur-sm">
+				<div class="flex items-center justify-between">
+					<div>
+						<p class="text-sm text-zinc-400 font-medium">Competitions</p>
+						<p class="text-lg text-zinc-200 mt-1">Active: <span class="font-bold text-green-400">{data.stats.activeCompetitions}</span></p>
+						<p class="text-lg text-zinc-200 mt-1">Upcoming: <span class="font-bold text-yellow-400">{data.stats.upcomingCompetitions}</span></p>
+					</div>
+					<svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-cyan-500/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+					</svg>
+				</div>
+			</div>
 		</div>
 
 		<!-- Navigation Cards -->
 		<div>
 			<h2 class="text-lg font-semibold text-zinc-100 mb-4">Manage Data</h2>
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 				<a href="/admin/matches" class="block">
 					<Button class="w-full h-40 text-lg font-semibold" variant="outline">
 						<div class="flex flex-col items-center gap-3">
@@ -88,6 +101,20 @@
 							<div>
 								<div>Matches</div>
 								<div class="text-sm font-normal text-zinc-400">{data.stats.totalMatches} total</div>
+							</div>
+						</div>
+					</Button>
+				</a>
+
+				<a href="/admin/competitions" class="block">
+					<Button class="w-full h-40 text-lg font-semibold" variant="outline">
+						<div class="flex flex-col items-center gap-3">
+							<svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M3 7h18"/><path d="M7 3v4"/><path d="M17 3v4"/><rect x="3" y="7" width="18" height="14" rx="2" ry="2"/>
+							</svg>
+							<div>
+								<div>Competitions</div>
+								<div class="text-sm font-normal text-zinc-400">{data.stats.totalCompetitions} total</div>
 							</div>
 						</div>
 					</Button>
