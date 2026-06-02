@@ -91,7 +91,7 @@
 		<!-- Navigation Cards -->
 		<div>
 			<h2 class="text-lg font-semibold text-zinc-100 mb-4">Manage Data</h2>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+			<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 				<a href="/admin/matches" class="block">
 					<Button class="w-full h-40 text-lg font-semibold" variant="outline">
 						<div class="flex flex-col items-center gap-3">
@@ -101,6 +101,21 @@
 							<div>
 								<div>Matches</div>
 								<div class="text-sm font-normal text-zinc-400">{data.stats.totalMatches} total</div>
+							</div>
+						</div>
+					</Button>
+				</a>
+
+				<a href="/admin/fields" class="block">
+					<Button class="w-full h-40 text-lg font-semibold" variant="outline">
+						<div class="flex flex-col items-center gap-3">
+							<svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+								<polyline points="9 22 9 12 15 12 15 22"/>
+							</svg>
+							<div>
+								<div>Fields</div>
+								<div class="text-sm font-normal text-zinc-400">{data.stats.totalFields} fields</div>
 							</div>
 						</div>
 					</Button>

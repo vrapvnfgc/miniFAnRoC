@@ -28,6 +28,11 @@
 				url: '/admin/teams',
 				icon: UsersGroupIcon
 			},
+				{
+					title: 'Fields',
+					url: '/admin/fields',
+					icon: InnerShadowTopIcon
+				},
 			{
 				title: 'Competitions',
 				url: '/admin/competitions',
