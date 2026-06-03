@@ -11,7 +11,7 @@
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
 
-	let { data }: { data: PageData } = $props();
+	let { data }: { data: PageData & { teams?: any[]; fields?: any[]; competitions?: any[]; matches?: any[]; error?: string } } = $props();
 
 	let isCreateSheetOpen = $state(false);
 	let isEditSheetOpen = $state(false);
@@ -52,6 +52,52 @@
 	let formBlueTeam2 = $state('');
 	let formScheduledTime = $state('');
 	let formNotes = $state('');
+
+	// Available teams for the currently selected competition (create sheet)
+	const availableTeams = $derived.by(() => {
+		if (!formCompetitionId) return [];
+		return (data.teams || []).filter((t: any) => (t.competitionIds || []).includes(formCompetitionId)).sort((a: any, b: any) => a.teamNumber.localeCompare(b.teamNumber));
+	});
+
+	// When creating a match and competition changes, clear team selections that are no longer valid
+	$effect(() => {
+		// Clear invalid selections when any match-edit sheet is open
+		if (!(isCreateSheetOpen || isEditSheetOpen || isEditFinishedMatchOpen)) return;
+		const ids = new Set((availableTeams || []).map((t: any) => t.id));
+		if (formRedTeam1 && !ids.has(formRedTeam1)) formRedTeam1 = '';
+		if (formRedTeam2 && !ids.has(formRedTeam2)) formRedTeam2 = '';
+		if (formBlueTeam1 && !ids.has(formBlueTeam1)) formBlueTeam1 = '';
+		if (formBlueTeam2 && !ids.has(formBlueTeam2)) formBlueTeam2 = '';
+	});
+
+	// Available lists per select to prevent duplicate team choices
+	const availableRedTeam1 = $derived.by(() => {
+		const base = formCompetitionId ? (availableTeams || []) : (data.teams || []);
+		return base.filter((t: any) => t.id !== formRedTeam2 && t.id !== formBlueTeam1 && t.id !== formBlueTeam2);
+	});
+
+	const availableRedTeam2 = $derived.by(() => {
+		const base = formCompetitionId ? (availableTeams || []) : (data.teams || []);
+		return base.filter((t: any) => t.id !== formRedTeam1 && t.id !== formBlueTeam1 && t.id !== formBlueTeam2);
+	});
+
+	const availableBlueTeam1 = $derived.by(() => {
+		const base = formCompetitionId ? (availableTeams || []) : (data.teams || []);
+		return base.filter((t: any) => t.id !== formRedTeam1 && t.id !== formRedTeam2 && t.id !== formBlueTeam2);
+	});
+
+	const availableBlueTeam2 = $derived.by(() => {
+		const base = formCompetitionId ? (availableTeams || []) : (data.teams || []);
+		return base.filter((t: any) => t.id !== formRedTeam1 && t.id !== formRedTeam2 && t.id !== formBlueTeam1);
+	});
+
+	// Disable create when competition not selected, teams missing, or duplicates exist
+	const createDisabled = $derived.by(() => {
+		if (!formCompetitionId) return true;
+		const sel = [formRedTeam1, formRedTeam2, formBlueTeam1, formBlueTeam2];
+		if (sel.some((s) => !s)) return true;
+		return new Set(sel).size !== 4;
+	});
 
 	function openCreateSheet() {
 		formMatchNumber = '';
@@ -475,14 +521,15 @@
 				</div>
 
 				<div class="grid gap-2">
-					<Label for="competitionId">Competition</Label>
+					<Label for="competitionId">Competition *</Label>
 					<select 
 						id="competitionId" 
 						name="competitionId" 
 						bind:value={formCompetitionId}
 						class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+						required
 					>
-						<option value="">No Competition (Optional)</option>
+						<option value="">Select a competition...</option>
 						{#each data.competitions as competition}
 							<option value={competition.id}>{competition.name}</option>
 						{/each}
@@ -515,11 +562,14 @@
 							bind:value={formRedTeam1}
 							class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
 							required
+							disabled={!formCompetitionId}
 						>
-							<option value="">Select a team...</option>
-							{#each data.teams as team}
-								<option value={team.id}>{team.teamNumber} - {team.name}</option>
-							{/each}
+							<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+							{#if formCompetitionId}
+								{#each availableRedTeam1 as team}
+									<option value={team.id}>{team.teamNumber} - {team.name}</option>
+								{/each}
+							{/if}
 						</select>
 					</div>
 					<div class="grid gap-2">
@@ -530,11 +580,14 @@
 							bind:value={formRedTeam2}
 							class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
 							required
+							disabled={!formCompetitionId}
 						>
-							<option value="">Select a team...</option>
-							{#each data.teams as team}
-								<option value={team.id}>{team.teamNumber} - {team.name}</option>
-							{/each}
+							<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+							{#if formCompetitionId}
+								{#each availableRedTeam2 as team}
+									<option value={team.id}>{team.teamNumber} - {team.name}</option>
+								{/each}
+							{/if}
 						</select>
 					</div>
 				</div>
@@ -549,11 +602,14 @@
 							bind:value={formBlueTeam1}
 							class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
 							required
+							disabled={!formCompetitionId}
 						>
-							<option value="">Select a team...</option>
-							{#each data.teams as team}
-								<option value={team.id}>{team.teamNumber} - {team.name}</option>
-							{/each}
+							<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+							{#if formCompetitionId}
+								{#each availableBlueTeam1 as team}
+									<option value={team.id}>{team.teamNumber} - {team.name}</option>
+								{/each}
+							{/if}
 						</select>
 					</div>
 					<div class="grid gap-2">
@@ -564,11 +620,14 @@
 							bind:value={formBlueTeam2}
 							class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
 							required
+							disabled={!formCompetitionId}
 						>
-							<option value="">Select a team...</option>
-							{#each data.teams as team}
-								<option value={team.id}>{team.teamNumber} - {team.name}</option>
-							{/each}
+							<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+							{#if formCompetitionId}
+								{#each availableBlueTeam2 as team}
+									<option value={team.id}>{team.teamNumber} - {team.name}</option>
+								{/each}
+							{/if}
 						</select>
 					</div>
 				</div>
@@ -595,8 +654,11 @@
 
 				<div class="flex gap-2">
 					<Button type="button" variant="outline" onclick={closeSheets} class="flex-1">Cancel</Button>
-					<Button type="submit" class="flex-1">Create Match</Button>
+					<Button type="submit" class="flex-1" disabled={createDisabled}>Create Match</Button>
 				</div>
+				{#if createDisabled}
+					<p class="text-sm text-red-400 mt-2">Select a competition and four distinct teams.</p>
+				{/if}
 			</form>
 		</Sheet.Content>
 	</Sheet.Root>
@@ -685,14 +747,16 @@
 						<select 
 							id="editRedTeam1" 
 							name="redTeam1" 
-							bind:value={formRedTeam1}
+									bind:value={formRedTeam1}
 							class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
 							required
 						>
-							<option value="">Select a team...</option>
-							{#each data.teams as team}
-								<option value={team.id}>{team.teamNumber} - {team.name}</option>
-							{/each}
+									<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+									{#if formCompetitionId || data.teams}
+										{#each availableRedTeam1 as team}
+											<option value={team.id}>{team.teamNumber} - {team.name}</option>
+										{/each}
+									{/if}
 						</select>
 					</div>
 					<div class="grid gap-2">
@@ -704,10 +768,12 @@
 							class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
 							required
 						>
-							<option value="">Select a team...</option>
-							{#each data.teams as team}
-								<option value={team.id}>{team.teamNumber} - {team.name}</option>
-							{/each}
+							<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+							{#if formCompetitionId || data.teams}
+								{#each availableRedTeam2 as team}
+									<option value={team.id}>{team.teamNumber} - {team.name}</option>
+								{/each}
+							{/if}
 						</select>
 					</div>
 				</div>
@@ -723,10 +789,12 @@
 							class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
 							required
 						>
-							<option value="">Select a team...</option>
-							{#each data.teams as team}
-								<option value={team.id}>{team.teamNumber} - {team.name}</option>
-							{/each}
+							<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+							{#if formCompetitionId || data.teams}
+								{#each availableBlueTeam1 as team}
+									<option value={team.id}>{team.teamNumber} - {team.name}</option>
+								{/each}
+							{/if}
 						</select>
 					</div>
 					<div class="grid gap-2">
@@ -738,10 +806,12 @@
 							class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
 							required
 						>
-							<option value="">Select a team...</option>
-							{#each data.teams as team}
-								<option value={team.id}>{team.teamNumber} - {team.name}</option>
-							{/each}
+							<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+							{#if formCompetitionId || data.teams}
+								{#each availableBlueTeam2 as team}
+									<option value={team.id}>{team.teamNumber} - {team.name}</option>
+								{/each}
+							{/if}
 						</select>
 					</div>
 				</div>
@@ -1049,10 +1119,12 @@
 									class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
 									required
 								>
-									<option value="">Select a team...</option>
-									{#each data.teams as team}
-										<option value={team.id}>{team.teamNumber} - {team.name}</option>
-									{/each}
+									<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+									{#if formCompetitionId || data.teams}
+										{#each availableRedTeam1 as team}
+											<option value={team.id}>{team.teamNumber} - {team.name}</option>
+										{/each}
+									{/if}
 								</select>
 							</div>
 							<div class="grid gap-2">
@@ -1064,10 +1136,12 @@
 									class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
 									required
 								>
-									<option value="">Select a team...</option>
-									{#each data.teams as team}
-										<option value={team.id}>{team.teamNumber} - {team.name}</option>
-									{/each}
+									<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+									{#if formCompetitionId || data.teams}
+										{#each availableRedTeam2 as team}
+											<option value={team.id}>{team.teamNumber} - {team.name}</option>
+										{/each}
+									{/if}
 								</select>
 							</div>
 						</div>
@@ -1083,10 +1157,12 @@
 									class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
 									required
 								>
-									<option value="">Select a team...</option>
-									{#each data.teams as team}
-										<option value={team.id}>{team.teamNumber} - {team.name}</option>
-									{/each}
+									<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+									{#if formCompetitionId || data.teams}
+										{#each availableBlueTeam1 as team}
+											<option value={team.id}>{team.teamNumber} - {team.name}</option>
+										{/each}
+									{/if}
 								</select>
 							</div>
 							<div class="grid gap-2">
@@ -1098,10 +1174,12 @@
 									class="flex h-10 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
 									required
 								>
-									<option value="">Select a team...</option>
-									{#each data.teams as team}
-										<option value={team.id}>{team.teamNumber} - {team.name}</option>
-									{/each}
+									<option value="">{formCompetitionId ? 'Select a team...' : 'Select a competition first'}</option>
+									{#if formCompetitionId || data.teams}
+										{#each availableBlueTeam2 as team}
+											<option value={team.id}>{team.teamNumber} - {team.name}</option>
+										{/each}
+									{/if}
 								</select>
 							</div>
 						</div>
