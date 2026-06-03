@@ -13,6 +13,12 @@
     let matchScores = $state<Record<string, { redScore: number; blueScore: number }>>({});
     let selectedMatchId: string | null = $state(null);
     let selectedMatchDetails: { match?: any; score?: MatchScoreResponse | null } | null = $state(null);
+    let rankings = $state<any[]>([]);
+    let rankingsLoading = $state(false);
+
+    $effect(() => {
+        rankings = data?.rankings || [];
+    });
 
     function getTeamName(teamId: string) {
         const team = (data.teams || []).find((t: any) => t.id === teamId);
@@ -95,7 +101,22 @@
 
     onMount(async () => {
         await loadScores();
+        if ((rankings || []).length === 0) await loadRankings();
     });
+
+    async function loadRankings() {
+        if (!data?.competition?.id) return;
+        rankingsLoading = true;
+        try {
+            const res = await api.competitions.getRankings(data.competition.id, true);
+            rankings = res.data?.rankings || [];
+        } catch (err) {
+            console.error('Failed to load rankings:', err);
+            rankings = [];
+        } finally {
+            rankingsLoading = false;
+        }
+    }
 </script>
 
 <Navbar />
@@ -121,6 +142,7 @@
             <Tabs.List class="w-fit">
                 <Tabs.Trigger value="teams">Teams</Tabs.Trigger>
                 <Tabs.Trigger value="matches">Matches</Tabs.Trigger>
+                <Tabs.Trigger value="rankings">Rankings</Tabs.Trigger>
             </Tabs.List>
 
             <Tabs.Content value="teams" class="relative flex flex-col gap-4">
@@ -151,6 +173,49 @@
                             </Table.Body>
                         </Table.Root>
                     </div>
+                {/if}
+            </Tabs.Content>
+
+            <Tabs.Content value="rankings" class="relative flex flex-col gap-4">
+                <h2 class="text-xl font-semibold text-slate-100 mb-3">Rankings</h2>
+
+                {#if rankingsLoading}
+                    <div class="rounded-lg border border-dashed border-slate-600 bg-slate-900/50 p-6 text-center">
+                        <p class="text-slate-300">Loading rankings…</p>
+                    </div>
+                {:else}
+                    {#if rankings.length === 0}
+                        <div class="rounded-lg border border-dashed border-slate-600 bg-slate-900/50 p-6 text-center">
+                            <p class="text-slate-300 mb-4">No rankings available yet.</p>
+                        </div>
+                    {:else}
+                        <div class="overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-lg">
+                            <Table.Root>
+                                <Table.Header>
+                                    <Table.Row class="border-b border-zinc-700 bg-zinc-800/70 hover:bg-zinc-800/70">
+                                        <Table.Head class="font-semibold text-zinc-100">Rank</Table.Head>
+                                        <Table.Head class="font-semibold text-zinc-100">Team #</Table.Head>
+                                        <Table.Head class="font-semibold text-zinc-100">Team Name</Table.Head>
+                                        <Table.Head class="font-semibold text-zinc-100">Matches</Table.Head>
+                                        <Table.Head class="font-semibold text-zinc-100">Score</Table.Head>
+                                        <Table.Head class="font-semibold text-zinc-100">Highest</Table.Head>
+                                    </Table.Row>
+                                </Table.Header>
+                                <Table.Body>
+                                    {#each rankings as r}
+                                        <Table.Row class="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
+                                            <Table.Cell class="font-mono font-medium text-cyan-400">{r.rank}</Table.Cell>
+                                            <Table.Cell class="font-mono font-medium text-cyan-400">{r.teamNumber}</Table.Cell>
+                                            <Table.Cell class="font-medium text-zinc-100">{r.teamName}</Table.Cell>
+                                            <Table.Cell class="text-zinc-400">{r.matchesPlayed}</Table.Cell>
+                                            <Table.Cell class="text-zinc-400">{r.rankingScore}</Table.Cell>
+                                            <Table.Cell class="text-zinc-400">{r.highestMatchScore}</Table.Cell>
+                                        </Table.Row>
+                                    {/each}
+                                </Table.Body>
+                            </Table.Root>
+                        </div>
+                    {/if}
                 {/if}
             </Tabs.Content>
 

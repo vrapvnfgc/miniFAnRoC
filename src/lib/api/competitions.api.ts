@@ -1,4 +1,5 @@
 import { BaseService, type ApiResponse } from './base';
+import type { RankingItem } from './rankings.api';
 
 export type CompetitionStatus = 'upcoming' | 'active' | 'completed';
 
@@ -30,6 +31,11 @@ export class CompetitionsService extends BaseService {
 
 	getById(id: string): Promise<ApiResponse<{ competition: CompetitionResponse }>> {
 		return this.http.get<ApiResponse<{ competition: CompetitionResponse }>>(`/competitions/${id}`);
+	}
+
+	getRankings(id: string, includeUnfinalized = false): Promise<ApiResponse<{ rankings: RankingItem[] }>> {
+		const query = includeUnfinalized ? '?includeUnfinalized=true' : '';
+		return this.http.get<ApiResponse<{ rankings: RankingItem[] }>>(`/competitions/${id}/rankings${query}`);
 	}
 
 	create(data: CreateCompetition): Promise<ApiResponse<{ competition: CompetitionResponse }>> {

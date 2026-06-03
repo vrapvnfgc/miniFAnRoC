@@ -18,11 +18,22 @@ export const load: PageServerLoad = async ({ params }) => {
         const matches = matchesRes.data?.matches || [];
         const competitionMatches = matches.filter((m: any) => m.competitionId === id);
         const fields = fieldsRes.data?.fields || [];
+        // load rankings for the competition (server-side)
+        let rankings: any[] = [];
+        try {
+            // include unfinalized scores for debugging/preview in the public page
+            const r = await api.competitions.getRankings(id, true);
+            rankings = r.data?.rankings || [];
+        } catch (err) {
+            console.error('Failed to load competition rankings in server load:', err);
+            rankings = [];
+        }
 
         return {
             competition,
             teams: registeredTeams,
             matches: competitionMatches,
+            rankings,
             fields
         };
     } catch (err) {
