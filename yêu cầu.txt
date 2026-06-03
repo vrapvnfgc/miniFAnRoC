@@ -1,0 +1,89 @@
+Bạn là senior frontend engineer chuyên về SvelteKit + TypeScript + TailwindCSS + shadcn-svelte.
+Hãy xây dựng hoàn chỉnh cho repo hiện có của dự án miniFAnRoC.
+Đây là một project SvelteKit đã được setup sẵn.
+#1: Yêu cầu chung
+Sử dụng:
+- SvelteKit
+- TypeScript
+- TailwindCSS
+- shadcn-svelte
+- lucide-svelte cho icon
+- motion/transition nhẹ bằng CSS hoặc Svelte transition
+- responsive hoàn chỉnh cho mobile/tablet/desktop
+
+Design style:
+- hiện đại
+- futuristic STEM/AI/robotics
+- clean UI
+- glassmorphism nhẹ
+- dark mode đẹp
+- gradient xanh dương / tím / cyan
+- có subtle animations
+- bố cục giống landing page công nghệ lớn
+
+Không dùng màu quá chói.
+#2: Tab Team list
+Bạn cần cho tôi 1 danh sách các đội thi. Bảng sẽ gồm: số thứ tự, tên, số lượng thành viên, điểm
+Có dấu biểu tượng dấu cộng ở góc.
+Khi ấn vào dấu cộng sẽ chuyển sang tab team register
+#3 Tab Team Register
+Đây là tab đăng ký đội.
+Người dùng cần điền các thông tin sau: Email đội trưởng, Tên đội, Tên đội trưởng, Số lượng thành viên của đội
+Sau khi đội thi đăng ký, thông tin đội thi sẽ được thêm ở mục Team list
+Có nút đăng ký để đội xác nhận thông tin.
+#3: Ngoài ra
+
+Yêu cầu code:
+- modular
+- reusable
+- typed
+- clean component structure
+- không lặp code
+- responsive hoàn chỉnh
+- semantic HTML
+- accessibility tốt
+
+Tách component nhỏ nếu cần:
+- HeroSection
+- StatisticsCard
+- Timeline
+- AwardCard
+- MatchCard
+- VietnamMap
+- CTASection
+- SponsorCarousel
+
+---
+# 4. i18n requirements
+
+Website cần hỗ trợ:
+- English
+- Vietnamese
+
+Không hardcode text trực tiếp.
+
+Tạo key trong:
+- `messages/en.json`
+- `messages/vi.json`
+
+Navbar language toggle phải hoạt động.
+
+# 5. Deliverables
+
+Hãy:
+
+1. Tạo toàn bộ structure component
+2. Viết code đầy đủ
+3. Viết routing cần thiết
+4. Viết fake data mẫu
+5. Viết responsive layout
+6. Viết animation
+7. Viết dark mode support
+8. Viết i18n keys
+9. Giải thích ngắn gọn architecture cuối cùng
+10. Đảm bảo project chạy được ngay
+
+Ưu tiên production-quality UI giống các landing page startup công nghệ hiện đại.
+#6. Yêu cầu có 1 file readme.md với nội dung:
+- các file trên gồm những phần nào, file nào phụ trách việc gì.
+- hướng dẫn tôi cách test trang web (tôi dùng vs code), có thể không dùng vs code, hãy chỉ tôi cách gì cũng được
