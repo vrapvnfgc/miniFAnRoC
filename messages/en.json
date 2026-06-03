@@ -3,6 +3,7 @@
   "hello_world": "Hello, {name} from en!",
   "nav_home": "Home",
   "nav_teams": "Team List",
+  "nav_competitions": "Competitions",
   "nav_ranking": "Ranking",
   "nav_matches": "Matches",
   "nav_awards": "Awards",
