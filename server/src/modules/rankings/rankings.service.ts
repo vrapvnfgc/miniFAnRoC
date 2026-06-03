@@ -82,18 +82,9 @@ class RankingsService {
 		const matches = await MatchModel.find({ competitionId, status: 'finished' });
 		const matchIds = matches.map((m) => String(m._id));
 
-		// Gather teams: registered teams for the competition and any teams that appear in matches
+		// Gather teams: only teams registered for this competition
 		const registeredTeams = await TeamModel.find({ competitionIds: competitionId }).sort({ teamNumber: 1 });
-
-		const matchTeamIds = new Set<string>();
-		for (const match of matches) {
-			for (const t of match.redTeamIds || []) matchTeamIds.add(String(t));
-			for (const t of match.blueTeamIds || []) matchTeamIds.add(String(t));
-		}
-
-		const allTeamIds = Array.from(new Set([...registeredTeams.map((t) => String(t._id)), ...Array.from(matchTeamIds)]));
-
-		const teams = allTeamIds.length > 0 ? await TeamModel.find({ _id: { $in: allTeamIds } }).sort({ teamNumber: 1 }) : [];
+		const teams = registeredTeams;
 
 		const rankingMap = new Map<string, RankingItem>();
 
@@ -113,22 +104,7 @@ class RankingsService {
 			});
 		}
 
-		// Ensure any team ids found in matches but missing from the teams query are included
-		for (const tid of matchTeamIds) {
-			if (!rankingMap.has(tid)) {
-				rankingMap.set(tid, {
-					rank: 0,
-					teamId: tid,
-					teamNumber: tid,
-					teamName: `Team ${tid}`,
-					rankingScore: 0,
-					highestMatchScore: 0,
-					bonusPoint: 0,
-					matchesPlayed: 0,
-					reason: ''
-				});
-			}
-		}
+		// Do NOT include teams that are not registered for the competition.
 
 		if (matchIds.length === 0) {
 			const rankingsEmpty = Array.from(rankingMap.values()).sort((a, b) => a.teamNumber.localeCompare(b.teamNumber));
