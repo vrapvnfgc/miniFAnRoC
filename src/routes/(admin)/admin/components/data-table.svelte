@@ -272,11 +272,9 @@
 		<div class="overflow-hidden rounded-lg border">
 			<DragDropProvider
 				modifiers={[
-					// @ts-expect-error @dnd-kit/abstract types are botched atm
 					RestrictToVerticalAxis
 				]}
 				onDragEnd={(e) => {
-					// @ts-expect-error type mismatch from dnd-kit versions
 					data = move(data, e);
 				}}
 			>
@@ -413,7 +411,7 @@
 		{#each row.getVisibleCells() as cell (cell.id)}
 			<Table.Cell>
 				<FlexRender
-					attach={sortable.attachHandle}
+					attach={sortable.attachHandle as any}
 					content={cell.column.columnDef.cell}
 					context={cell.getContext()}
 				/>

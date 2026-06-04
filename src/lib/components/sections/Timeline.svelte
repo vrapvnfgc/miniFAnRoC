@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CheckCircle, Circle, Clock, Zap, Rocket, Star, Trophy } from 'lucide-svelte';
-	import { t } from '$lib/i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { timelineEvents } from '$lib/data';
 
 	const iconMap: Record<string, typeof Zap> = {
@@ -15,7 +15,7 @@
 <section
 	id="schedule"
 	class="relative px-4 py-20 sm:px-6 lg:px-8"
-	aria-label={$t('timeline.title')}
+	aria-label={m.timeline_title()}
 >
 	<!-- BG -->
 	<div class="pointer-events-none absolute inset-0">
@@ -34,10 +34,10 @@
 				// Schedule
 			</span>
 			<h2 class="section-title mb-4 text-3xl sm:text-4xl lg:text-5xl">
-				{$t('timeline.title')}
+				{m.timeline_title()}
 			</h2>
 			<p class="mx-auto max-w-xl text-sm sm:text-base" style="color: var(--text-secondary);">
-				{$t('timeline.subtitle')}
+				{m.timeline_desc()}
 			</p>
 		</div>
 
@@ -90,10 +90,10 @@
 									class="font-display mb-1.5 text-base font-bold"
 									style="color: var(--text-primary);"
 								>
-									{$t(event.titleKey)}
+									{(m as any)[event.titleKey.replace(/\./g, '_')]()}
 								</h3>
 								<p class="text-sm leading-relaxed" style="color: var(--text-secondary);">
-									{$t(event.descriptionKey)}
+									{(m as any)[event.descriptionKey.replace(/\./g, '_')]()}
 								</p>
 							</div>
 						</div>

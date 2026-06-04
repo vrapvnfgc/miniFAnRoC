@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/i18n';
+	import * as m from '$lib/paraglide/messages';
 	import type { Stat } from '$lib/data';
 
 	let { stat }: { stat: Stat } = $props();
@@ -16,6 +16,6 @@
 		{stat.value}{stat.suffix ?? ''}
 	</div>
 	<div class="font-mono text-xs tracking-widest uppercase" style="color: var(--text-secondary);">
-		{$t(stat.key)}
+		{(m as any)[stat.key.replace(/\./g, '_')]()!}
 	</div>
 </div>

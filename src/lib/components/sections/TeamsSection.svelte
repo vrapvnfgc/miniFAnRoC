@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { List, UserPlus } from 'lucide-svelte';
-	import { t } from '$lib/i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { uiStore } from '$lib/stores/ui';
 	import TeamList from '../team/TeamList.svelte';
 	import TeamRegister from '../team/TeamRegister.svelte';
@@ -13,7 +13,7 @@
 	];
 </script>
 
-<section id="teams" class="relative px-4 py-20 sm:px-6 lg:px-8" aria-label={$t('teams.title')}>
+<section id="teams" class="relative px-4 py-20 sm:px-6 lg:px-8" aria-label={m.nav_teams()}>
 	<!-- Section background glow -->
 	<div class="pointer-events-none absolute inset-0 overflow-hidden">
 		<div
@@ -32,10 +32,10 @@
 				// Competition
 			</span>
 			<h2 class="section-title mb-4 text-3xl sm:text-4xl lg:text-5xl">
-				{$t('teams.title')}
+				{m.nav_teams()}
 			</h2>
 			<p class="mx-auto max-w-xl text-sm sm:text-base" style="color: var(--text-secondary);">
-				{$t('teams.subtitle')}
+				{m.hero_stats_teams()}
 			</p>
 		</div>
 
@@ -60,7 +60,7 @@
 					onclick={() => switchTab(tab.key)}
 				>
 					<Icon size={15} />
-					<span class="hidden sm:inline">{$t(tab.labelKey)}</span>
+					<span class="hidden sm:inline">{(m as any)[tab.labelKey.replace(/\./g, '_')]()}</span>
 				</button>
 			{/each}
 		</div>

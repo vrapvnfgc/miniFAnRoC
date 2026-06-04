@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ArrowLeft, CheckCircle, Loader2, User, Mail, Users, Shield } from 'lucide-svelte';
-	import { t } from '$lib/i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { teamStore, type TeamFormData } from '$lib/stores/teams';
 	import { uiStore } from '$lib/stores/ui';
 	import { fade, fly, scale } from 'svelte/transition';
@@ -23,18 +23,18 @@
 		errors = {};
 		const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-		if (!form.captainEmail) errors.captainEmail = $t('register.validation.email_required');
+		if (!form.captainEmail) errors.captainEmail = (m as any).register_validation_email_required?.() || 'Email is required';
 		else if (!emailRe.test(form.captainEmail))
-			errors.captainEmail = $t('register.validation.email_invalid');
+			errors.captainEmail = (m as any).register_validation_email_invalid?.() || 'Email is invalid';
 
-		if (!form.teamName) errors.teamName = $t('register.validation.team_name_required');
-		else if (form.teamName.length < 3) errors.teamName = $t('register.validation.team_name_min');
+		if (!form.teamName) errors.teamName = (m as any).register_validation_team_name_required?.() || 'Team name is required';
+		else if (form.teamName.length < 3) errors.teamName = (m as any).register_validation_team_name_min?.() || 'Team name is too short';
 
-		if (!form.captainName) errors.captainName = $t('register.validation.captain_name_required');
+		if (!form.captainName) errors.captainName = (m as any).register_validation_captain_name_required?.() || 'Captain name is required';
 
-		if (!form.memberCount) errors.memberCount = $t('register.validation.member_count_required');
+		if (!form.memberCount) errors.memberCount = (m as any).register_validation_member_count_required?.() || 'Member count is required';
 		else if (form.memberCount < 2 || form.memberCount > 6)
-			errors.memberCount = $t('register.validation.member_count_range');
+			errors.memberCount = (m as any).register_validation_member_count_range?.() || 'Member count must be between 2 and 6';
 
 		return Object.keys(errors).length === 0;
 	}
@@ -64,13 +64,13 @@
 			<CheckCircle size={40} style="color: #00e678;" />
 		</div>
 		<h3 class="font-display text-gradient mb-3 text-2xl font-bold">
-			{$t('register.success_title')}
+			{(m as any).register_success_title?.() || 'Registration Successful'}
 		</h3>
 		<p class="mb-8 max-w-sm" style="color: var(--text-secondary);">
-			{$t('register.success_message')}
+			{(m as any).register_success_message?.() || 'Your team has been registered successfully.'}
 		</p>
 		<button onclick={() => switchTab('list')} class="btn-ghost">
-			{$t('register.back_to_list')}
+			{(m as any).register_back_to_list?.() || 'Back to Team List'}
 		</button>
 	</div>
 {:else}
@@ -79,7 +79,7 @@
 		<!-- Back button -->
 		<button onclick={() => switchTab('list')} class="btn-ghost mb-6 !px-3 !py-2">
 			<ArrowLeft size={15} />
-			{$t('register.back_to_list')}
+			{(m as any).register_back_to_list?.() || 'Back to Team List'}
 		</button>
 
 		<div class="mx-auto max-w-xl">
@@ -87,10 +87,10 @@
 				<!-- Header -->
 				<div class="mb-8">
 					<h2 class="font-display text-gradient mb-2 text-2xl font-bold sm:text-3xl">
-						{$t('register.title')}
+						{(m as any).register_title?.() || 'Register Team'}
 					</h2>
 					<p class="text-sm" style="color: var(--text-secondary);">
-						{$t('register.subtitle')}
+						{(m as any).register_subtitle?.() || 'Fill in the details below to register your team.'}
 					</p>
 				</div>
 
@@ -102,7 +102,7 @@
 					}}
 					class="flex flex-col gap-5"
 					novalidate
-					aria-label={$t('register.title')}
+					aria-label={(m as any).register_title?.() || 'Register Team'}
 				>
 					<!-- Email -->
 					<div class="flex flex-col gap-1.5">
@@ -112,14 +112,14 @@
 							style="color: var(--accent-cyan);"
 						>
 							<Mail size={12} />
-							{$t('register.fields.captain_email')}
+							{(m as any).register_fields_captain_email?.() || 'Captain Email'}
 						</label>
 						<input
 							id="captainEmail"
 							type="email"
 							class="input-field"
 							class:border-red-500={errors.captainEmail}
-							placeholder={$t('register.fields.captain_email_placeholder')}
+							placeholder={(m as any).register_fields_captain_email_placeholder?.() || 'Enter captain email'}
 							bind:value={form.captainEmail}
 							autocomplete="email"
 							aria-describedby={errors.captainEmail ? 'email-error' : undefined}
@@ -145,14 +145,14 @@
 							style="color: var(--accent-cyan);"
 						>
 							<Shield size={12} />
-							{$t('register.fields.team_name')}
+							{(m as any).register_fields_team_name?.() || 'Team Name'}
 						</label>
 						<input
 							id="teamName"
 							type="text"
 							class="input-field"
 							class:border-red-500={errors.teamName}
-							placeholder={$t('register.fields.team_name_placeholder')}
+							placeholder={(m as any).register_fields_team_name_placeholder?.() || 'Enter team name'}
 							bind:value={form.teamName}
 							aria-describedby={errors.teamName ? 'teamname-error' : undefined}
 							aria-invalid={!!errors.teamName}
@@ -177,14 +177,14 @@
 							style="color: var(--accent-cyan);"
 						>
 							<User size={12} />
-							{$t('register.fields.captain_name')}
+							{(m as any).register_fields_captain_name?.() || 'Captain Name'}
 						</label>
 						<input
 							id="captainName"
 							type="text"
 							class="input-field"
 							class:border-red-500={errors.captainName}
-							placeholder={$t('register.fields.captain_name_placeholder')}
+							placeholder={(m as any).register_fields_captain_name_placeholder?.() || 'Enter captain name'}
 							bind:value={form.captainName}
 							autocomplete="name"
 							aria-describedby={errors.captainName ? 'captain-error' : undefined}
@@ -210,7 +210,7 @@
 							style="color: var(--accent-cyan);"
 						>
 							<Users size={12} />
-							{$t('register.fields.member_count')}
+							{(m as any).register_fields_member_count?.() || 'Member Count'}
 						</label>
 						<div class="flex items-center gap-3">
 							<input
@@ -255,9 +255,9 @@
 					>
 						{#if submitting}
 							<Loader2 size={18} class="animate-spin" />
-							{$t('register.submitting')}
+							{(m as any).register_submitting?.() || 'Submitting...'}
 						{:else}
-							{$t('register.submit')}
+							{(m as any).register_submit?.() || 'Register'}
 						{/if}
 					</button>
 				</form>

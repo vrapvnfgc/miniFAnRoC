@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { ChevronDown, Zap, Users, MapPin, Trophy } from 'lucide-svelte';
-	import { t } from '$lib/i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { uiStore } from '$lib/stores/ui';
 	import { heroStats } from '$lib/data';
 	import StatisticsCard from '../sections/StatisticsCard.svelte';
@@ -66,7 +66,7 @@
 			style="background: rgba(0, 180, 230, 0.1); border: 1px solid rgba(0, 180, 230, 0.3); color: var(--accent-cyan); animation-delay: 0.1s;"
 		>
 			<div class="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400"></div>
-			{$t('hero.badge')}
+			{m.hero_badge()}
 		</div>
 
 		<!-- Main title -->
@@ -76,7 +76,7 @@
 			class:animate-slide-up={visible}
 			style="animation-delay: 0.2s; font-size: clamp(3rem, 10vw, 8rem); line-height: 1;"
 		>
-			<span class="text-gradient">{$t('hero.title')}</span>
+			<span class="text-gradient">{m.hero_title()}</span>
 		</h1>
 
 		<!-- Subtitle -->
@@ -86,7 +86,7 @@
 			class:animate-slide-up={visible}
 			style="color: var(--accent-cyan); animation-delay: 0.35s;"
 		>
-			{$t('hero.subtitle')}
+			{m.hero_subtitle()}
 		</p>
 
 		<!-- Description -->
@@ -96,7 +96,7 @@
 			class:animate-slide-up={visible}
 			style="color: var(--text-secondary); animation-delay: 0.5s;"
 		>
-			{$t('hero.description')}
+			{m.hero_desc()}
 		</p>
 
 		<!-- CTAs -->
@@ -114,13 +114,13 @@
 				class="btn-primary w-full justify-center px-8 py-4 text-base sm:w-auto"
 			>
 				<Zap size={18} />
-				{$t('hero.cta_register')}
+				{m.hero_cta_register()}
 			</button>
 			<button
 				onclick={scrollToTeams}
 				class="btn-ghost w-full justify-center px-8 py-4 text-base sm:w-auto"
 			>
-				{$t('hero.cta_schedule')}
+				{m.hero_cta_explore()}
 			</button>
 		</div>
 
@@ -142,7 +142,7 @@
 		class="absolute bottom-8 left-1/2 flex -translate-x-1/2 animate-bounce flex-col items-center gap-2"
 	>
 		<span class="font-mono text-xs tracking-widest uppercase" style="color: var(--text-secondary);">
-			{$t('hero.scroll_down')}
+			{m.hero_scroll_label()}
 		</span>
 		<ChevronDown size={20} style="color: var(--accent-cyan);" />
 	</div>

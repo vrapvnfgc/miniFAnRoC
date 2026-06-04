@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Trophy, Medal, Award, Lightbulb, Heart, Sprout } from 'lucide-svelte';
 	import type { Award as AwardType } from '$lib/data';
-	import { t } from '$lib/i18n';
+	import * as m from '$lib/paraglide/messages';
 
 	let { award }: { award: AwardType } = $props();
 
@@ -20,7 +20,7 @@
 
 <article
 	class="glass-card-hover group flex flex-col items-center p-6 text-center"
-	aria-label={$t(award.titleKey)}
+	aria-label={(m as any)[award.titleKey.replace(/\./g, '_')]()}
 >
 	<!-- Icon with gradient bg -->
 	<div
@@ -46,7 +46,7 @@
 		class:text-gradient-gold={award.rank === 1}
 		class:text-gradient={award.rank !== 1}
 	>
-		{$t(award.titleKey)}
+		{(m as any)[award.titleKey.replace(/\./g, '_')]()!}
 	</h3>
 
 	<!-- Prize -->

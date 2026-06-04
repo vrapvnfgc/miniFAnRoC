@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { sponsors } from '$lib/data';
 
 	const platinum = sponsors.filter((s) => s.tier === 'platinum');
@@ -21,7 +21,7 @@
 <section
 	id="sponsors"
 	class="relative px-4 py-20 sm:px-6 lg:px-8"
-	aria-label={$t('sponsors.title')}
+	aria-label={m.sponsors_title()}
 >
 	<div class="pointer-events-none absolute inset-0">
 		<div
@@ -39,10 +39,10 @@
 				// Partners
 			</span>
 			<h2 class="section-title mb-4 text-3xl sm:text-4xl lg:text-5xl">
-				{$t('sponsors.title')}
+				{m.sponsors_title()}
 			</h2>
 			<p class="mx-auto max-w-xl text-sm sm:text-base" style="color: var(--text-secondary);">
-				{$t('sponsors.subtitle')}
+				{m.sponsors_desc()}
 			</p>
 		</div>
 
@@ -57,7 +57,7 @@
 					class="rounded-full px-3 py-1 font-mono text-xs tracking-widest uppercase"
 					style="background: rgba(226,232,240,0.1); border: 1px solid rgba(226,232,240,0.3); color: #e2e8f0;"
 				>
-					{$t('sponsors.partner_types.platinum')}
+					{m.sponsor_title_sponsor()}
 				</span>
 				<div
 					class="h-px flex-1"
@@ -93,7 +93,7 @@
 					class="rounded-full px-3 py-1 font-mono text-xs tracking-widest uppercase"
 					style="background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3); color: #fbbf24;"
 				>
-					{$t('sponsors.partner_types.gold')}
+					{m.sponsor_supporting_sponsor()}
 				</span>
 				<div
 					class="h-px flex-1"
@@ -129,7 +129,7 @@
 					class="rounded-full px-3 py-1 font-mono text-xs tracking-widest uppercase"
 					style="background: rgba(100,116,139,0.1); border: 1px solid rgba(100,116,139,0.3); color: #94a3b8;"
 				>
-					{$t('sponsors.partner_types.silver')}
+					{m.sponsor_technology_partner()}
 				</span>
 				<div
 					class="h-px flex-1"

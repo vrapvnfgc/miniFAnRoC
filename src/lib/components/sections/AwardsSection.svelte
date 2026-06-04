@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { t } from '$lib/i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { awards } from '$lib/data';
 	import AwardCard from './AwardCard.svelte';
 </script>
 
-<section id="awards" class="relative px-4 py-20 sm:px-6 lg:px-8" aria-label={$t('awards.title')}>
+<section id="awards" class="relative px-4 py-20 sm:px-6 lg:px-8" aria-label={m.awards_title()}>
 	<div class="pointer-events-none absolute inset-0">
 		<div
 			class="absolute top-0 h-px w-full"
@@ -18,10 +18,10 @@
 				// Prizes
 			</span>
 			<h2 class="section-title mb-4 text-3xl sm:text-4xl lg:text-5xl">
-				{$t('awards.title')}
+				{m.awards_title()}
 			</h2>
 			<p class="mx-auto max-w-xl text-sm sm:text-base" style="color: var(--text-secondary);">
-				{$t('awards.subtitle')}
+				{m.awards_desc()}
 			</p>
 		</div>
 

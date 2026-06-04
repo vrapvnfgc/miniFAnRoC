@@ -7,7 +7,7 @@
 		ChevronUp,
 		ChevronDown as ChevronDownIcon
 	} from 'lucide-svelte';
-	import { t } from '$lib/i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { teamStore } from '$lib/stores/teams';
 	import { uiStore } from '$lib/stores/ui';
 	import TeamStatusBadge from './TeamStatusBadge.svelte';
@@ -60,9 +60,9 @@
 			<input
 				class="input-field !pl-9"
 				type="text"
-				placeholder={$t('teams.search_placeholder')}
+				placeholder={(m as any).teams_search_placeholder?.() || 'Search'}
 				bind:value={$searchQuery}
-				aria-label={$t('teams.search_placeholder')}
+				aria-label={(m as any).teams_search_placeholder?.() || 'Search'}
 			/>
 		</div>
 
@@ -70,10 +70,10 @@
 		<button
 			onclick={() => switchTab('register')}
 			class="btn-primary justify-center gap-2"
-			aria-label={$t('teams.add_team')}
+			aria-label={m.btn_register_team()}
 		>
 			<Plus size={16} />
-			{$t('teams.add_team')}
+			{m.btn_register_team()}
 		</button>
 	</div>
 
@@ -83,10 +83,10 @@
 			{#if sorted.length === 0}
 				<div class="py-20 text-center" in:fade={{ duration: 200 }}>
 					<Users size={40} class="mx-auto mb-3 opacity-30" />
-					<p class="text-sm" style="color: var(--text-secondary);">{$t('teams.empty')}</p>
+					<p class="text-sm" style="color: var(--text-secondary);">{(m as any).teams_empty?.() || 'No teams found'}</p>
 				</div>
 			{:else}
-				<table class="data-table w-full" aria-label={$t('teams.title')}>
+				<table class="data-table w-full" aria-label={m.nav_teams()}>
 					<thead>
 						<tr>
 							<th scope="col">
@@ -95,7 +95,7 @@
 									onclick={() => toggleSort('rank')}
 									aria-label="Sort by rank"
 								>
-									{$t('teams.columns.rank')}
+									{(m as any).teams_columns_rank?.() || 'Rank'}
 									{#if sortField === 'rank'}
 										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon
 												size={12}
@@ -108,7 +108,7 @@
 									class="flex items-center gap-1 transition-colors duration-150 hover:text-white"
 									onclick={() => toggleSort('name')}
 								>
-									{$t('teams.columns.name')}
+									{(m as any).teams_columns_name?.() || 'Name'}
 									{#if sortField === 'name'}
 										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon
 												size={12}
@@ -121,7 +121,7 @@
 									class="flex items-center gap-1 transition-colors duration-150 hover:text-white"
 									onclick={() => toggleSort('memberCount')}
 								>
-									{$t('teams.columns.members')}
+									{(m as any).teams_columns_members?.() || 'Members'}
 									{#if sortField === 'memberCount'}
 										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon
 												size={12}
@@ -134,7 +134,7 @@
 									class="flex items-center gap-1 transition-colors duration-150 hover:text-white"
 									onclick={() => toggleSort('score')}
 								>
-									{$t('teams.columns.score')}
+									{(m as any).teams_columns_score?.() || 'Score'}
 									{#if sortField === 'score'}
 										{#if sortDir === 'asc'}<ChevronUp size={12} />{:else}<ChevronDownIcon
 												size={12}
@@ -142,7 +142,7 @@
 									{/if}
 								</button>
 							</th>
-							<th scope="col" class="hidden md:table-cell">{$t('teams.columns.status')}</th>
+							<th scope="col" class="hidden md:table-cell">{(m as any).teams_columns_status?.() || 'Status'}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -211,7 +211,7 @@
 			>
 				<span class="font-mono text-xs" style="color: var(--text-secondary);">
 					{sorted.length}
-					{$t('teams.title').toLowerCase()}
+					{m.nav_teams().toLowerCase()}
 				</span>
 				<div class="flex items-center gap-1.5">
 					<div class="h-1.5 w-1.5 animate-pulse rounded-full bg-green-400"></div>

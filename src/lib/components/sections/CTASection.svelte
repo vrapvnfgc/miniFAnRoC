@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Rocket, ArrowRight } from 'lucide-svelte';
-	import { t } from '$lib/i18n';
+	import * as m from '$lib/paraglide/messages';
 	import { uiStore } from '$lib/stores/ui';
 
 	const { switchTab } = uiStore;
@@ -31,10 +31,10 @@
 			class="font-display text-gradient mb-6 text-3xl font-black sm:text-5xl"
 			style="line-height: 1.1;"
 		>
-			{$t('hero.cta_register')}
+			{m.hero_cta_register()}
 		</h2>
 		<p class="mb-10 text-base sm:text-lg" style="color: var(--text-secondary);">
-			{$t('hero.description')}
+			{m.hero_desc()}
 		</p>
 
 		<div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -43,11 +43,11 @@
 				class="btn-primary w-full justify-center px-10 py-4 text-base sm:w-auto"
 			>
 				<Rocket size={18} />
-				{$t('hero.cta_register')}
+				{m.hero_cta_register()}
 				<ArrowRight size={16} />
 			</button>
 			<a href="#sponsors" class="btn-ghost w-full justify-center px-8 py-4 sm:w-auto">
-				{$t('sponsors.title')}
+				{m.sponsors_title()}
 			</a>
 		</div>
 	</div>
