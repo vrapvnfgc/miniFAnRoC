@@ -1,16 +1,15 @@
 <script lang="ts">
 	import { ExternalLink, Bot, Share2, AtSign, Rss } from 'lucide-svelte';
 	import * as m from '$lib/paraglide/messages';
+	import { languageStore } from '$lib/stores/language.svelte';
 	import ContactSection from './ContactSection.svelte';
 
-	const quickLinks = [
-		{ label: m.nav_teams(), href: '/teams' },
-		{ label: m.nav_ranking(), href: '/ranking' },
+	let quickLinks = $derived([
+		{ label: languageStore.locale === 'vi' ? 'Cuộc Thi' : 'Competition', href: '/competitions' },
 		{ label: m.nav_matches(), href: '/matches' },
-		{ label: m.nav_awards(), href: '/awards' },
 		{ label: m.nav_manual(), href: '/manual' },
 		{ label: m.nav_resources(), href: '/resources' }
-	];
+	]);
 	const socials = [
 		{ icon: Share2, href: '#', label: m.social_facebook() },
 		{ icon: AtSign, href: '#', label: m.social_instagram() },

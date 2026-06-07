@@ -10,12 +10,10 @@
 	let scrolled = $state(false);
 	let languageOpen = $state(false);
 
-	const navItems = [
-		{ label: m.nav_home(), href: '/homepage' },
-		{ label: m.nav_teams(), href: '/teams' },
-		{ label: m.nav_ranking(), href: '/ranking' },
+	let navItems = $derived([
+		{ label: m.nav_home(), href: '/' },
+		{ label: languageStore.locale === 'vi' ? 'Cuộc Thi' : 'Competition', href: '/competitions' },
 		{ label: m.nav_matches(), href: '/matches' },
-		{ label: m.nav_awards(), href: '/awards' },
 		{
 			label: m.nav_resources(),
 			children: [
@@ -23,7 +21,7 @@
 				{ label: m.nav_resources(), href: '/resources' }
 			]
 		}
-	];
+	]);
 
 	let resourcesOpen = $state(false);
 
@@ -53,7 +51,7 @@
 <nav class="fixed top-0 z-50 w-full transition-all duration-300" class:nav-scrolled={scrolled}>
 	<div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
 		<!-- LOGO -->
-		<a href="/homepage" class="group flex shrink-0 items-center gap-2 sm:gap-3">
+		<a href="/" class="group flex shrink-0 items-center gap-2 sm:gap-3">
 			<div
 				class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/25 transition group-hover:scale-105"
 			>
@@ -155,10 +153,10 @@
 			</button>
 
 			<a
-				href="/login"
+				href="/register"
 				class="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-105 hover:shadow-cyan-500/40"
 			>
-				{m.nav_login()}
+				{languageStore.locale === 'vi' ? 'Đăng ký đội' : 'Register team'}
 			</a>
 		</div>
 
@@ -242,11 +240,11 @@
 						</div>
 					</div>
 					<a
-						href="/login"
+						href="/register"
 						onclick={closeMobile}
 						class="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white"
 					>
-						{m.nav_login()}
+						{languageStore.locale === 'vi' ? 'Đăng ký đội' : 'Register team'}
 					</a>
 				</div>
 			</div>

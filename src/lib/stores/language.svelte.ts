@@ -1,11 +1,11 @@
 import { browser } from '$app/environment';
 import { page } from '$app/state';
-import { cookieName, localizeHref } from '$lib/paraglide/runtime';
+import { cookieName, getLocale, localizeHref } from '$lib/paraglide/runtime';
 
 type Locale = 'en' | 'vi';
 
 function createLanguageStore() {
-	let locale = $state<Locale>('vi');
+	let locale = $state<Locale>(getLocale() as Locale);
 
 	function initializeLocale(currentLocale: Locale) {
 		locale = currentLocale;
