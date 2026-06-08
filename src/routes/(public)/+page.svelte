@@ -8,7 +8,6 @@
 	import TimelineSection from '$lib/components/homepage/TimelineSection.svelte';
 	import VietnamMapSection from '$lib/components/homepage/VietnamMapSection.svelte';
 	import DivisionsSection from '$lib/components/homepage/DivisionsSection.svelte';
-	import AwardsSection from '$lib/components/homepage/AwardsSection.svelte';
 	import MatchesSection from '$lib/components/homepage/MatchesSection.svelte';
 	import CTASection from '$lib/components/homepage/CTASection.svelte';
 	import SponsorsSection from '$lib/components/homepage/SponsorsSection.svelte';
@@ -30,7 +29,6 @@
 	<TimelineSection />
 	<VietnamMapSection />
 	<DivisionsSection />
-	<AwardsSection />
 	<MatchesSection />
 	<CTASection />
 	<SponsorsSection />
