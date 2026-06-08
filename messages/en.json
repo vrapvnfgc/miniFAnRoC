@@ -159,6 +159,9 @@
   "map_region_cantho_subtitle": "Southern Vietnam",
   "map_region_cantho_venue": "FSchool Can Tho",
   "map_region_cantho_tooltip": "Competes at FSchool Can Tho",
+  "map_finals_title": "National Finals",
+  "map_finals_venue": "FSchool Hanoi, Hanoi",
+  "map_finals_desc": "The strongest teams from the regional qualifiers advance to compete together in the National Finals at FSchool Hanoi.",
   "page_title": "miniFAnRoC — FSchool AI and Robotics Challenge",
   "page_description": "Vietnam's nationwide STEM, AI and Robotics competition for middle school students. Powered by miniFAnRoC platform."
 }

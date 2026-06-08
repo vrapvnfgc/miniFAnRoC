@@ -109,6 +109,7 @@
 	import { move } from '@dnd-kit/helpers';
 	import { createSortable } from '@dnd-kit/svelte/sortable';
 	import { Badge } from '$lib/components/ui/badge/index.js';
+	import type { Attachment } from 'svelte/attachments';
 
 	let { data }: { data: Schema[] } = $props();
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
@@ -271,9 +272,7 @@
 	<Tabs.Content value="outline" class="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">
 		<div class="overflow-hidden rounded-lg border">
 			<DragDropProvider
-				modifiers={[
-					RestrictToVerticalAxis
-				]}
+				modifiers={[RestrictToVerticalAxis]}
 				onDragEnd={(e) => {
 					data = move(data, e);
 				}}
@@ -411,7 +410,7 @@
 		{#each row.getVisibleCells() as cell (cell.id)}
 			<Table.Cell>
 				<FlexRender
-					attach={sortable.attachHandle as any}
+					attach={sortable.attachHandle as Attachment}
 					content={cell.column.columnDef.cell}
 					context={cell.getContext()}
 				/>
