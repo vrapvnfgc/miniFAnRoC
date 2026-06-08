@@ -12,11 +12,8 @@
 
 	const navItems = [
 		{ label: m.nav_home(), href: '/homepage' },
-		{ label: m.nav_teams(), href: '/teams' },
 		{ label: (m as any).nav_competitions(), href: '/competitions' },
-		{ label: m.nav_ranking(), href: '/ranking' },
 		{ label: m.nav_matches(), href: '/matches' },
-		{ label: m.nav_awards(), href: '/awards' },
 		{
 			label: m.nav_resources(),
 			children: [
