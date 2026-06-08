@@ -3,6 +3,7 @@
     import Footer from '$lib/components/layout/Footer.svelte';
     import type { PageData } from './$types';
     import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
     import { api } from '$lib/api';
     import type { MatchScoreResponse } from '$lib/api/scores.api';
     import { Trophy, Users, Swords, BarChart3, Calendar, Clock } from 'lucide-svelte';
@@ -23,6 +24,11 @@
     function getTeamName(teamId: string) {
         const team = (data.teams || []).find((t: any) => t.id === teamId);
         return team ? `${team.teamNumber} - ${team.name}` : 'Unknown Team';
+    }
+
+    async function navigateToTeam(teamId: string) {
+        const team = (data.teams || []).find((t: any) => t.id === teamId);
+        if (team) await goto(`/teams/${team.teamNumber}`);
     }
 
     function getFieldName(fieldId: string) {
@@ -223,12 +229,16 @@
                             <span class="text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">School</span>
                         </div>
                         {#each data.teams as team, i (team.id)}
-                            <div class="grid grid-cols-[3rem_1fr_2fr_2fr] items-center gap-0 border-b border-slate-100 px-5 py-4 transition-colors last:border-0 hover:bg-slate-50 dark:border-white/5 dark:hover:bg-slate-800/40">
+                            <button
+                                type="button"
+                                onclick={() => goto(`/teams/${team.teamNumber}`)}
+                                class="grid w-full grid-cols-[3rem_1fr_2fr_2fr] items-center gap-0 border-b border-slate-100 px-5 py-4 text-left transition-colors last:border-0 hover:bg-cyan-50 dark:border-white/5 dark:hover:bg-cyan-500/5"
+                            >
                                 <span class="text-sm text-slate-400 dark:text-slate-500">{i + 1}</span>
                                 <span class="font-mono text-sm font-bold text-cyan-600 dark:text-cyan-400">{team.teamNumber}</span>
-                                <span class="text-sm font-semibold text-slate-900 dark:text-white">{team.name}</span>
+                                <span class="text-sm font-semibold text-slate-900 transition group-hover:text-cyan-600 dark:text-white">{team.name}</span>
                                 <span class="text-sm text-slate-500 dark:text-slate-400">{team.school || '—'}</span>
-                            </div>
+                            </button>
                         {/each}
                     </div>
                 {/if}
@@ -266,7 +276,7 @@
                                                     <p class="text-xs font-bold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red</p>
                                                     <div class="mt-2 space-y-0.5 text-sm font-semibold text-slate-900 dark:text-white">
                                                         {#each match.redTeamIds as teamId}
-                                                            <div>{getTeamName(teamId)}</div>
+                                                            <button type="button" onclick={() => navigateToTeam(teamId)} class="block text-left transition hover:text-cyan-600 dark:hover:text-cyan-400">{getTeamName(teamId)}</button>
                                                         {/each}
                                                     </div>
                                                 </div>
@@ -283,7 +293,7 @@
                                                     <p class="text-xs font-bold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Blue</p>
                                                     <div class="mt-2 space-y-0.5 text-sm font-semibold text-slate-900 dark:text-white">
                                                         {#each match.blueTeamIds as teamId}
-                                                            <div>{getTeamName(teamId)}</div>
+                                                            <button type="button" onclick={() => navigateToTeam(teamId)} class="block text-left transition hover:text-cyan-600 dark:hover:text-cyan-400">{getTeamName(teamId)}</button>
                                                         {/each}
                                                     </div>
                                                 </div>
@@ -320,7 +330,7 @@
                                                     <p class="text-xs font-bold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red</p>
                                                     <div class="mt-2 space-y-0.5 text-sm font-semibold text-slate-900 dark:text-white">
                                                         {#each match.redTeamIds as teamId}
-                                                            <div>{getTeamName(teamId)}</div>
+                                                            <button type="button" onclick={() => navigateToTeam(teamId)} class="block text-left transition hover:text-cyan-600 dark:hover:text-cyan-400">{getTeamName(teamId)}</button>
                                                         {/each}
                                                     </div>
                                                 </div>
@@ -328,7 +338,7 @@
                                                     <p class="text-xs font-bold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Blue</p>
                                                     <div class="mt-2 space-y-0.5 text-sm font-semibold text-slate-900 dark:text-white">
                                                         {#each match.blueTeamIds as teamId}
-                                                            <div>{getTeamName(teamId)}</div>
+                                                            <button type="button" onclick={() => navigateToTeam(teamId)} class="block text-left transition hover:text-cyan-600 dark:hover:text-cyan-400">{getTeamName(teamId)}</button>
                                                         {/each}
                                                     </div>
                                                 </div>
@@ -364,7 +374,11 @@
                             <span class="text-right text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">Highest</span>
                         </div>
                         {#each rankings as r, i}
-                            <div class={`grid grid-cols-[3.5rem_3.5rem_1fr_5rem_5rem_6rem] items-center gap-0 border-b border-slate-100 px-5 py-4 transition-colors last:border-0 hover:bg-slate-50 dark:border-white/5 dark:hover:bg-slate-800/40 ${i === 0 ? 'bg-amber-50/60 dark:bg-amber-500/5' : ''}`}>
+                            <button
+                                type="button"
+                                onclick={() => goto(`/teams/${r.teamNumber}`)}
+                                class={`grid w-full grid-cols-[3.5rem_3.5rem_1fr_5rem_5rem_6rem] items-center gap-0 border-b border-slate-100 px-5 py-4 text-left transition-colors last:border-0 hover:bg-cyan-50 dark:border-white/5 dark:hover:bg-cyan-500/5 ${i === 0 ? 'bg-amber-50/60 dark:bg-amber-500/5' : ''}`}
+                            >
                                 <span class={`text-sm font-black ${i === 0 ? 'text-amber-500' : i === 1 ? 'text-slate-400' : i === 2 ? 'text-orange-500' : 'text-slate-500 dark:text-slate-400'}`}>
                                     {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : r.rank}
                                 </span>
@@ -373,7 +387,7 @@
                                 <span class="text-right text-sm text-slate-500 dark:text-slate-400">{r.matchesPlayed}</span>
                                 <span class="text-right text-sm font-bold text-slate-700 dark:text-slate-200">{r.rankingScore}</span>
                                 <span class="text-right text-sm text-slate-500 dark:text-slate-400">{r.highestMatchScore}</span>
-                            </div>
+                            </button>
                         {/each}
                     </div>
                 {/if}
