@@ -5,12 +5,14 @@
 	import * as m from '$lib/paraglide/messages';
 	import Navbar from '$lib/components/layout/Navbar.svelte';
 	import Footer from '$lib/components/layout/Footer.svelte';
-	import { Clock, Check, ChevronLeft, ChevronRight } from 'lucide-svelte';
+	import { Clock, Check, ChevronLeft, ChevronRight, BarChart3, Trophy } from 'lucide-svelte';
 
 	import type { MatchResponse } from '$lib/api/matches.api';
 	import type { MatchScoreResponse } from '$lib/api/scores.api';
 	import type { TeamResponse } from '$lib/api/teams.api';
 	import type { FieldResponse } from '$lib/api/fields.api';
+	import type { CompetitionResponse } from '$lib/api/competitions.api';
+	import type { RankingItem } from '$lib/api/rankings.api';
 
 	let { data } = $props();
 
@@ -40,6 +42,11 @@
 	let refreshTimer: number | null = null;
 	const REFRESH_MS = 60_000;
 	let lastRefresh = 0;
+
+	// Competition rankings
+	type CompRanking = { competition: CompetitionResponse; ranking: RankingItem };
+	let competitionRankings = $state<CompRanking[]>([]);
+	let rankingsLoading = $state(false);
 
 	// Stats
 	let teamStats = $state({
@@ -88,12 +95,42 @@
 			scoresMap = new Map();
 			await loadScoresForCurrentPage();
 			calculateStats();
+			await loadCompetitionRankings(foundTeam);
 			lastRefresh = Date.now();
 		} catch (err) {
 			console.error('Error loading team page:', err);
 			error = err instanceof Error ? err.message : 'Failed to load data';
 		} finally {
 			loading = false;
+		}
+	}
+
+	async function loadCompetitionRankings(foundTeam: TeamResponse) {
+		rankingsLoading = true;
+		try {
+			const compsRes = await api.competitions.getAll();
+			const comps = compsRes.data?.competitions || [];
+			const results: CompRanking[] = [];
+			await Promise.all(
+				comps.map(async (comp) => {
+					try {
+						const res = await api.competitions.getRankings(comp.id, true);
+						const ranking = (res.data?.rankings || []).find(
+							(r) => r.teamId === foundTeam.id
+						);
+						if (ranking) results.push({ competition: comp, ranking });
+					} catch {
+						// skip competitions where rankings fail
+					}
+				})
+			);
+			// sort by competition name
+			results.sort((a, b) => a.competition.name.localeCompare(b.competition.name));
+			competitionRankings = results;
+		} catch {
+			competitionRankings = [];
+		} finally {
+			rankingsLoading = false;
 		}
 	}
 
@@ -389,6 +426,78 @@
 						</p>
 					</div>
 				</div>
+			</div>
+		{/if}
+
+		<!-- Competition Rankings Card -->
+		{#if team && !loading && !error}
+			<div class="mb-10 rounded-[32px] border border-white/10 bg-white/90 p-8 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/80 dark:shadow-black/20 sm:p-10">
+				<div class="mb-6 flex items-center gap-3">
+					<div class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/25">
+						<BarChart3 class="h-4 w-4 text-white" />
+					</div>
+					<p class="text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400">
+						Competition Rankings
+					</p>
+				</div>
+
+				{#if rankingsLoading}
+					<div class="py-8 text-center text-slate-500 dark:text-slate-400">Loading rankings…</div>
+				{:else if competitionRankings.length === 0}
+					<div class="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center dark:border-white/10 dark:bg-slate-800/40">
+						<div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700">
+							<Trophy class="h-6 w-6 text-slate-400" />
+						</div>
+						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">No competition rankings yet.</p>
+					</div>
+				{:else}
+					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+						{#each competitionRankings as { competition, ranking }}
+							<a
+								href={`/competitions/${competition.id}`}
+								class="group relative flex flex-col gap-4 overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 p-5 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-cyan-500/10 dark:border-white/10 dark:bg-slate-800/50"
+							>
+								<!-- Rank badge -->
+								<div class="flex items-start justify-between gap-2">
+									<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl {ranking.rank === 1 ? 'bg-amber-100 dark:bg-amber-500/20' : ranking.rank === 2 ? 'bg-slate-100 dark:bg-slate-600/40' : ranking.rank === 3 ? 'bg-orange-100 dark:bg-orange-500/20' : 'bg-slate-100 dark:bg-slate-700/60'}">
+										<span class="text-xl font-black {ranking.rank === 1 ? 'text-amber-500' : ranking.rank === 2 ? 'text-slate-400' : ranking.rank === 3 ? 'text-orange-500' : 'text-slate-500 dark:text-slate-400'}">
+											#{ranking.rank}
+										</span>
+									</div>
+									<span class="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide
+										{competition.status === 'active'
+											? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300'
+											: competition.status === 'upcoming'
+											? 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-300'
+											: 'border-slate-200 bg-white text-slate-500 dark:border-white/10 dark:bg-slate-700 dark:text-slate-400'}
+									">{competition.status}</span>
+								</div>
+
+								<!-- Competition name -->
+								<div>
+									<p class="text-xs font-medium text-slate-400 dark:text-slate-500">Competition</p>
+									<p class="mt-0.5 text-sm font-bold leading-snug text-slate-900 transition group-hover:text-cyan-600 dark:text-white dark:group-hover:text-cyan-400">{competition.name}</p>
+								</div>
+
+								<!-- Stats row -->
+								<div class="grid grid-cols-3 gap-2 border-t border-slate-200 pt-3 dark:border-white/10">
+									<div class="text-center">
+										<p class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Score</p>
+										<p class="mt-0.5 text-base font-black text-slate-900 dark:text-white">{ranking.rankingScore}</p>
+									</div>
+									<div class="text-center">
+										<p class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Matches</p>
+										<p class="mt-0.5 text-base font-black text-slate-900 dark:text-white">{ranking.matchesPlayed}</p>
+									</div>
+									<div class="text-center">
+										<p class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Best</p>
+										<p class="mt-0.5 text-base font-black text-cyan-600 dark:text-cyan-400">{ranking.highestMatchScore}</p>
+									</div>
+								</div>
+							</a>
+						{/each}
+					</div>
+				{/if}
 			</div>
 		{/if}
 

@@ -6,6 +6,7 @@ function mapTeam(team: any): TeamResponse {
 	return {
 		id: String(team._id),
 		teamNumber: team.teamNumber,
+		competitionIds: team.competitionIds || [],
 		name: team.name,
 		school: team.school,
 		coach: team.coach,
@@ -30,6 +31,7 @@ class TeamsService {
 		try {
 			const team = await TeamModel.create({
 				teamNumber: data.teamNumber,
+				competitionIds: data.competitionIds || [],
 				name: data.name,
 				school: data.school,
 				coach: data.coach,
