@@ -3,4 +3,4 @@
 	import * as m from '$lib/paraglide/messages';
 </script>
 
-<ComingSoon title={m.placeholder_matches_title()} description={m.placeholder_matches_desc()} />
+<ComingSoon title={m.placeholder_resources_title()} description={m.placeholder_resources_desc()} />
