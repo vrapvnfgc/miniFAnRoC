@@ -3,40 +3,90 @@ import { fail } from '@sveltejs/kit';
 import { api } from '$lib/api';
 import type { MatchPhase } from '@shared';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ params }) => {
     try {
-        const [matchesRes, teamsRes, fieldsRes, competitionsRes] = await Promise.all([
-            api.matches.getAll(),
+        const id = params.id;
+
+        const [competitionRes, teamsRes, matchesRes, fieldsRes] = await Promise.all([
+            api.competitions.getById(id),
             api.teams.getAll(),
-            api.fields.getAll(),
-            api.competitions.getAll()
+            api.matches.getAll(),
+            api.fields.getAll()
         ]);
 
+        const competition = competitionRes.data?.competition || null;
+        const allTeams = teamsRes.data?.teams || [];
+        const registeredTeams = allTeams.filter((t: any) => (t.competitionIds || []).includes(id));
+        const availableTeams = allTeams.filter((t: any) => !(t.competitionIds || []).includes(id));
+        const matches = matchesRes.data?.matches || [];
+        const competitionMatches = matches.filter((m: any) => m.competitionId === id);
+        const fields = fieldsRes.data?.fields || [];
+
         return {
-            matches: matchesRes.data?.matches || [],
-            teams: teamsRes.data?.teams || [],
-            fields: fieldsRes.data?.fields || [],
-            competitions: competitionsRes.data?.competitions || []
+            competition,
+            teams: registeredTeams,
+            availableTeams,
+            matches: competitionMatches,
+            fields
         };
     } catch (err) {
-        console.error('Matches loader error:', err);
+        console.error('Competition admin page load error:', err);
         return {
-            matches: [],
+            competition: null,
             teams: [],
+            availableTeams: [],
+            matches: [],
             fields: [],
-            competitions: [],
-            error: 'Could not fetch data'
+            error: 'Could not load competition'
         };
     }
 };
 
 export const actions: Actions = {
-    create: async ({ request }) => {
+    register: async ({ request, params }) => {
+        const data = await request.formData();
+        const teamId = data.get('teamId');
+
+        if (!teamId) {
+            return fail(400, { missing: true, type: 'register' });
+        }
+
+        const compId = params.id;
+
+        try {
+            const teamRes = await api.teams.getById(teamId.toString());
+            const team = teamRes.data?.team;
+
+            if (!team) {
+                return fail(400, { success: false, error: 'Team not found', type: 'register' });
+            }
+
+            const currentCompetitionIds = team.competitionIds || [];
+            if (currentCompetitionIds.includes(compId)) {
+                return { success: true, type: 'register' };
+            }
+
+            const updated = [...currentCompetitionIds, compId];
+
+            await api.teams.update(teamId.toString(), { competitionIds: updated });
+
+            return { success: true, type: 'register' };
+        } catch (err) {
+            console.error('Register team error:', err);
+            const apiError = err as { error?: { message?: string } };
+            return fail(400, {
+                success: false,
+                error: apiError?.error?.message || 'Failed to register team',
+                type: 'register'
+            });
+        }
+    },
+
+    create: async ({ request, params }) => {
         const data = await request.formData();
         const matchNumber = data.get('matchNumber');
         const phase = data.get('phase');
         const fieldId = data.get('fieldId');
-        const competitionId = data.get('competitionId');
         const redTeam1 = data.get('redTeam1');
         const redTeam2 = data.get('redTeam2');
         const blueTeam1 = data.get('blueTeam1');
@@ -44,42 +94,25 @@ export const actions: Actions = {
         const scheduledTime = data.get('scheduledTime');
         const notes = data.get('notes');
 
-        if (!matchNumber || !phase || !fieldId || !competitionId || !redTeam1 || !redTeam2 || !blueTeam1 || !blueTeam2) {
+        if (!matchNumber || !phase || !fieldId || !redTeam1 || !redTeam2 || !blueTeam1 || !blueTeam2) {
             return fail(400, { missing: true, type: 'create' });
         }
 
-        // Validate that teams are different
+        // Validate teams are distinct
         const allTeams = [redTeam1.toString(), redTeam2.toString(), blueTeam1.toString(), blueTeam2.toString()];
         const uniqueTeams = new Set(allTeams);
         if (uniqueTeams.size !== 4) {
-            return fail(400, {
-                success: false,
-                error: 'All teams must be different',
-                type: 'create'
-            });
+            return fail(400, { success: false, error: 'All teams must be different', type: 'create' });
         }
 
         try {
-            // Validate selected teams belong to the chosen competition
-            const teamsRes = await api.teams.getAll();
-            const allTeamsList = teamsRes.data?.teams || [];
-            const compTeams = allTeamsList.filter((t: any) => (t.competitionIds || []).includes(competitionId.toString()));
-            const compTeamIds = new Set(compTeams.map((t: any) => t.id));
-            const selectedIds = [redTeam1.toString(), redTeam2.toString(), blueTeam1.toString(), blueTeam2.toString()];
-            const invalid = selectedIds.find((id) => !compTeamIds.has(id));
-            if (invalid) {
-                return fail(400, {
-                    success: false,
-                    error: 'All selected teams must be registered in the chosen competition',
-                    type: 'create'
-                });
-            }
+            const compId = params.id;
 
             await api.matches.create({
                 matchNumber: parseInt(matchNumber.toString()),
                 phase: phase as MatchPhase,
                 fieldId: fieldId.toString(),
-                competitionId: competitionId?.toString() || undefined,
+                competitionId: compId,
                 redTeamIds: [redTeam1.toString(), redTeam2.toString()],
                 blueTeamIds: [blueTeam1.toString(), blueTeam2.toString()],
                 status: 'scheduled',
@@ -99,13 +132,12 @@ export const actions: Actions = {
         }
     },
 
-    edit: async ({ request }) => {
+    edit: async ({ request, params }) => {
         const data = await request.formData();
         const matchId = data.get('matchId');
         const matchNumber = data.get('matchNumber');
         const phase = data.get('phase');
         const fieldId = data.get('fieldId');
-        const competitionId = data.get('competitionId');
         const redTeam1 = data.get('redTeam1');
         const redTeam2 = data.get('redTeam2');
         const blueTeam1 = data.get('blueTeam1');
@@ -117,57 +149,32 @@ export const actions: Actions = {
             return fail(400, { missing: true, type: 'edit' });
         }
 
-        // Validate that teams are different
+        // Validate teams are distinct
         const allTeams = [redTeam1.toString(), redTeam2.toString(), blueTeam1.toString(), blueTeam2.toString()];
         const uniqueTeams = new Set(allTeams);
         if (uniqueTeams.size !== 4) {
-            return fail(400, {
-                success: false,
-                error: 'All teams must be different',
-                type: 'edit'
-            });
+            return fail(400, { success: false, error: 'All teams must be different', type: 'edit' });
         }
 
         try {
-            // If a competition was selected, validate selected teams belong to it
-            if (competitionId) {
-                const teamsRes = await api.teams.getAll();
-                const allTeamsList = teamsRes.data?.teams || [];
-                const compTeams = allTeamsList.filter((t: any) => (t.competitionIds || []).includes(competitionId.toString()));
-                const compTeamIds = new Set(compTeams.map((t: any) => t.id));
-                const selectedIds = [redTeam1.toString(), redTeam2.toString(), blueTeam1.toString(), blueTeam2.toString()];
-                const invalid = selectedIds.find((id) => !compTeamIds.has(id));
-                if (invalid) {
-                    return fail(400, {
-                        success: false,
-                        error: 'All selected teams must be registered in the chosen competition',
-                        type: 'edit'
-                    });
-                }
-            }
+            const compId = params.id;
 
-            const updateRes = await api.matches.update(matchId.toString(), {
+            await api.matches.update(matchId.toString(), {
                 matchNumber: parseInt(matchNumber.toString()),
                 phase: phase as MatchPhase,
                 fieldId: fieldId.toString(),
-                competitionId: competitionId?.toString() || undefined,
+                competitionId: compId,
                 redTeamIds: [redTeam1.toString(), redTeam2.toString()],
                 blueTeamIds: [blueTeam1.toString(), blueTeam2.toString()],
                 scheduledTime: scheduledTime ? new Date(scheduledTime.toString()).toISOString() : undefined,
                 notes: notes?.toString() || undefined
             });
 
-            console.log('Matches edit action - updateRes:', updateRes);
-
             return { success: true, type: 'edit' };
         } catch (err) {
             console.error('Edit match error:', err);
             const apiError = err as { error?: { message?: string } };
-            return fail(400, {
-                success: false,
-                error: apiError?.error?.message || 'Failed to update match',
-                type: 'edit'
-            });
+            return fail(400, { success: false, error: apiError?.error?.message || 'Failed to update match', type: 'edit' });
         }
     },
 
@@ -185,11 +192,7 @@ export const actions: Actions = {
         } catch (err) {
             console.error('Delete match error:', err);
             const apiError = err as { error?: { message?: string } };
-            return fail(400, {
-                success: false,
-                error: apiError?.error?.message || 'Failed to delete match',
-                type: 'delete'
-            });
+            return fail(400, { success: false, error: apiError?.error?.message || 'Failed to delete match', type: 'delete' });
         }
     },
 
@@ -243,21 +246,16 @@ export const actions: Actions = {
         } catch (err) {
             console.error('Finish match error:', err);
             const apiError = err as { error?: { message?: string } };
-            return fail(400, {
-                success: false,
-                error: apiError?.error?.message || 'Failed to save score and finish match',
-                type: 'finishMatch'
-            });
+            return fail(400, { success: false, error: apiError?.error?.message || 'Failed to save score and finish match', type: 'finishMatch' });
         }
     },
 
-    editFinished: async ({ request }) => {
+    editFinished: async ({ request, params }) => {
         const data = await request.formData();
         const matchId = data.get('matchId');
         const matchNumber = data.get('matchNumber');
         const phase = data.get('phase');
         const fieldId = data.get('fieldId');
-        const competitionId = data.get('competitionId');
         const redTeam1 = data.get('redTeam1');
         const redTeam2 = data.get('redTeam2');
         const blueTeam1 = data.get('blueTeam1');
@@ -283,40 +281,19 @@ export const actions: Actions = {
         }
 
         // Validate that teams are different
-        const allTeams2 = [redTeam1.toString(), redTeam2.toString(), blueTeam1.toString(), blueTeam2.toString()];
-        const uniqueTeams2 = new Set(allTeams2);
-        if (uniqueTeams2.size !== 4) {
-            return fail(400, {
-                success: false,
-                error: 'All teams must be different',
-                type: 'editFinished'
-            });
+        const allTeams = [redTeam1.toString(), redTeam2.toString(), blueTeam1.toString(), blueTeam2.toString()];
+        const uniqueTeams = new Set(allTeams);
+        if (uniqueTeams.size !== 4) {
+            return fail(400, { success: false, error: 'All teams must be different', type: 'editFinished' });
         }
 
         try {
-            // If a competition was selected, validate selected teams belong to it
-            if (competitionId) {
-                const teamsRes = await api.teams.getAll();
-                const allTeamsList = teamsRes.data?.teams || [];
-                const compTeams = allTeamsList.filter((t: any) => (t.competitionIds || []).includes(competitionId.toString()));
-                const compTeamIds = new Set(compTeams.map((t: any) => t.id));
-                const selectedIds = [redTeam1.toString(), redTeam2.toString(), blueTeam1.toString(), blueTeam2.toString()];
-                const invalid = selectedIds.find((id) => !compTeamIds.has(id));
-                if (invalid) {
-                    return fail(400, {
-                        success: false,
-                        error: 'All selected teams must be registered in the chosen competition',
-                        type: 'editFinished'
-                    });
-                }
-            }
-
             // Update the match
             await api.matches.update(matchId.toString(), {
                 matchNumber: parseInt(matchNumber.toString()),
                 phase: phase as MatchPhase,
                 fieldId: fieldId.toString(),
-                competitionId: competitionId?.toString() || undefined,
+                competitionId: params.id,
                 redTeamIds: [redTeam1.toString(), redTeam2.toString()],
                 blueTeamIds: [blueTeam1.toString(), blueTeam2.toString()],
                 scheduledTime: scheduledTime ? new Date(scheduledTime.toString()).toISOString() : undefined,
@@ -346,11 +323,42 @@ export const actions: Actions = {
         } catch (err) {
             console.error('Edit finished match error:', err);
             const apiError = err as { error?: { message?: string } };
-            return fail(400, {
-                success: false,
-                error: apiError?.error?.message || 'Failed to update match and score',
-                type: 'editFinished'
-            });
+            return fail(400, { success: false, error: apiError?.error?.message || 'Failed to update match and score', type: 'editFinished' });
+        }
+    },
+
+    unregister: async ({ request, params }) => {
+        const data = await request.formData();
+        const teamId = data.get('teamId');
+
+        if (!teamId) {
+            return fail(400, { missing: true, type: 'unregister' });
+        }
+
+        try {
+            const teamRes = await api.teams.getById(teamId.toString());
+            const team = teamRes.data?.team;
+
+            if (!team) {
+                return fail(400, { success: false, error: 'Team not found', type: 'unregister' });
+            }
+
+            const currentCompetitionIds = team.competitionIds || [];
+            const compId = params.id;
+
+            if (!currentCompetitionIds.includes(compId)) {
+                return { success: true, type: 'unregister' };
+            }
+
+            const updated = currentCompetitionIds.filter((id: string) => id !== compId);
+
+            await api.teams.update(teamId.toString(), { competitionIds: updated });
+
+            return { success: true, type: 'unregister' };
+        } catch (err) {
+            console.error('Unregister team error:', err);
+            const apiError = err as { error?: { message?: string } };
+            return fail(400, { success: false, error: apiError?.error?.message || 'Failed to unregister team', type: 'unregister' });
         }
     }
 };

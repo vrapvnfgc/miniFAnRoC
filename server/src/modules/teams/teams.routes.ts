@@ -14,6 +14,7 @@ const TeamIdParamSchema = z.object({
 
 const CreateTeamSchema = z.object({
 	teamNumber: z.string().min(1, 'Team number is required'),
+	competitionIds: z.array(ObjectIdSchema).optional(),
 	name: z.string().min(1, 'Team name is required'),
 	school: z.string().min(1, 'School is required'),
 	coach: z.string().optional(),
