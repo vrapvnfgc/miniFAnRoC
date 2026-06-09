@@ -1,4 +1,14 @@
-import { RankingItem } from '@shared';
+type RankingItem = {
+	rank: number;
+	teamId: string;
+	teamNumber: string;
+	teamName: string;
+	rankingScore: number;
+	highestMatchScore: number;
+	bonusPoint: number;
+	matchesPlayed: number;
+	reason?: string;
+};
 import { TeamModel } from '../teams/teams.model';
 import { MatchModel } from '../matches/matches.model';
 import { MatchScoreModel } from '../scores/scores.model';
@@ -174,19 +184,21 @@ class RankingsService {
 
 	private computeAllianceTotal(alliance: any): number {
 		if (!alliance) return 0;
-		const tele = Number(alliance.teleIndependent ?? 0);
-		const shared = Number(alliance.sharedScore ?? 0);
-		const penalties = Number(alliance.penalties ?? 0);
-		const endgame = Number(alliance.endgame ?? 0);
-		const mult = Number(alliance.endgameMultiplier ?? 1) || 1;
-		const total = (tele + shared - penalties + endgame) * mult;
-		if (Number.isFinite(total)) return total;
-		// fallback to explicit total field if present (allow numeric string)
+
+		// Prefer stored total (source of truth)
 		if (alliance.total != null) {
 			const t = Number(alliance.total);
 			if (Number.isFinite(t)) return t;
 		}
-		return 0;
+
+		// Fallback: compute using current formula
+		const tele = Number(alliance.teleIndependent ?? 0);
+		const mult = Number(alliance.balanceMultiplier ?? alliance.endgameMultiplier ?? 1) || 1;
+		const shared = Number(alliance.sharedScore ?? 0);
+		const endgame = Number(alliance.endgame ?? 0);
+		const penalties = Number(alliance.penalties ?? 0);
+		const total = tele * mult + shared + endgame - penalties;
+		return Number.isFinite(total) ? total : 0;
 	}
 }
 

@@ -9,10 +9,14 @@ import { matchesService } from '../matches/matches.service';
 import { MatchScoreModel } from './scores.model';
 
 function calculateAllianceTotal(score: AllianceScoreInput): number {
-	return (
-		(score.teleIndependent + score.sharedScore - score.penalties + score.endgame) *
-		score.endgameMultiplier
-	);
+	const tele = Number(score.teleIndependent ?? 0);
+	const mult = Number(score.balanceMultiplier ?? 1) || 1;
+	const shared = Number(score.sharedScore ?? 0);
+	const endgame = Number(score.endgame ?? 0);
+	const penalties = Number(score.penalties ?? 0);
+
+	const total = tele * mult + shared + endgame - penalties;
+	return Number.isFinite(total) ? total : 0;
 }
 
 function buildAllianceScore(score: AllianceScoreInput): AllianceScoreResponse {
@@ -21,7 +25,7 @@ function buildAllianceScore(score: AllianceScoreInput): AllianceScoreResponse {
 		sharedScore: score.sharedScore,
 		penalties: score.penalties,
 		endgame: score.endgame,
-		endgameMultiplier: score.endgameMultiplier,
+		balanceMultiplier: score.balanceMultiplier,
 		total: calculateAllianceTotal(score)
 	};
 }

@@ -487,8 +487,8 @@
 										<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.endgame ?? 'N/A'}</span>
 									</div>
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Endgame Mult:</span>
-										<span class="font-semibold text-slate-900 dark:text-white">×{details.score.red.endgameMultiplier ?? 'N/A'}</span>
+										<span class="text-slate-600 dark:text-slate-400">Balance Mult:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">×{details.score.red.balanceMultiplier ?? 'N/A'}</span>
 									</div>
 									<div class="border-t border-slate-200 pt-2 dark:border-white/10">
 										<div class="flex justify-between">
@@ -519,8 +519,8 @@
 										<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.endgame ?? 'N/A'}</span>
 									</div>
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Endgame Mult:</span>
-										<span class="font-semibold text-slate-900 dark:text-white">×{details.score.blue.endgameMultiplier ?? 'N/A'}</span>
+										<span class="text-slate-600 dark:text-slate-400">Balance Mult:</span>
+										<span class="font-semibold text-slate-900 dark:text-white">×{details.score.blue.balanceMultiplier ?? 'N/A'}</span>
 									</div>
 									<div class="border-t border-slate-200 pt-2 dark:border-white/10">
 										<div class="flex justify-between">

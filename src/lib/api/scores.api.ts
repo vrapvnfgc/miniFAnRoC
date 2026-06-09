@@ -7,7 +7,7 @@ export type AllianceScoreInput = {
 	sharedScore: number;
 	penalties: number;
 	endgame: number;
-	endgameMultiplier: number;
+	balanceMultiplier: number;
 };
 
 export type AllianceScoreResponse = AllianceScoreInput & {

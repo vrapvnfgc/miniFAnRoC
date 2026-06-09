@@ -31,13 +31,13 @@
 	let redShared = $state(0);
 	let redPenalties = $state(0);
 	let redEndgame = $state(0);
-	let redEndgameMultiplier = $state(1);
+	let redBalanceMultiplier = $state(1);
 
 	let blueTeleIndependent = $state(0);
 	let blueShared = $state(0);
 	let bluePenalties = $state(0);
 	let blueEndgame = $state(0);
-	let blueEndgameMultiplier = $state(1);
+	let blueBalanceMultiplier = $state(1);
 
 	// Form fields
 	let formMatchNumber = $state('');
@@ -234,13 +234,13 @@
 				redShared = scoreRes.data.score.red.sharedScore || 0;
 				redPenalties = scoreRes.data.score.red.penalties || 0;
 				redEndgame = scoreRes.data.score.red.endgame || 0;
-				redEndgameMultiplier = scoreRes.data.score.red.endgameMultiplier || 1;
+				redBalanceMultiplier = scoreRes.data.score.red.balanceMultiplier || 1;
 
 				blueTeleIndependent = scoreRes.data.score.blue.teleIndependent || 0;
 				blueShared = scoreRes.data.score.blue.sharedScore || 0;
 				bluePenalties = scoreRes.data.score.blue.penalties || 0;
 				blueEndgame = scoreRes.data.score.blue.endgame || 0;
-				blueEndgameMultiplier = scoreRes.data.score.blue.endgameMultiplier || 1;
+				blueBalanceMultiplier = scoreRes.data.score.blue.balanceMultiplier || 1;
 			}
 		} catch (err) {
 			console.error('Failed to load score:', err);
@@ -255,12 +255,12 @@
 		redShared = 0;
 		redPenalties = 0;
 		redEndgame = 0;
-		redEndgameMultiplier = 1;
+		redBalanceMultiplier = 1;
 		blueTeleIndependent = 0;
 		blueShared = 0;
 		bluePenalties = 0;
 		blueEndgame = 0;
-		blueEndgameMultiplier = 1;
+		blueBalanceMultiplier = 1;
 		isScoreSheetOpen = true;
 	}
 
@@ -926,14 +926,14 @@
 							</div>
 
 							<div class="grid gap-2">
-								<Label for="redEndgameMultiplier" class="text-sm">Endgame Multiplier</Label>
+								<Label for="redBalanceMultiplier" class="text-sm">Balance Multiplier</Label>
 								<Input 
-									id="redEndgameMultiplier" 
-									name="redEndgameMultiplier" 
+									id="redBalanceMultiplier" 
+									name="redBalanceMultiplier" 
 									type="number"
 									step="0.01"
 									min="1"
-									bind:value={redEndgameMultiplier}
+									bind:value={redBalanceMultiplier}
 									class="bg-slate-700"
 									required 
 								/>
@@ -1003,14 +1003,14 @@
 							</div>
 
 							<div class="grid gap-2">
-								<Label for="blueEndgameMultiplier" class="text-sm">Endgame Multiplier</Label>
+								<Label for="blueBalanceMultiplier" class="text-sm">Balance Multiplier</Label>
 								<Input 
-									id="blueEndgameMultiplier" 
-									name="blueEndgameMultiplier" 
+									id="blueBalanceMultiplier" 
+									name="blueBalanceMultiplier" 
 									type="number"
 									step="0.01"
 									min="1"
-									bind:value={blueEndgameMultiplier}
+									bind:value={blueBalanceMultiplier}
 									class="bg-slate-700"
 									required 
 								/>
@@ -1267,14 +1267,14 @@
 							</div>
 
 							<div class="grid gap-2">
-								<Label for="editFinRedEndgameMultiplier" class="text-sm">Endgame Multiplier</Label>
+								<Label for="editFinRedBalanceMultiplier" class="text-sm">Balance Multiplier</Label>
 								<Input 
-									id="editFinRedEndgameMultiplier" 
-									name="redEndgameMultiplier" 
+									id="editFinRedBalanceMultiplier" 
+									name="redBalanceMultiplier" 
 									type="number"
 									step="0.01"
 									min="1"
-									bind:value={redEndgameMultiplier}
+									bind:value={redBalanceMultiplier}
 									class="bg-zinc-800 text-zinc-100"
 									required 
 								/>
@@ -1343,14 +1343,14 @@
 							</div>
 
 							<div class="grid gap-2">
-								<Label for="editFinBlueEndgameMultiplier" class="text-sm">Endgame Multiplier</Label>
+								<Label for="editFinBlueBalanceMultiplier" class="text-sm">Balance Multiplier</Label>
 								<Input 
-									id="editFinBlueEndgameMultiplier" 
-									name="blueEndgameMultiplier" 
+									id="editFinBlueBalanceMultiplier" 
+									name="blueBalanceMultiplier" 
 									type="number"
 									step="0.01"
 									min="1"
-									bind:value={blueEndgameMultiplier}
+									bind:value={blueBalanceMultiplier}
 									class="bg-zinc-800 text-zinc-100"
 									required 
 								/>

@@ -425,7 +425,7 @@
                     <div>
                         <h3 class="mb-3 text-sm font-bold text-red-600 dark:text-red-400">Red Alliance</h3>
                         <div class="space-y-2 text-sm">
-                            {#each [['Tele Independent', selectedMatchDetails.score?.red.teleIndependent], ['Shared', selectedMatchDetails.score?.red.sharedScore], ['Penalties', selectedMatchDetails.score?.red.penalties], ['Endgame', selectedMatchDetails.score?.red.endgame], ['Endgame Mult', selectedMatchDetails.score?.red.endgameMultiplier]] as [label, val]}
+                            {#each [['Tele Independent', selectedMatchDetails.score?.red.teleIndependent], ['Shared', selectedMatchDetails.score?.red.sharedScore], ['Penalties', selectedMatchDetails.score?.red.penalties], ['Endgame', selectedMatchDetails.score?.red.endgame], ['Balance Mult', selectedMatchDetails.score?.red.balanceMultiplier]] as [label, val]}
                                 <div class="flex justify-between">
                                     <span class="text-slate-600 dark:text-slate-400">{label}:</span>
                                     <span class="font-semibold text-slate-900 dark:text-white">{val ?? 'N/A'}</span>
@@ -444,7 +444,7 @@
                     <div>
                         <h3 class="mb-3 text-sm font-bold text-sky-600 dark:text-sky-400">Blue Alliance</h3>
                         <div class="space-y-2 text-sm">
-                            {#each [['Tele Independent', selectedMatchDetails.score?.blue.teleIndependent], ['Shared', selectedMatchDetails.score?.blue.sharedScore], ['Penalties', selectedMatchDetails.score?.blue.penalties], ['Endgame', selectedMatchDetails.score?.blue.endgame], ['Endgame Mult', selectedMatchDetails.score?.blue.endgameMultiplier]] as [label, val]}
+                            {#each [['Tele Independent', selectedMatchDetails.score?.blue.teleIndependent], ['Shared', selectedMatchDetails.score?.blue.sharedScore], ['Penalties', selectedMatchDetails.score?.blue.penalties], ['Endgame', selectedMatchDetails.score?.blue.endgame], ['Balance Mult', selectedMatchDetails.score?.blue.balanceMultiplier]] as [label, val]}
                                 <div class="flex justify-between">
                                     <span class="text-slate-600 dark:text-slate-400">{label}:</span>
                                     <span class="font-semibold text-slate-900 dark:text-white">{val ?? 'N/A'}</span>

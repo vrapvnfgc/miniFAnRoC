@@ -9,7 +9,7 @@ const AllianceScoreSchema = new Schema<IAllianceScore>(
 		sharedScore: { type: Number, required: true, default: 0 },
 		penalties: { type: Number, required: true, default: 0 },
 		endgame: { type: Number, required: true, default: 0 },
-		endgameMultiplier: { type: Number, required: true, default: 1 },
+		balanceMultiplier: { type: Number, required: true, default: 1 },
 		total: { type: Number, required: true, default: 0 }
 	},
 	{ _id: false }

@@ -58,7 +58,7 @@
 		avgEndgame: 0,
 		avgPenalty: 0,
 		avgSharedScore: 0,
-		avgEndgameMultiplier: 0
+		avgBalanceMultiplier: 0
 	});
 
 	async function loadAll() {
@@ -197,7 +197,7 @@
 		let totalEndgame = 0;
 		let totalPenalty = 0;
 		let totalSharedScore = 0;
-		let totalEndgameMultiplier = 0;
+		let totalBalanceMultiplier = 0;
 		let finishedCount = 0;
 
 		finishedMatches.forEach((match) => {
@@ -221,7 +221,7 @@
 			totalEndgame += teamScore.endgame;
 			totalPenalty += teamScore.penalties;
 			totalSharedScore += teamScore.sharedScore;
-			totalEndgameMultiplier += teamScore.endgameMultiplier;
+			totalBalanceMultiplier += teamScore.balanceMultiplier;
 		});
 
 		teamStats = {
@@ -233,7 +233,7 @@
 			avgEndgame: finishedCount > 0 ? totalEndgame / finishedCount : 0,
 			avgPenalty: finishedCount > 0 ? totalPenalty / finishedCount : 0,
 			avgSharedScore: finishedCount > 0 ? totalSharedScore / finishedCount : 0,
-			avgEndgameMultiplier: finishedCount > 0 ? totalEndgameMultiplier / finishedCount : 0
+			avgBalanceMultiplier: finishedCount > 0 ? totalBalanceMultiplier / finishedCount : 0
 		};
 	}
 
@@ -420,9 +420,9 @@
 						</p>
 					</div>
 					<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
-						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Endgame Multiplier</p>
+						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Balance Multiplier</p>
 						<p class="text-2xl font-bold text-slate-900 dark:text-white">
-							{teamStats.avgEndgameMultiplier.toFixed(2)}x
+							{teamStats.avgBalanceMultiplier.toFixed(2)}x
 						</p>
 					</div>
 				</div>
@@ -824,7 +824,7 @@
 											</div>
 											<div class="flex justify-between">
 												<span class="text-slate-600 dark:text-slate-300">Multiplier:</span>
-												<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.endgameMultiplier}x</span>
+												<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.balanceMultiplier}x</span>
 											</div>
 											<div class="flex justify-between border-t border-slate-300 pt-1 dark:border-white/20">
 												<span class="text-slate-600 dark:text-slate-300">Penalties:</span>
@@ -850,7 +850,7 @@
 											</div>
 											<div class="flex justify-between">
 												<span class="text-slate-600 dark:text-slate-300">Multiplier:</span>
-												<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.endgameMultiplier}x</span>
+												<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.balanceMultiplier}x</span>
 											</div>
 											<div class="flex justify-between border-t border-slate-300 pt-1 dark:border-white/20">
 												<span class="text-slate-600 dark:text-slate-300">Penalties:</span>

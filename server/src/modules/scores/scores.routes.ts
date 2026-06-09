@@ -16,7 +16,7 @@ const AllianceScoreSchema = z.object({
 	sharedScore: z.number(),
 	penalties: z.number(),
 	endgame: z.number(),
-	endgameMultiplier: z.number()
+	balanceMultiplier: z.number()
 });
 
 const SaveMatchScoreSchema = z.object({

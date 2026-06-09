@@ -8,7 +8,7 @@ export const AllianceScoreInputSchema = z.object({
 	sharedScore: z.number().default(0),
 	penalties: z.number().default(0),
 	endgame: z.number().default(0),
-	endgameMultiplier: z.number().default(1)
+	balanceMultiplier: z.number().default(1)
 });
 export type AllianceScoreInput = z.infer<typeof AllianceScoreInputSchema>;
 

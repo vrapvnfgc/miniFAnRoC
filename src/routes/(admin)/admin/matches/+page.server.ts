@@ -202,13 +202,13 @@ export const actions: Actions = {
         const redShared = parseFloat(data.get('redShared')?.toString() || '0');
         const redPenalties = parseFloat(data.get('redPenalties')?.toString() || '0');
         const redEndgame = parseFloat(data.get('redEndgame')?.toString() || '0');
-        const redEndgameMultiplier = parseFloat(data.get('redEndgameMultiplier')?.toString() || '1');
+        const redBalanceMultiplier = parseFloat(data.get('redBalanceMultiplier')?.toString() || '1');
 
         const blueTeleIndependent = parseFloat(data.get('blueTeleIndependent')?.toString() || '0');
         const blueShared = parseFloat(data.get('blueShared')?.toString() || '0');
         const bluePenalties = parseFloat(data.get('bluePenalties')?.toString() || '0');
         const blueEndgame = parseFloat(data.get('blueEndgame')?.toString() || '0');
-        const blueEndgameMultiplier = parseFloat(data.get('blueEndgameMultiplier')?.toString() || '1');
+        const blueBalanceMultiplier = parseFloat(data.get('blueBalanceMultiplier')?.toString() || '1');
 
         if (!matchId) {
             return fail(400, { missing: true, type: 'finishMatch' });
@@ -222,14 +222,14 @@ export const actions: Actions = {
                     sharedScore: redShared,
                     penalties: redPenalties,
                     endgame: redEndgame,
-                    endgameMultiplier: redEndgameMultiplier
+                    balanceMultiplier: redBalanceMultiplier
                 },
                 blue: {
                     teleIndependent: blueTeleIndependent,
                     sharedScore: blueShared,
                     penalties: bluePenalties,
                     endgame: blueEndgame,
-                    endgameMultiplier: blueEndgameMultiplier
+                    balanceMultiplier: blueBalanceMultiplier
                 },
                 status: 'submitted'
             });
@@ -270,13 +270,13 @@ export const actions: Actions = {
         const redShared = parseFloat(data.get('redShared')?.toString() || '0');
         const redPenalties = parseFloat(data.get('redPenalties')?.toString() || '0');
         const redEndgame = parseFloat(data.get('redEndgame')?.toString() || '0');
-        const redEndgameMultiplier = parseFloat(data.get('redEndgameMultiplier')?.toString() || '1');
+        const redBalanceMultiplier = parseFloat(data.get('redBalanceMultiplier')?.toString() || '1');
 
         const blueTeleIndependent = parseFloat(data.get('blueTeleIndependent')?.toString() || '0');
         const blueShared = parseFloat(data.get('blueShared')?.toString() || '0');
         const bluePenalties = parseFloat(data.get('bluePenalties')?.toString() || '0');
         const blueEndgame = parseFloat(data.get('blueEndgame')?.toString() || '0');
-        const blueEndgameMultiplier = parseFloat(data.get('blueEndgameMultiplier')?.toString() || '1');
+        const blueBalanceMultiplier = parseFloat(data.get('blueBalanceMultiplier')?.toString() || '1');
 
         if (!matchId || !matchNumber || !phase || !fieldId || !redTeam1 || !redTeam2 || !blueTeam1 || !blueTeam2) {
             return fail(400, { missing: true, type: 'editFinished' });
@@ -330,14 +330,14 @@ export const actions: Actions = {
                     sharedScore: redShared,
                     penalties: redPenalties,
                     endgame: redEndgame,
-                    endgameMultiplier: redEndgameMultiplier
+                    balanceMultiplier: redBalanceMultiplier
                 },
                 blue: {
                     teleIndependent: blueTeleIndependent,
                     sharedScore: blueShared,
                     penalties: bluePenalties,
                     endgame: blueEndgame,
-                    endgameMultiplier: blueEndgameMultiplier
+                    balanceMultiplier: blueBalanceMultiplier
                 },
                 status: 'submitted'
             });
