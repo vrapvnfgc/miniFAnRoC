@@ -87,6 +87,38 @@ const seedTeams = [
 		coach: 'Bui Khanh Linh',
 		robotName: 'Core',
 		members: ['Son Nguyen', 'Uyen Do', 'Thao Ho']
+	},
+	{
+		teamNumber: '9009',
+		name: 'Quang Ninh Quantum',
+		school: 'Ha Long High School for the Gifted',
+		coach: 'Nguyen Hai Yen',
+		robotName: 'CoalSpark',
+		members: ['Khanh Hoang', 'Linh Dao', 'Duy Pham']
+	},
+	{
+		teamNumber: '9010',
+		name: 'Nha Trang Navigators',
+		school: 'Ly Tu Trong High School',
+		coach: 'Tran Minh Chau',
+		robotName: 'Seabird',
+		members: ['Gia Bao', 'An Nguyen', 'Vy Tran']
+	},
+	{
+		teamNumber: '9011',
+		name: 'Bac Ninh Binary',
+		school: 'Han Thuyen High School',
+		coach: 'Do Thanh Tung',
+		robotName: 'Quan Ho',
+		members: ['Phuong Anh', 'Minh Duc', 'Hoang Lam']
+	},
+	{
+		teamNumber: '9012',
+		name: 'Long An Logic',
+		school: 'Tan An High School',
+		coach: 'Le Kim Ngan',
+		robotName: 'Vam Co',
+		members: ['Quoc Bao', 'Thanh Nhi', 'Huu Phuoc']
 	}
 ];
 
@@ -181,6 +213,69 @@ export async function seedDemoData(): Promise<void> {
 
 	const fieldAId = String(fields[0]._id);
 	const fieldBId = String(fields[1]._id);
+	const playoffAlliances = [
+		['9001', '9002'],
+		['9003', '9004'],
+		['9005', '9006'],
+		['9007', '9008'],
+		['9009', '9010'],
+		['9011', '9012']
+	];
+	const playoffMatches: Array<{
+		matchNumber: number;
+		phase: 'playoff';
+		fieldId: string;
+		redTeamIds: string[];
+		blueTeamIds: string[];
+		status: 'finished';
+		scheduledTime: Date;
+		startTime: Date;
+		endTime: Date;
+		notes: string;
+		score: {
+			red: ReturnType<typeof allianceScore>;
+			blue: ReturnType<typeof allianceScore>;
+		};
+	}> = [];
+	let playoffMatchNumber = 9101;
+
+	for (let i = 0; i < playoffAlliances.length; i += 1) {
+		for (let j = i + 1; j < playoffAlliances.length; j += 1) {
+			const matchOffset = playoffMatchNumber - 9100;
+			const redShared = 18 + ((i + j) % 5) * 2;
+			const blueShared = redShared;
+
+			playoffMatches.push({
+				matchNumber: playoffMatchNumber,
+				phase: 'playoff',
+				fieldId: matchOffset % 2 === 0 ? fieldBId : fieldAId,
+				redTeamIds: playoffAlliances[i].map(teamId),
+				blueTeamIds: playoffAlliances[j].map(teamId),
+				status: 'finished',
+				scheduledTime: new Date(now.getTime() - (24 - matchOffset) * 30 * 60 * 1000),
+				startTime: new Date(now.getTime() - (24 - matchOffset) * 30 * 60 * 1000),
+				endTime: new Date(now.getTime() - (23.5 - matchOffset) * 30 * 60 * 1000),
+				notes: 'Seeded playoff round-robin match.',
+				score: {
+					red: allianceScore({
+						teleIndependent: 30 + i * 4 + (matchOffset % 3),
+						sharedScore: redShared,
+						penalties: matchOffset % 4,
+						endgame: 12 + j,
+						endgameMultiplier: 1
+					}),
+					blue: allianceScore({
+						teleIndependent: 28 + j * 3 + (matchOffset % 4),
+						sharedScore: blueShared,
+						penalties: (matchOffset + 1) % 4,
+						endgame: 11 + i,
+						endgameMultiplier: 1
+					})
+				}
+			});
+			playoffMatchNumber += 1;
+		}
+	}
 
 	const seededMatches = await Promise.all(
 		[
@@ -262,14 +357,15 @@ export async function seedDemoData(): Promise<void> {
 			},
 			{
 				matchNumber: 9005,
-				phase: 'semifinal',
+				phase: 'playoff',
 				fieldId: fieldAId,
 				redTeamIds: [teamId('9001'), teamId('9006')],
 				blueTeamIds: [teamId('9004'), teamId('9007')],
 				status: 'scheduled',
 				scheduledTime: new Date(now.getTime() + 3 * 60 * 60 * 1000),
 				notes: 'Seeded playoff preview match.'
-			}
+			},
+			...playoffMatches
 		].map(({ score, ...match }) =>
 			MatchModel.findOneAndUpdate(
 				{ matchNumber: match.matchNumber },

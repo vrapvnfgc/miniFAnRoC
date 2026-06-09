@@ -512,8 +512,7 @@
 						required
 					>
 						<option value="qualification">Qualification</option>
-						<option value="semifinal">Semifinal</option>
-						<option value="final">Final</option>
+						<option value="playoff">Playoff</option>
 					</select>
 				</div>
 
@@ -701,8 +700,7 @@
 						required
 					>
 						<option value="qualification">Qualification</option>
-						<option value="semifinal">Semifinal</option>
-						<option value="final">Final</option>
+						<option value="playoff">Playoff</option>
 					</select>
 				</div>
 
@@ -1055,8 +1053,7 @@
 								required
 							>
 								<option value="qualification">Qualification</option>
-								<option value="semifinal">Semifinal</option>
-								<option value="final">Final</option>
+								<option value="playoff">Playoff</option>
 							</select>
 						</div>
 

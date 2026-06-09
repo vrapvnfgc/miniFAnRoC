@@ -33,6 +33,8 @@ router.post('/', validate({ body: CreateCompetitionSchema }), createCompetitionH
 router.get('/', getAllCompetitionsHandler);
 router.get('/:id', validate({ params: CompetitionIdParamSchema }), getCompetitionByIdHandler);
 router.get('/:id/rankings', validate({ params: CompetitionIdParamSchema }), getCompetitionRankingsHandler);
+router.get('/:id/award-report', validate({ params: CompetitionIdParamSchema }), getAwardReportHandler);
+router.get('/:id/advance-report', validate({ params: CompetitionIdParamSchema }), getAdvanceReportHandler);
 router.patch(
 	'/:id',
 	validate({ params: CompetitionIdParamSchema, body: UpdateCompetitionSchema }),
@@ -113,6 +115,34 @@ async function getCompetitionRankingsHandler(req: Request, res: Response, next: 
 		res.status(200).json({
 			status: 'success',
 			data: { rankings }
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+async function getAwardReportHandler(req: Request, res: Response, next: NextFunction) {
+	try {
+		const includeUnfinalized = req.query.includeUnfinalized === 'true';
+		const report = await competitionsService.getAwardReport(req.params.id, includeUnfinalized);
+
+		res.status(200).json({
+			status: 'success',
+			data: { report }
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+async function getAdvanceReportHandler(req: Request, res: Response, next: NextFunction) {
+	try {
+		const includeUnfinalized = req.query.includeUnfinalized === 'true';
+		const report = await competitionsService.getAdvanceReport(req.params.id, includeUnfinalized);
+
+		res.status(200).json({
+			status: 'success',
+			data: { report }
 		});
 	} catch (error) {
 		next(error);

@@ -53,11 +53,11 @@
                 insufficientData: 'Chưa đủ dữ liệu',
                 advanceIntroPrefix: 'Giải này thăng cấp lên',
                 higherCompetition: 'giải cấp cao hơn',
-                advanceIntro: 'Playoff FAnRoC có 6 liên minh, mỗi liên minh gồm 2 đội. Các liên minh đấu vòng tròn sao cho tất cả liên minh đều gặp nhau; màu liên minh và thứ tự sân là ngẫu nhiên, không ràng buộc. 4 liên minh có thành tích playoff tốt nhất sẽ được thăng hạng.',
+                advanceIntro: 'Playoff FAnRoC có 6 liên minh, mỗi liên minh gồm 2 đội. Mỗi liên minh đấu 5 trận để gặp đủ 5 liên minh còn lại; màu liên minh và thứ tự sân là ngẫu nhiên, không ràng buộc. Bảng xếp hạng playoff được tính theo tổng điểm tích lũy của liên minh, tương tự cách xếp hạng vòng loại nhưng áp dụng cho liên minh thay vì từng đội.',
                 noAdvanceData: 'Chưa có dữ liệu playoff để lập báo cáo thăng hạng.',
                 noAdvanceHint: 'BTC cần cập nhật các trận playoff và điểm số để hệ thống xác định 4 liên minh thăng hạng.',
                 alliance: 'Liên minh',
-                averageScore: 'TB điểm',
+                playoffScore: 'Điểm',
                 total: 'Tổng',
                 status: 'Trạng thái',
                 advanced: 'Thăng hạng',
@@ -116,11 +116,11 @@
                 insufficientData: 'Not enough data',
                 advanceIntroPrefix: 'This competition advances to',
                 higherCompetition: 'a higher-level competition',
-                advanceIntro: 'FAnRoC playoffs have 6 alliances, each with 2 teams. Alliances play a round-robin schedule so every alliance meets every other alliance; alliance color and field order are random and not constrained. The top 4 playoff alliances advance.',
+                advanceIntro: 'FAnRoC playoffs have 6 alliances, each with 2 teams. Each alliance plays 5 matches to face the other 5 alliances; alliance color and field order are random and not constrained. Playoff ranking uses each alliance total accumulated score, similar to qualification ranking but applied to alliances instead of individual teams.',
                 noAdvanceData: 'No playoff data is available for the advance report yet.',
                 noAdvanceHint: 'Organizers need to update playoff matches and scores so the system can identify the 4 advancing alliances.',
                 alliance: 'Alliance',
-                averageScore: 'Avg score',
+                playoffScore: 'Score',
                 total: 'Total',
                 status: 'Status',
                 advanced: 'Advanced',
@@ -209,26 +209,33 @@
     }
 
     function getAwardRows() {
-        const awardTemplates = [
-            {
+        const awardCatalog = {
+            fanroc_excellence: {
                 title: 'FAnRoC Excellence Award',
                 description: text.awardDescriptions[0]
             },
-            {
+            outstanding: {
                 title: 'Outstanding Award',
                 description: text.awardDescriptions[1]
             },
-            {
+            innovation: {
                 title: 'Innovation Award',
                 description: text.awardDescriptions[2]
             },
-            {
+            rising_star: {
                 title: 'Rising Star Award',
                 description: text.awardDescriptions[3]
             }
-        ];
+        };
 
-        return awardTemplates.map((award, index) => ({
+        if (data.awardReport?.awards?.length) {
+            return data.awardReport.awards.map((award: any) => ({
+                ...awardCatalog[award.awardKey as keyof typeof awardCatalog],
+                team: award.ranking || null
+            }));
+        }
+
+        return Object.values(awardCatalog).map((award, index) => ({
             ...award,
             team: rankings[index] || null
         }));
@@ -239,6 +246,10 @@
     }
 
     function getAdvanceRows() {
+        if (data.advanceReport?.alliances?.length) {
+            return data.advanceReport.alliances;
+        }
+
         const allianceMap = new Map<
             string,
             {
@@ -249,7 +260,7 @@
             }
         >();
 
-        for (const match of finishedMatches.filter((item: any) => item.phase !== 'qualification')) {
+        for (const match of finishedMatches.filter((item: any) => item.phase === 'playoff')) {
             const score = matchScores[match.id];
             if (!score) continue;
 
@@ -277,13 +288,30 @@
         return Array.from(allianceMap.values())
             .map((alliance) => ({
                 ...alliance,
+                rankingScore: alliance.totalScore,
                 averageScore: alliance.matchesPlayed > 0 ? alliance.totalScore / alliance.matchesPlayed : 0
             }))
             .sort((a, b) => {
-                if (b.averageScore !== a.averageScore) return b.averageScore - a.averageScore;
-                if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
-                return b.highestScore - a.highestScore;
-            });
+                if (b.rankingScore !== a.rankingScore) return b.rankingScore - a.rankingScore;
+                if (b.highestScore !== a.highestScore) return b.highestScore - a.highestScore;
+                return allianceKey(a.teamIds).localeCompare(allianceKey(b.teamIds));
+            })
+            .map((alliance, index) => ({
+                ...alliance,
+                rank: index + 1,
+                status: index < 4 ? 'advanced' : 'reserve'
+            }));
+    }
+
+    function getAllianceTeams(alliance: any) {
+        if (alliance.teams?.length) return alliance.teams;
+        return (alliance.teamIds || []).map((teamId: string) => ({ teamId }));
+    }
+
+    function getAllianceTeamLabel(team: any) {
+        return team.teamNumber && team.teamName
+            ? `${team.teamNumber} - ${team.teamName}`
+            : getTeamName(team.teamId);
     }
 
     async function openDetails(match: any) {
@@ -675,25 +703,25 @@
                                 <span class="text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">{text.rank}</span>
                                 <span class="text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">{text.alliance}</span>
                                 <span class="text-right text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">{text.played}</span>
-                                <span class="text-right text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">{text.averageScore}</span>
-                                <span class="text-right text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">{text.total}</span>
+                                <span class="text-right text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">{text.playoffScore}</span>
+                                <span class="text-right text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">{text.highest}</span>
                                 <span class="text-right text-xs font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">{text.status}</span>
                             </div>
                             {#each advanceRows as alliance, index}
                                 <div class="grid grid-cols-[4rem_1fr_5rem_6rem_6rem_7rem] items-center gap-0 border-b border-slate-100 px-5 py-4 last:border-0 dark:border-white/5">
-                                    <span class="text-sm font-black text-slate-700 dark:text-slate-200">#{index + 1}</span>
+                                    <span class="text-sm font-black text-slate-700 dark:text-slate-200">#{alliance.rank || index + 1}</span>
                                     <div class="text-sm font-semibold text-slate-900 dark:text-white">
-                                        {#each alliance.teamIds as teamId, teamIndex}
-                                            <button type="button" onclick={() => navigateToTeam(teamId)} class="transition hover:text-cyan-600 dark:hover:text-cyan-400">
-                                                {getTeamName(teamId)}
-                                            </button>{teamIndex < alliance.teamIds.length - 1 ? ' + ' : ''}
+                                        {#each getAllianceTeams(alliance) as team, teamIndex}
+                                            <button type="button" onclick={() => navigateToTeam(team.teamId)} class="transition hover:text-cyan-600 dark:hover:text-cyan-400">
+                                                {getAllianceTeamLabel(team)}
+                                            </button>{teamIndex < getAllianceTeams(alliance).length - 1 ? ' + ' : ''}
                                         {/each}
                                     </div>
                                     <span class="text-right text-sm text-slate-500 dark:text-slate-400">{alliance.matchesPlayed}</span>
-                                    <span class="text-right text-sm font-bold text-slate-700 dark:text-slate-200">{alliance.averageScore.toFixed(1)}</span>
-                                    <span class="text-right text-sm text-slate-500 dark:text-slate-400">{alliance.totalScore}</span>
-                                    <span class={`text-right text-xs font-bold uppercase tracking-wide ${index < 4 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}`}>
-                                        {index < 4 ? text.advanced : text.reserve}
+                                    <span class="text-right text-sm font-bold text-slate-700 dark:text-slate-200">{alliance.rankingScore ?? alliance.totalScore}</span>
+                                    <span class="text-right text-sm text-slate-500 dark:text-slate-400">{alliance.highestScore}</span>
+                                    <span class={`text-right text-xs font-bold uppercase tracking-wide ${alliance.status === 'advanced' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}`}>
+                                        {alliance.status === 'advanced' ? text.advanced : text.reserve}
                                     </span>
                                 </div>
                             {/each}

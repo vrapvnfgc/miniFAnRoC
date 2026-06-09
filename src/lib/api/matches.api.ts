@@ -1,6 +1,6 @@
 import { BaseService, type ApiResponse } from './base';
 
-export type MatchPhase = 'qualification' | 'semifinal' | 'final';
+export type MatchPhase = 'qualification' | 'playoff';
 
 export type MatchStatus = 'queued' | 'scheduled' | 'in_progress' | 'finished' | 'terminated';
 

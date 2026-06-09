@@ -34,6 +34,36 @@ export type CreateCompetition = {
 
 export type UpdateCompetition = Partial<CreateCompetition>;
 
+export type AwardReportItem = {
+	awardKey: 'fanroc_excellence' | 'outstanding' | 'innovation' | 'rising_star';
+	ranking: RankingItem | null;
+};
+
+export type AwardReportResponse = {
+	competitionId: string;
+	generatedAt: string;
+	awards: AwardReportItem[];
+};
+
+export type AdvanceReportAlliance = {
+	rank: number;
+	teamIds: string[];
+	teams: Array<{ teamId: string; teamNumber?: string; teamName?: string }>;
+	matchesPlayed: number;
+	rankingScore: number;
+	totalScore: number;
+	highestScore: number;
+	averageScore: number;
+	status: 'advanced' | 'reserve';
+};
+
+export type AdvanceReportResponse = {
+	competitionId: string;
+	nextCompetitionId: string | null;
+	generatedAt: string;
+	alliances: AdvanceReportAlliance[];
+};
+
 export class CompetitionsService extends BaseService {
 	getAll(): Promise<ApiResponse<{ competitions: CompetitionResponse[] }>> {
 		return this.http.get<ApiResponse<{ competitions: CompetitionResponse[] }>>('/competitions');
@@ -46,6 +76,20 @@ export class CompetitionsService extends BaseService {
 	getRankings(id: string, includeUnfinalized = false): Promise<ApiResponse<{ rankings: RankingItem[] }>> {
 		const query = includeUnfinalized ? '?includeUnfinalized=true' : '';
 		return this.http.get<ApiResponse<{ rankings: RankingItem[] }>>(`/competitions/${id}/rankings${query}`);
+	}
+
+	getAwardReport(id: string, includeUnfinalized = false): Promise<ApiResponse<{ report: AwardReportResponse }>> {
+		const query = includeUnfinalized ? '?includeUnfinalized=true' : '';
+		return this.http.get<ApiResponse<{ report: AwardReportResponse }>>(
+			`/competitions/${id}/award-report${query}`
+		);
+	}
+
+	getAdvanceReport(id: string, includeUnfinalized = false): Promise<ApiResponse<{ report: AdvanceReportResponse }>> {
+		const query = includeUnfinalized ? '?includeUnfinalized=true' : '';
+		return this.http.get<ApiResponse<{ report: AdvanceReportResponse }>>(
+			`/competitions/${id}/advance-report${query}`
+		);
 	}
 
 	create(data: CreateCompetition): Promise<ApiResponse<{ competition: CompetitionResponse }>> {

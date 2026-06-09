@@ -488,8 +488,7 @@
                     <Label for="phase">Phase *</Label>
                     <select id="phase" name="phase" bind:value={formPhase} class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-zinc-100" required>
                         <option value="qualification">Qualification</option>
-                        <option value="semifinal">Semifinal</option>
-                        <option value="final">Final</option>
+                        <option value="playoff">Playoff</option>
                     </select>
                 </div>
 
@@ -801,8 +800,7 @@
                                 required
                             >
                                 <option value="qualification">Qualification</option>
-                                <option value="semifinal">Semifinal</option>
-                                <option value="final">Final</option>
+                                <option value="playoff">Playoff</option>
                             </select>
                         </div>
 

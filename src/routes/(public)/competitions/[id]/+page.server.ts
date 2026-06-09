@@ -23,6 +23,8 @@ export const load: PageServerLoad = async ({ params }) => {
         const nextCompetition = competitions.find((c: any) => c.id === competition?.nextCompetitionId) || null;
         // load rankings for the competition (server-side)
         let rankings: any[] = [];
+        let awardReport = null;
+        let advanceReport = null;
         try {
             // include unfinalized scores for debugging/preview in the public page
             const r = await api.competitions.getRankings(id, true);
@@ -31,12 +33,30 @@ export const load: PageServerLoad = async ({ params }) => {
             console.error('Failed to load competition rankings in server load:', err);
             rankings = [];
         }
+        try {
+            const report = await api.competitions.getAwardReport(id, true);
+            awardReport = report.data?.report || null;
+        } catch (err) {
+            console.error('Failed to load award report in server load:', err);
+            awardReport = null;
+        }
+        if (competition?.nextCompetitionId) {
+            try {
+                const report = await api.competitions.getAdvanceReport(id, true);
+                advanceReport = report.data?.report || null;
+            } catch (err) {
+                console.error('Failed to load advance report in server load:', err);
+                advanceReport = null;
+            }
+        }
 
         return {
             competition,
             teams: registeredTeams,
             matches: competitionMatches,
             rankings,
+            awardReport,
+            advanceReport,
             fields,
             nextCompetition
         };
@@ -46,6 +66,8 @@ export const load: PageServerLoad = async ({ params }) => {
             competition: null,
             teams: [],
             matches: [],
+            awardReport: null,
+            advanceReport: null,
             fields: [],
             nextCompetition: null,
             error: 'Could not load competition'
