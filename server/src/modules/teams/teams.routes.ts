@@ -17,9 +17,24 @@ const CreateTeamSchema = z.object({
 	competitionIds: z.array(ObjectIdSchema).optional(),
 	name: z.string().min(1, 'Team name is required'),
 	school: z.string().min(1, 'School is required'),
+	location: z.string().optional(),
+	representativeEmail: z.string().email().optional(),
+	representativePhone: z.string().optional(),
 	coach: z.string().optional(),
+	teacherName: z.string().optional(),
+	teacherEmail: z.string().email().optional(),
+	teacherPhone: z.string().optional(),
 	robotName: z.string().optional(),
-	members: z.array(z.string()).optional()
+	members: z.array(z.string()).optional(),
+	memberDetails: z
+		.array(
+			z.object({
+				name: z.string().min(1),
+				className: z.string().min(1)
+			})
+		)
+		.max(4)
+		.optional()
 });
 
 const UpdateTeamSchema = CreateTeamSchema.partial();

@@ -9,9 +9,16 @@ function mapTeam(team: any): TeamResponse {
 		competitionIds: team.competitionIds || [],
 		name: team.name,
 		school: team.school,
+		location: team.location,
+		representativeEmail: team.representativeEmail,
+		representativePhone: team.representativePhone,
 		coach: team.coach,
+		teacherName: team.teacherName,
+		teacherEmail: team.teacherEmail,
+		teacherPhone: team.teacherPhone,
 		robotName: team.robotName,
 		members: team.members,
+		memberDetails: team.memberDetails || [],
 		createdAt: team.createdAt,
 		updatedAt: team.updatedAt
 	};
@@ -34,9 +41,16 @@ class TeamsService {
 				competitionIds: data.competitionIds || [],
 				name: data.name,
 				school: data.school,
+				location: data.location,
+				representativeEmail: data.representativeEmail,
+				representativePhone: data.representativePhone,
 				coach: data.coach,
+				teacherName: data.teacherName,
+				teacherEmail: data.teacherEmail,
+				teacherPhone: data.teacherPhone,
 				robotName: data.robotName,
-				members: data.members || []
+				members: data.members || [],
+				memberDetails: data.memberDetails || []
 			});
 
 			return mapTeam(team);

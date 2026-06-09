@@ -28,13 +28,12 @@
 
 	// Score form state
 	let redTeleIndependent = $state(0);
-	let redShared = $state(0);
+	let sharedScore = $state(0);
 	let redPenalties = $state(0);
 	let redEndgame = $state(0);
 	let redEndgameMultiplier = $state(1);
 
 	let blueTeleIndependent = $state(0);
-	let blueShared = $state(0);
 	let bluePenalties = $state(0);
 	let blueEndgame = $state(0);
 	let blueEndgameMultiplier = $state(1);
@@ -231,13 +230,12 @@
 			const scoreRes = await api.scores.getByMatchId(match.id);
 			if (scoreRes.data?.score) {
 				redTeleIndependent = scoreRes.data.score.red.teleIndependent || 0;
-				redShared = scoreRes.data.score.red.sharedScore || 0;
+				sharedScore = scoreRes.data.score.red.sharedScore || scoreRes.data.score.blue.sharedScore || 0;
 				redPenalties = scoreRes.data.score.red.penalties || 0;
 				redEndgame = scoreRes.data.score.red.endgame || 0;
 				redEndgameMultiplier = scoreRes.data.score.red.endgameMultiplier || 1;
 
 				blueTeleIndependent = scoreRes.data.score.blue.teleIndependent || 0;
-				blueShared = scoreRes.data.score.blue.sharedScore || 0;
 				bluePenalties = scoreRes.data.score.blue.penalties || 0;
 				blueEndgame = scoreRes.data.score.blue.endgame || 0;
 				blueEndgameMultiplier = scoreRes.data.score.blue.endgameMultiplier || 1;
@@ -252,12 +250,11 @@
 	function openScoreSheet(match: any) {
 		scoringMatch = match;
 		redTeleIndependent = 0;
-		redShared = 0;
+		sharedScore = 0;
 		redPenalties = 0;
 		redEndgame = 0;
 		redEndgameMultiplier = 1;
 		blueTeleIndependent = 0;
-		blueShared = 0;
 		bluePenalties = 0;
 		blueEndgame = 0;
 		blueEndgameMultiplier = 1;
@@ -864,6 +861,20 @@
 				>
 					<input type="hidden" name="matchId" value={scoringMatch.id} />
 
+					<div class="grid gap-2 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
+						<Label for="sharedScore" class="text-sm">Shared score chung</Label>
+						<Input
+							id="sharedScore"
+							name="sharedScore"
+							type="number"
+							step="0.5"
+							min="0"
+							bind:value={sharedScore}
+							class="bg-slate-700"
+							required
+						/>
+					</div>
+
 					<!-- Red Alliance -->
 					<div class="space-y-4 rounded-lg border border-red-700 bg-red-900/20 p-4">
 						<h3 class="font-semibold text-red-400">Red Alliance</h3>
@@ -878,20 +889,6 @@
 									step="0.5"
 									min="0"
 									bind:value={redTeleIndependent}
-									class="bg-slate-700"
-									required 
-								/>
-							</div>
-
-							<div class="grid gap-2">
-								<Label for="redShared" class="text-sm">Shared Score</Label>
-								<Input 
-									id="redShared" 
-									name="redShared" 
-									type="number"
-									step="0.5"
-									min="0"
-									bind:value={redShared}
 									class="bg-slate-700"
 									required 
 								/>
@@ -955,20 +952,6 @@
 									step="0.5"
 									min="0"
 									bind:value={blueTeleIndependent}
-									class="bg-slate-700"
-									required 
-								/>
-							</div>
-
-							<div class="grid gap-2">
-								<Label for="blueShared" class="text-sm">Shared Score</Label>
-								<Input 
-									id="blueShared" 
-									name="blueShared" 
-									type="number"
-									step="0.5"
-									min="0"
-									bind:value={blueShared}
 									class="bg-slate-700"
 									required 
 								/>
@@ -1206,6 +1189,20 @@
 					</div>
 
 					<!-- Score Section -->
+					<div class="grid gap-2 rounded-lg border border-zinc-700 bg-zinc-800/50 p-3">
+						<Label for="editFinSharedScore" class="text-sm">Shared score chung</Label>
+						<Input
+							id="editFinSharedScore"
+							name="sharedScore"
+							type="number"
+							step="0.5"
+							min="0"
+							bind:value={sharedScore}
+							class="bg-zinc-800 text-zinc-100"
+							required
+						/>
+					</div>
+
 					<div class="space-y-4 rounded-lg border border-red-700 bg-red-900/20 p-3">
 						<h3 class="font-semibold text-red-400">Red Alliance Score</h3>
 						
@@ -1219,20 +1216,6 @@
 									step="0.5"
 									min="0"
 									bind:value={redTeleIndependent}
-									class="bg-zinc-800 text-zinc-100"
-									required 
-								/>
-							</div>
-
-							<div class="grid gap-2">
-								<Label for="editFinRedShared" class="text-sm">Shared Score</Label>
-								<Input 
-									id="editFinRedShared" 
-									name="redShared" 
-									type="number"
-									step="0.5"
-									min="0"
-									bind:value={redShared}
 									class="bg-zinc-800 text-zinc-100"
 									required 
 								/>
@@ -1295,20 +1278,6 @@
 									step="0.5"
 									min="0"
 									bind:value={blueTeleIndependent}
-									class="bg-zinc-800 text-zinc-100"
-									required 
-								/>
-							</div>
-
-							<div class="grid gap-2">
-								<Label for="editFinBlueShared" class="text-sm">Shared Score</Label>
-								<Input 
-									id="editFinBlueShared" 
-									name="blueShared" 
-									type="number"
-									step="0.5"
-									min="0"
-									bind:value={blueShared}
 									class="bg-zinc-800 text-zinc-100"
 									required 
 								/>

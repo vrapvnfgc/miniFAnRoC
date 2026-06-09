@@ -23,7 +23,12 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const name = data.get('name');
 		const description = data.get('description');
+		const nameEn = data.get('nameEn');
+		const nameVi = data.get('nameVi');
+		const descriptionEn = data.get('descriptionEn');
+		const descriptionVi = data.get('descriptionVi');
 		const status = data.get('status');
+		const nextCompetitionId = data.get('nextCompetitionId');
 		const startDate = data.get('startDate');
 		const endDate = data.get('endDate');
 
@@ -35,7 +40,12 @@ export const actions: Actions = {
 			await api.competitions.create({
 				name: name.toString(),
 				description: description?.toString() || undefined,
+				nameEn: nameEn?.toString() || undefined,
+				nameVi: nameVi?.toString() || undefined,
+				descriptionEn: descriptionEn?.toString() || undefined,
+				descriptionVi: descriptionVi?.toString() || undefined,
 				status: status as CompetitionStatus,
+				nextCompetitionId: nextCompetitionId?.toString() || undefined,
 				startDate: startDate ? new Date(startDate.toString()).toISOString() : undefined,
 				endDate: endDate ? new Date(endDate.toString()).toISOString() : undefined
 			});
@@ -57,7 +67,12 @@ export const actions: Actions = {
 		const id = data.get('id');
 		const name = data.get('name');
 		const description = data.get('description');
+		const nameEn = data.get('nameEn');
+		const nameVi = data.get('nameVi');
+		const descriptionEn = data.get('descriptionEn');
+		const descriptionVi = data.get('descriptionVi');
 		const status = data.get('status');
+		const nextCompetitionId = data.get('nextCompetitionId');
 		const startDate = data.get('startDate');
 		const endDate = data.get('endDate');
 
@@ -69,7 +84,12 @@ export const actions: Actions = {
 			await api.competitions.update(id.toString(), {
 				name: name.toString(),
 				description: description?.toString() || undefined,
+				nameEn: nameEn?.toString() || undefined,
+				nameVi: nameVi?.toString() || undefined,
+				descriptionEn: descriptionEn?.toString() || undefined,
+				descriptionVi: descriptionVi?.toString() || undefined,
 				status: status as CompetitionStatus,
+				nextCompetitionId: nextCompetitionId?.toString() || undefined,
 				startDate: startDate ? new Date(startDate.toString()).toISOString() : undefined,
 				endDate: endDate ? new Date(endDate.toString()).toISOString() : undefined
 			});

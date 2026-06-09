@@ -37,14 +37,14 @@
 				</p>
 				<div class="mt-10 flex flex-wrap justify-center gap-4">
 					<a
-						href="/signup"
+						href="/auth"
 						class="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-8 py-4 font-semibold text-white shadow-xl shadow-cyan-500/20 transition hover:scale-105 hover:shadow-cyan-500/40"
 					>
 						<UserPlus class="h-5 w-5" />
 						{m.btn_sign_up()}
 					</a>
 					<a
-						href="/register"
+						href="/auth"
 						class="group inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-8 py-4 font-semibold text-slate-700 backdrop-blur-sm transition hover:border-slate-400 hover:bg-slate-100 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-white/30 dark:hover:bg-white/10"
 					>
 						{m.btn_register_team()}

@@ -7,7 +7,12 @@ export type CompetitionResponse = {
 	id: string;
 	name: string;
 	description?: string;
+	nameEn?: string;
+	nameVi?: string;
+	descriptionEn?: string;
+	descriptionVi?: string;
 	status: CompetitionStatus;
+	nextCompetitionId?: string;
 	startDate?: string;
 	endDate?: string;
 	createdAt: string;
@@ -17,7 +22,12 @@ export type CompetitionResponse = {
 export type CreateCompetition = {
 	name: string;
 	description?: string;
+	nameEn?: string;
+	nameVi?: string;
+	descriptionEn?: string;
+	descriptionVi?: string;
 	status?: CompetitionStatus;
+	nextCompetitionId?: string;
 	startDate?: string;
 	endDate?: string;
 };

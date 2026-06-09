@@ -5,11 +5,12 @@ export const load: PageServerLoad = async ({ params }) => {
     try {
         const id = params.id;
 
-        const [competitionRes, teamsRes, matchesRes, fieldsRes] = await Promise.all([
+        const [competitionRes, teamsRes, matchesRes, fieldsRes, competitionsRes] = await Promise.all([
             api.competitions.getById(id),
             api.teams.getAll(),
             api.matches.getAll(),
-            api.fields.getAll()
+            api.fields.getAll(),
+            api.competitions.getAll()
         ]);
 
         const competition = competitionRes.data?.competition || null;
@@ -18,6 +19,8 @@ export const load: PageServerLoad = async ({ params }) => {
         const matches = matchesRes.data?.matches || [];
         const competitionMatches = matches.filter((m: any) => m.competitionId === id);
         const fields = fieldsRes.data?.fields || [];
+        const competitions = competitionsRes.data?.competitions || [];
+        const nextCompetition = competitions.find((c: any) => c.id === competition?.nextCompetitionId) || null;
         // load rankings for the competition (server-side)
         let rankings: any[] = [];
         try {
@@ -34,7 +37,8 @@ export const load: PageServerLoad = async ({ params }) => {
             teams: registeredTeams,
             matches: competitionMatches,
             rankings,
-            fields
+            fields,
+            nextCompetition
         };
     } catch (err) {
         console.error('Competition page load error:', err);
@@ -43,6 +47,7 @@ export const load: PageServerLoad = async ({ params }) => {
             teams: [],
             matches: [],
             fields: [],
+            nextCompetition: null,
             error: 'Could not load competition'
         };
     }

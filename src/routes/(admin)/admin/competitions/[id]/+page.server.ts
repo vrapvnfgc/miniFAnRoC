@@ -202,13 +202,17 @@ export const actions: Actions = {
 
         // Parse score inputs
         const redTeleIndependent = parseFloat(data.get('redTeleIndependent')?.toString() || '0');
-        const redShared = parseFloat(data.get('redShared')?.toString() || '0');
+        const sharedScore = parseFloat(
+            data.get('sharedScore')?.toString() ||
+                data.get('redShared')?.toString() ||
+                data.get('blueShared')?.toString() ||
+                '0'
+        );
         const redPenalties = parseFloat(data.get('redPenalties')?.toString() || '0');
         const redEndgame = parseFloat(data.get('redEndgame')?.toString() || '0');
         const redEndgameMultiplier = parseFloat(data.get('redEndgameMultiplier')?.toString() || '1');
 
         const blueTeleIndependent = parseFloat(data.get('blueTeleIndependent')?.toString() || '0');
-        const blueShared = parseFloat(data.get('blueShared')?.toString() || '0');
         const bluePenalties = parseFloat(data.get('bluePenalties')?.toString() || '0');
         const blueEndgame = parseFloat(data.get('blueEndgame')?.toString() || '0');
         const blueEndgameMultiplier = parseFloat(data.get('blueEndgameMultiplier')?.toString() || '1');
@@ -222,14 +226,14 @@ export const actions: Actions = {
             await api.scores.save(matchId.toString(), {
                 red: {
                     teleIndependent: redTeleIndependent,
-                    sharedScore: redShared,
+                    sharedScore,
                     penalties: redPenalties,
                     endgame: redEndgame,
                     endgameMultiplier: redEndgameMultiplier
                 },
                 blue: {
                     teleIndependent: blueTeleIndependent,
-                    sharedScore: blueShared,
+                    sharedScore,
                     penalties: bluePenalties,
                     endgame: blueEndgame,
                     endgameMultiplier: blueEndgameMultiplier
@@ -265,13 +269,17 @@ export const actions: Actions = {
 
         // Parse score inputs
         const redTeleIndependent = parseFloat(data.get('redTeleIndependent')?.toString() || '0');
-        const redShared = parseFloat(data.get('redShared')?.toString() || '0');
+        const sharedScore = parseFloat(
+            data.get('sharedScore')?.toString() ||
+                data.get('redShared')?.toString() ||
+                data.get('blueShared')?.toString() ||
+                '0'
+        );
         const redPenalties = parseFloat(data.get('redPenalties')?.toString() || '0');
         const redEndgame = parseFloat(data.get('redEndgame')?.toString() || '0');
         const redEndgameMultiplier = parseFloat(data.get('redEndgameMultiplier')?.toString() || '1');
 
         const blueTeleIndependent = parseFloat(data.get('blueTeleIndependent')?.toString() || '0');
-        const blueShared = parseFloat(data.get('blueShared')?.toString() || '0');
         const bluePenalties = parseFloat(data.get('bluePenalties')?.toString() || '0');
         const blueEndgame = parseFloat(data.get('blueEndgame')?.toString() || '0');
         const blueEndgameMultiplier = parseFloat(data.get('blueEndgameMultiplier')?.toString() || '1');
@@ -304,14 +312,14 @@ export const actions: Actions = {
             await api.scores.save(matchId.toString(), {
                 red: {
                     teleIndependent: redTeleIndependent,
-                    sharedScore: redShared,
+                    sharedScore,
                     penalties: redPenalties,
                     endgame: redEndgame,
                     endgameMultiplier: redEndgameMultiplier
                 },
                 blue: {
                     teleIndependent: blueTeleIndependent,
-                    sharedScore: blueShared,
+                    sharedScore,
                     penalties: bluePenalties,
                     endgame: blueEndgame,
                     endgameMultiplier: blueEndgameMultiplier

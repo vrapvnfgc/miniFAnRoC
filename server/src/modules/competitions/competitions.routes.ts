@@ -17,7 +17,12 @@ const CompetitionStatusSchema = z.enum(['upcoming', 'active', 'completed']);
 const CreateCompetitionSchema = z.object({
 	name: z.string().min(1, 'Name is required'),
 	description: z.string().optional(),
+	nameEn: z.string().optional(),
+	nameVi: z.string().optional(),
+	descriptionEn: z.string().optional(),
+	descriptionVi: z.string().optional(),
 	status: CompetitionStatusSchema.optional(),
+	nextCompetitionId: ObjectIdSchema.optional(),
 	startDate: z.string().datetime().optional(),
 	endDate: z.string().datetime().optional()
 });
