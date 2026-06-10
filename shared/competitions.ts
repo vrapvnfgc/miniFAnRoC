@@ -6,7 +6,12 @@ export type CompetitionStatus = (typeof competitionStatuses)[number];
 export const ICompetitionSchema = z.object({
 	name: z.string().min(1, 'Name is required'),
 	description: z.string().optional(),
+	nameEn: z.string().optional(),
+	nameVi: z.string().optional(),
+	descriptionEn: z.string().optional(),
+	descriptionVi: z.string().optional(),
 	status: z.enum(competitionStatuses).default('upcoming'),
+	nextCompetitionId: z.string().optional(),
 	startDate: z.date().optional(),
 	endDate: z.date().optional(),
 	createdAt: z.date(),
@@ -22,7 +27,12 @@ export type Competition = z.infer<typeof CompetitionSchema>;
 export const CreateCompetitionSchema = z.object({
 	name: z.string().min(1, 'Name is required'),
 	description: z.string().optional(),
+	nameEn: z.string().optional(),
+	nameVi: z.string().optional(),
+	descriptionEn: z.string().optional(),
+	descriptionVi: z.string().optional(),
 	status: z.enum(competitionStatuses).optional(),
+	nextCompetitionId: z.string().optional(),
 	startDate: z.string().or(z.date()).optional(),
 	endDate: z.string().or(z.date()).optional()
 });

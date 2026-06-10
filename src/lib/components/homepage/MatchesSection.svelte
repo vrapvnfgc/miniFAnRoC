@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Clock, MapPin, ArrowRight, Zap } from 'lucide-svelte';
 	import * as m from '$lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import { api } from '$lib/api/client';
 	import type { MatchResponse, MatchStatus } from '$lib/api/matches.api';
 	import type { MatchScoreResponse } from '$lib/api/scores.api';
@@ -17,7 +18,6 @@
 			scoreB: number;
 			region: string;
 			time: string;
-			result: 'red' | 'blue' | 'draw';
 		}>
 	>([]);
 
@@ -34,6 +34,12 @@
 
 	let loading = $state(true);
 	let error = $state<string | null>(null);
+	const locale = $derived(getLocale() as 'en' | 'vi');
+	const text = $derived.by(() =>
+		locale === 'vi'
+			? { final: 'Hoàn tất', red: 'Đỏ', blue: 'Xanh' }
+			: { final: 'Final', red: 'Red', blue: 'Blue' }
+	);
 
 	async function loadMatches() {
 		try {
@@ -80,9 +86,6 @@
 						const scoreB = score?.blue?.total || 0;
 						const region = fieldMap.get(match.fieldId)?.name || 'N/A';
 
-						const result: 'red' | 'blue' | 'draw' =
-							scoreA > scoreB ? 'red' : scoreB > scoreA ? 'blue' : 'draw';
-
 						const endTime = match.endTime ? new Date(match.endTime) : new Date(match.updatedAt);
 						const time = endTime.toLocaleTimeString('en-US', {
 							hour: '2-digit',
@@ -96,8 +99,7 @@
 							scoreA,
 							scoreB,
 							region,
-							time,
-							result
+							time
 						};
 					} catch (err) {
 						console.error(`Error fetching score for match ${match.id}:`, err);
@@ -112,8 +114,7 @@
 							scoreA: 0,
 							scoreB: 0,
 							region,
-							time: 'N/A',
-							result: 'draw' as const
+							time: 'N/A'
 						};
 					}
 				})
@@ -166,8 +167,7 @@
 					scoreA: 0,
 					scoreB: 0,
 					region: 'N/A',
-					time: 'N/A',
-					result: 'draw'
+					time: 'N/A'
 				},
 				{
 					id: 'N/A',
@@ -176,8 +176,7 @@
 					scoreA: 0,
 					scoreB: 0,
 					region: 'N/A',
-					time: 'N/A',
-					result: 'draw'
+					time: 'N/A'
 				}
 			];
 			upcomingMatches = [
@@ -240,18 +239,14 @@
 							<div class="mb-2 space-y-1">
 								{#each match.redTeams as team}
 									<p
-										class="text-sm font-bold {match.result === 'red'
-											? 'text-green-600 dark:text-green-400'
-											: 'text-slate-700 dark:text-white'}"
+										class="text-sm font-bold text-slate-700 dark:text-white"
 									>
 										{team}
 									</p>
 								{/each}
 							</div>
 							<p
-								class="text-3xl font-black {match.result === 'red'
-									? 'text-green-600 dark:text-green-400'
-									: 'text-slate-400 dark:text-slate-500'}"
+								class="text-3xl font-black text-slate-400 dark:text-slate-500"
 							>
 								{match.scoreA}
 							</p>
@@ -260,7 +255,7 @@
 							<div
 								class="rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 dark:border-white/10 dark:bg-white/5"
 							>
-								<p class="text-xs text-slate-400">FINAL</p>
+								<p class="text-xs text-slate-400">{text.final}</p>
 								<p class="text-lg font-black text-slate-600 dark:text-white">VS</p>
 							</div>
 						</div>
@@ -268,18 +263,14 @@
 							<div class="mb-2 space-y-1">
 								{#each match.blueTeams as team}
 									<p
-										class="text-sm font-bold {match.result === 'blue'
-											? 'text-green-600 dark:text-green-400'
-											: 'text-slate-700 dark:text-white'}"
+										class="text-sm font-bold text-slate-700 dark:text-white"
 									>
 										{team}
 									</p>
 								{/each}
 							</div>
 							<p
-								class="text-3xl font-black {match.result === 'blue'
-									? 'text-green-600 dark:text-green-400'
-									: 'text-slate-400 dark:text-slate-500'}"
+								class="text-3xl font-black text-slate-400 dark:text-slate-500"
 							>
 								{match.scoreB}
 							</p>
@@ -307,7 +298,7 @@
 						<div
 							class="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1.5 text-xs font-semibold text-green-700 dark:bg-green-500/15 dark:text-green-400"
 						>
-							<Zap class="h-3 w-3" /> Upcoming
+							<Zap class="h-3 w-3" /> {m.matches_upcoming()}
 						</div>
 						<span class="font-mono text-sm text-slate-400">{match.id}</span>
 					</div>
@@ -316,7 +307,7 @@
 							<div
 								class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl border border-red-300 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10"
 							>
-								<span class="text-xs font-bold text-red-600 dark:text-red-400">RED</span>
+								<span class="text-xs font-bold text-red-600 dark:text-red-400">{text.red}</span>
 							</div>
 							<div class="space-y-1">
 								{#each match.redTeams as team}
@@ -329,7 +320,7 @@
 							<div
 								class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl border border-blue-300 bg-blue-50 dark:border-blue-500/30 dark:bg-blue-500/10"
 							>
-								<span class="text-xs font-bold text-blue-600 dark:text-blue-400">BLU</span>
+								<span class="text-xs font-bold text-blue-600 dark:text-blue-400">{text.blue}</span>
 							</div>
 							<div class="space-y-1">
 								{#each match.blueTeams as team}

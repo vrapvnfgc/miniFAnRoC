@@ -49,7 +49,7 @@
 					</div>
 					<div class="flex flex-wrap gap-3">
 						<a
-							href="/register"
+							href="/auth"
 							class="group/btn inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-cyan-600"
 						>
 							{m.btn_register_team()}
@@ -100,7 +100,7 @@
 					</div>
 					<div class="flex flex-wrap gap-3">
 						<a
-							href="/register"
+							href="/auth"
 							class="group/btn inline-flex items-center gap-2 rounded-xl bg-purple-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-600"
 						>
 							{m.btn_register_team()}

@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/api/client';
 	import * as m from '$lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import Navbar from '$lib/components/layout/Navbar.svelte';
 	import Footer from '$lib/components/layout/Footer.svelte';
 	import { Clock, Check, ChevronLeft, ChevronRight, BarChart3, Trophy } from 'lucide-svelte';
@@ -42,6 +43,94 @@
 	let refreshTimer: number | null = null;
 	const REFRESH_MS = 60_000;
 	let lastRefresh = 0;
+	const locale = $derived(getLocale() as 'en' | 'vi');
+	const text = $derived.by(() =>
+		locale === 'vi'
+			? {
+					loadingTeam: 'Đang tải thông tin đội...',
+					teamInformation: 'Thông tin đội',
+					name: 'Tên đội',
+					school: 'Trường',
+					coach: 'Huấn luyện viên',
+					robotName: 'Tên robot',
+					performance: 'Hiệu suất',
+					averageScore: 'Điểm trung bình',
+					averageStats: 'Thống kê trung bình',
+					totalScore: 'Tổng điểm',
+					teleIndependent: 'Tele độc lập',
+					endgame: 'Endgame',
+					penalty: 'Điểm phạt',
+					sharedScore: 'Điểm chung',
+					endgameMultiplier: 'Hệ số cân bằng',
+					competitionRankings: 'Xếp hạng giải đấu',
+					loadingRankings: 'Đang tải xếp hạng...',
+					noRankings: 'Chưa có xếp hạng giải đấu.',
+					competition: 'Giải đấu',
+					score: 'Điểm',
+					matches: 'Trận',
+					best: 'Cao nhất',
+					upcoming: 'Sắp diễn ra',
+					results: 'Kết quả',
+					noUpcoming: 'Chưa có trận sắp diễn ra',
+					noCompleted: 'Chưa có trận đã hoàn tất',
+					redAlliance: 'Liên minh đỏ',
+					blueAlliance: 'Liên minh xanh',
+					scheduledFor: 'Thời gian dự kiến',
+					completed: 'Hoàn tất',
+					noDate: 'Chưa có ngày',
+					page: 'Trang',
+					matchDetails: 'Chi tiết trận đấu',
+					redScore: 'Điểm đỏ',
+					blueScore: 'Điểm xanh',
+					redBreakdown: 'Chi tiết đỏ',
+					blueBreakdown: 'Chi tiết xanh',
+					shared: 'Điểm chung',
+					multiplier: 'Hệ số',
+					penalties: 'Phạt'
+				}
+			: {
+					loadingTeam: 'Loading team information...',
+					teamInformation: 'Team Information',
+					name: 'Name',
+					school: 'School',
+					coach: 'Coach',
+					robotName: 'Robot Name',
+					performance: 'Performance',
+					averageScore: 'Average score',
+					averageStats: 'Average Stats',
+					totalScore: 'Total Score',
+					teleIndependent: 'Tele Independent',
+					endgame: 'Endgame',
+					penalty: 'Penalty',
+					sharedScore: 'Shared Score',
+					endgameMultiplier: 'Balance Multiplier',
+					competitionRankings: 'Competition Rankings',
+					loadingRankings: 'Loading rankings...',
+					noRankings: 'No competition rankings yet.',
+					competition: 'Competition',
+					score: 'Score',
+					matches: 'Matches',
+					best: 'Best',
+					upcoming: 'Upcoming',
+					results: 'Results',
+					noUpcoming: 'No upcoming matches',
+					noCompleted: 'No completed matches yet',
+					redAlliance: 'Red alliance',
+					blueAlliance: 'Blue alliance',
+					scheduledFor: 'Scheduled for',
+					completed: 'Completed',
+					noDate: 'No date',
+					page: 'Page',
+					matchDetails: 'Match Details',
+					redScore: 'Red Score',
+					blueScore: 'Blue Score',
+					redBreakdown: 'Red Breakdown',
+					blueBreakdown: 'Blue Breakdown',
+					shared: 'Shared',
+					multiplier: 'Multiplier',
+					penalties: 'Penalties'
+				}
+	);
 
 	// Competition rankings
 	type CompRanking = { competition: CompetitionResponse; ranking: RankingItem };
@@ -50,9 +139,6 @@
 
 	// Stats
 	let teamStats = $state({
-		wins: 0,
-		losses: 0,
-		winRate: 0,
 		avgScore: 0,
 		avgTeleIndependent: 0,
 		avgEndgame: 0,
@@ -190,8 +276,6 @@
 		if (!team) return;
 
 		const teamId = team.id;
-		let wins = 0;
-		let losses = 0;
 		let totalScore = 0;
 		let totalTeleIndependent = 0;
 		let totalEndgame = 0;
@@ -208,14 +292,6 @@
 
 			const isRedTeam = match.redTeamIds.includes(teamId);
 			const teamScore = isRedTeam ? score.red : score.blue;
-			const opponentScore = isRedTeam ? score.blue : score.red;
-
-			if (teamScore.total > opponentScore.total) {
-				wins++;
-			} else if (teamScore.total < opponentScore.total) {
-				losses++;
-			}
-
 			totalScore += teamScore.total;
 			totalTeleIndependent += teamScore.teleIndependent;
 			totalEndgame += teamScore.endgame;
@@ -225,9 +301,6 @@
 		});
 
 		teamStats = {
-			wins,
-			losses,
-			winRate: finishedCount > 0 ? (wins / finishedCount) * 100 : 0,
 			avgScore: finishedCount > 0 ? totalScore / finishedCount : 0,
 			avgTeleIndependent: finishedCount > 0 ? totalTeleIndependent / finishedCount : 0,
 			avgEndgame: finishedCount > 0 ? totalEndgame / finishedCount : 0,
@@ -245,14 +318,6 @@
 		const s = scoresMap.get(matchId);
 		if (!s) return '—';
 		return `${s.red.total} — ${s.blue.total}`;
-	}
-
-	function getMatchWinner(matchId: string) {
-		const s = scoresMap.get(matchId);
-		if (!s) return 'draw';
-		if (s.red.total > s.blue.total) return 'red';
-		if (s.blue.total > s.red.total) return 'blue';
-		return 'draw';
 	}
 
 	function getSelectedMatchDetails() {
@@ -323,7 +388,7 @@
 		<!-- Team Header Card -->
 		<div class="mb-10 rounded-[32px] border border-white/10 bg-white/90 p-8 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/80 dark:shadow-black/20 sm:p-10">
 			{#if loading}
-				<div class="text-center">Loading team information…</div>
+				<div class="text-center">{text.loadingTeam}</div>
 			{:else if error}
 				<div class="text-center text-red-500">{error}</div>
 			{:else if team}
@@ -331,26 +396,26 @@
 					<!-- Team Info -->
 					<div>
 						<p class="mb-3 text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400">
-							Team Information
+							{text.teamInformation}
 						</p>
 						<h1 class="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white sm:text-5xl">
 							{team.teamNumber}
 						</h1>
 						<div class="space-y-3 text-slate-700 dark:text-slate-300">
 							<div>
-								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Name</p>
+								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.name}</p>
 								<p class="text-lg">{team.name || 'N/A'}</p>
 							</div>
 							<div>
-								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">School</p>
+								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.school}</p>
 								<p class="text-lg">{team.school || 'N/A'}</p>
 							</div>
 							<div>
-								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Coach</p>
+								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.coach}</p>
 								<p class="text-lg">{team.coach || 'N/A'}</p>
 							</div>
 							<div>
-								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Robot Name</p>
+								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.robotName}</p>
 								<p class="text-lg">{team.robotName || 'N/A'}</p>
 							</div>
 						</div>
@@ -359,21 +424,13 @@
 					<!-- Stats Summary -->
 					<div>
 						<p class="mb-3 text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400">
-							Performance
+							{text.performance}
 						</p>
 						<div class="grid grid-cols-2 gap-4">
-							<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
-								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Wins</p>
-								<p class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{teamStats.wins}</p>
-							</div>
-							<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
-								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Losses</p>
-								<p class="text-3xl font-bold text-red-600 dark:text-red-400">{teamStats.losses}</p>
-							</div>
 							<div class="col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
-								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Win Rate</p>
+								<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.averageScore}</p>
 								<p class="text-3xl font-bold text-cyan-600 dark:text-cyan-400">
-									{teamStats.winRate.toFixed(1)}%
+									{teamStats.avgScore.toFixed(1)}
 								</p>
 							</div>
 						</div>
@@ -386,41 +443,41 @@
 		{#if team && !loading && !error}
 			<div class="mb-10 rounded-[32px] border border-white/10 bg-white/90 p-8 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/80 dark:shadow-black/20 sm:p-10">
 				<p class="mb-6 text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400">
-					Average Stats
+					{text.averageStats}
 				</p>
 				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
-						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Total Score</p>
+						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.totalScore}</p>
 						<p class="text-2xl font-bold text-slate-900 dark:text-white">
 							{teamStats.avgScore.toFixed(1)}
 						</p>
 					</div>
 					<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
-						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Tele Independent</p>
+						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.teleIndependent}</p>
 						<p class="text-2xl font-bold text-slate-900 dark:text-white">
 							{teamStats.avgTeleIndependent.toFixed(1)}
 						</p>
 					</div>
 					<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
-						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Endgame</p>
+						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.endgame}</p>
 						<p class="text-2xl font-bold text-slate-900 dark:text-white">
 							{teamStats.avgEndgame.toFixed(1)}
 						</p>
 					</div>
 					<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
-						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Penalty</p>
+						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.penalty}</p>
 						<p class="text-2xl font-bold text-slate-900 dark:text-white">
 							{teamStats.avgPenalty.toFixed(1)}
 						</p>
 					</div>
 					<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
-						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Shared Score</p>
+						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.sharedScore}</p>
 						<p class="text-2xl font-bold text-slate-900 dark:text-white">
 							{teamStats.avgSharedScore.toFixed(1)}
 						</p>
 					</div>
 					<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
-						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Balance Multiplier</p>
+						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.endgameMultiplier}</p>
 						<p class="text-2xl font-bold text-slate-900 dark:text-white">
 							{teamStats.avgBalanceMultiplier.toFixed(2)}x
 						</p>
@@ -437,18 +494,18 @@
 						<BarChart3 class="h-4 w-4 text-white" />
 					</div>
 					<p class="text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400">
-						Competition Rankings
+						{text.competitionRankings}
 					</p>
 				</div>
 
 				{#if rankingsLoading}
-					<div class="py-8 text-center text-slate-500 dark:text-slate-400">Loading rankings…</div>
+					<div class="py-8 text-center text-slate-500 dark:text-slate-400">{text.loadingRankings}</div>
 				{:else if competitionRankings.length === 0}
 					<div class="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center dark:border-white/10 dark:bg-slate-800/40">
 						<div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700">
 							<Trophy class="h-6 w-6 text-slate-400" />
 						</div>
-						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">No competition rankings yet.</p>
+						<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.noRankings}</p>
 					</div>
 				{:else}
 					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -475,22 +532,22 @@
 
 								<!-- Competition name -->
 								<div>
-									<p class="text-xs font-medium text-slate-400 dark:text-slate-500">Competition</p>
+									<p class="text-xs font-medium text-slate-400 dark:text-slate-500">{text.competition}</p>
 									<p class="mt-0.5 text-sm font-bold leading-snug text-slate-900 transition group-hover:text-cyan-600 dark:text-white dark:group-hover:text-cyan-400">{competition.name}</p>
 								</div>
 
 								<!-- Stats row -->
 								<div class="grid grid-cols-3 gap-2 border-t border-slate-200 pt-3 dark:border-white/10">
 									<div class="text-center">
-										<p class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Score</p>
+										<p class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">{text.score}</p>
 										<p class="mt-0.5 text-base font-black text-slate-900 dark:text-white">{ranking.rankingScore}</p>
 									</div>
 									<div class="text-center">
-										<p class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Matches</p>
+										<p class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">{text.matches}</p>
 										<p class="mt-0.5 text-base font-black text-slate-900 dark:text-white">{ranking.matchesPlayed}</p>
 									</div>
 									<div class="text-center">
-										<p class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Best</p>
+										<p class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">{text.best}</p>
 										<p class="mt-0.5 text-base font-black text-cyan-600 dark:text-cyan-400">{ranking.highestMatchScore}</p>
 									</div>
 								</div>
@@ -511,7 +568,7 @@
 						onclick={() => (tab = 'scheduled')}
 					>
 						<Clock size={16} class="text-cyan-400" />
-						<span>Upcoming</span>
+						<span>{text.upcoming}</span>
 					</button>
 					<button
 						type="button"
@@ -519,13 +576,13 @@
 						onclick={() => (tab = 'results')}
 					>
 						<Check size={16} class="text-emerald-400" />
-						<span>Results</span>
+						<span>{text.results}</span>
 					</button>
 				</div>
 
 				{#if tab === 'scheduled'}
 					{#if scheduledMatches.length === 0}
-						<div class="py-8 text-center text-slate-500 dark:text-slate-400">No upcoming matches</div>
+						<div class="py-8 text-center text-slate-500 dark:text-slate-400">{text.noUpcoming}</div>
 					{:else}
 						<div class="grid gap-4 md:grid-cols-2">
 							{#each pageItems(scheduledMatches, scheduledPage) as match}
@@ -543,7 +600,7 @@
 
 									<div class="grid gap-3 sm:grid-cols-[1fr_auto_1fr] items-center">
 										<div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-950/70">
-											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red alliance</p>
+											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">{text.redAlliance}</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 												{#each match.redTeamIds as teamId}
 														<div
@@ -572,7 +629,7 @@
 										</div>
 
 										<div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-950/70">
-											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Blue alliance</p>
+											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">{text.blueAlliance}</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 												{#each match.blueTeamIds as teamId}
 														<div
@@ -599,7 +656,7 @@
 
 									{#if match.scheduledTime}
 										<div class="mt-4">
-											<p class="text-xs font-semibold text-slate-500 dark:text-slate-400">Scheduled for</p>
+											<p class="text-xs font-semibold text-slate-500 dark:text-slate-400">{text.scheduledFor}</p>
 											<p class="text-sm font-semibold text-slate-900 dark:text-white">
 												{new Date(match.scheduledTime).toLocaleDateString()} at {new Date(match.scheduledTime).toLocaleTimeString()}
 											</p>
@@ -617,7 +674,7 @@
 							>
 								<ChevronLeft size={16} />
 							</button>
-							<span class="text-sm text-slate-600 dark:text-slate-400">Page {scheduledPage} / {totalPages(scheduledMatches.length)}</span>
+							<span class="text-sm text-slate-600 dark:text-slate-400">{text.page} {scheduledPage} / {totalPages(scheduledMatches.length)}</span>
 							<button
 								onclick={() => (scheduledPage = Math.min(totalPages(scheduledMatches.length), scheduledPage + 1))}
 								disabled={scheduledPage === totalPages(scheduledMatches.length)}
@@ -629,7 +686,7 @@
 					{/if}
 				{:else}
 					{#if finishedMatches.length === 0}
-						<div class="py-8 text-center text-slate-500 dark:text-slate-400">No completed matches yet</div>
+						<div class="py-8 text-center text-slate-500 dark:text-slate-400">{text.noCompleted}</div>
 					{:else}
 						<div class="grid gap-4 md:grid-cols-2">
 							{#each pageItems(finishedMatches, resultsPage) as match}
@@ -644,14 +701,10 @@
 
 									<div class="grid gap-3 sm:grid-cols-[1fr_auto_1fr] items-center">
 										<div
-											class={`rounded-3xl p-4 transition hover:shadow-lg ${
-												getMatchWinner(match.id) === 'red'
-													? 'border-2 border-red-500 bg-red-50 hover:shadow-red-500/50 dark:bg-red-500/10'
-													: 'bg-slate-50 dark:bg-slate-950/70'
-											}`}
+											class="rounded-3xl bg-slate-50 p-4 transition hover:shadow-lg hover:shadow-red-500/50 dark:bg-slate-950/70"
 										>
 											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">
-												Red alliance
+												{text.redAlliance}
 											</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 												{#each match.redTeamIds as teamId}
@@ -678,7 +731,7 @@
 
 										<div class="flex flex-col items-center gap-2">
 											<div class="text-center">
-												<p class="text-xs font-semibold text-slate-500 dark:text-slate-400">SCORE</p>
+												<p class="text-xs font-semibold text-slate-500 dark:text-slate-400">{text.score}</p>
 												<p class="text-3xl font-bold text-slate-900 dark:text-white">
 													{scoresMap.get(match.id)?.red.total ?? 0}
 												</p>
@@ -692,14 +745,10 @@
 										</div>
 
 										<div
-											class={`rounded-3xl p-4 transition hover:shadow-lg ${
-												getMatchWinner(match.id) === 'blue'
-													? 'border-2 border-blue-500 bg-blue-50 hover:shadow-blue-500/50 dark:bg-blue-500/10'
-													: 'bg-slate-50 dark:bg-slate-950/70'
-											}`}
+											class="rounded-3xl bg-slate-50 p-4 transition hover:shadow-lg hover:shadow-blue-500/50 dark:bg-slate-950/70"
 										>
 											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
-												Blue alliance
+												{text.blueAlliance}
 											</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 												{#each match.blueTeamIds as teamId}
@@ -726,9 +775,9 @@
 									</div>
 
 									<div class="mt-4">
-										<p class="text-xs font-semibold text-slate-500 dark:text-slate-400">Completed</p>
+										<p class="text-xs font-semibold text-slate-500 dark:text-slate-400">{text.completed}</p>
 										<p class="text-sm font-semibold text-slate-900 dark:text-white">
-											{match.endTime ? new Date(match.endTime).toLocaleDateString() : 'No date'}
+											{match.endTime ? new Date(match.endTime).toLocaleDateString() : text.noDate}
 										</p>
 									</div>
 								</button>
@@ -746,7 +795,7 @@
 							>
 								<ChevronLeft size={16} />
 							</button>
-							<span class="text-sm text-slate-600 dark:text-slate-400">Page {resultsPage} / {totalPages(finishedMatches.length)}</span>
+							<span class="text-sm text-slate-600 dark:text-slate-400">{text.page} {resultsPage} / {totalPages(finishedMatches.length)}</span>
 							<button
 								onclick={async () => {
 									resultsPage = Math.min(totalPages(finishedMatches.length), resultsPage + 1);
@@ -772,7 +821,7 @@
 						<div class="mb-6 flex items-center justify-between">
 							<div>
 								<p class="text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400">
-									Match Details
+									{text.matchDetails}
 								</p>
 								<h2 class="text-2xl font-bold text-slate-900 dark:text-white">
 									{formatMatchId(details.match)}
@@ -790,7 +839,7 @@
 							<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
 								<div class="mb-4 grid grid-cols-3 gap-4">
 									<div class="text-center">
-										<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Red Score</p>
+										<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.redScore}</p>
 										<p class="text-4xl font-bold text-red-600 dark:text-red-400">
 											{details.score.red.total}
 										</p>
@@ -799,7 +848,7 @@
 										<p class="text-2xl font-bold text-slate-700 dark:text-slate-300">—</p>
 									</div>
 									<div class="text-center">
-										<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Blue Score</p>
+										<p class="text-sm font-semibold text-slate-500 dark:text-slate-400">{text.blueScore}</p>
 										<p class="text-4xl font-bold text-blue-600 dark:text-blue-400">
 											{details.score.blue.total}
 										</p>
@@ -808,52 +857,52 @@
 
 								<div class="grid grid-cols-2 gap-4 border-t border-slate-200 pt-4 dark:border-white/10">
 									<div>
-										<p class="text-xs font-semibold text-slate-500 dark:text-slate-400">Red Breakdown</p>
+										<p class="text-xs font-semibold text-slate-500 dark:text-slate-400">{text.redBreakdown}</p>
 										<div class="mt-2 space-y-1 text-sm">
 											<div class="flex justify-between">
-												<span class="text-slate-600 dark:text-slate-300">Tele Independent:</span>
+												<span class="text-slate-600 dark:text-slate-300">{text.teleIndependent}:</span>
 												<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.teleIndependent}</span>
 											</div>
 											<div class="flex justify-between">
-												<span class="text-slate-600 dark:text-slate-300">Shared:</span>
+												<span class="text-slate-600 dark:text-slate-300">{text.shared}:</span>
 												<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.sharedScore}</span>
 											</div>
 											<div class="flex justify-between">
-												<span class="text-slate-600 dark:text-slate-300">Endgame:</span>
+												<span class="text-slate-600 dark:text-slate-300">{text.endgame}:</span>
 												<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.endgame}</span>
 											</div>
 											<div class="flex justify-between">
-												<span class="text-slate-600 dark:text-slate-300">Multiplier:</span>
+												<span class="text-slate-600 dark:text-slate-300">{text.multiplier}:</span>
 												<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.balanceMultiplier}x</span>
 											</div>
 											<div class="flex justify-between border-t border-slate-300 pt-1 dark:border-white/20">
-												<span class="text-slate-600 dark:text-slate-300">Penalties:</span>
+												<span class="text-slate-600 dark:text-slate-300">{text.penalties}:</span>
 												<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.penalties}</span>
 											</div>
 										</div>
 									</div>
 
 									<div>
-										<p class="text-xs font-semibold text-slate-500 dark:text-slate-400">Blue Breakdown</p>
+										<p class="text-xs font-semibold text-slate-500 dark:text-slate-400">{text.blueBreakdown}</p>
 										<div class="mt-2 space-y-1 text-sm">
 											<div class="flex justify-between">
-												<span class="text-slate-600 dark:text-slate-300">Tele Independent:</span>
+												<span class="text-slate-600 dark:text-slate-300">{text.teleIndependent}:</span>
 												<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.teleIndependent}</span>
 											</div>
 											<div class="flex justify-between">
-												<span class="text-slate-600 dark:text-slate-300">Shared:</span>
+												<span class="text-slate-600 dark:text-slate-300">{text.shared}:</span>
 												<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.sharedScore}</span>
 											</div>
 											<div class="flex justify-between">
-												<span class="text-slate-600 dark:text-slate-300">Endgame:</span>
+												<span class="text-slate-600 dark:text-slate-300">{text.endgame}:</span>
 												<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.endgame}</span>
 											</div>
 											<div class="flex justify-between">
-												<span class="text-slate-600 dark:text-slate-300">Multiplier:</span>
+												<span class="text-slate-600 dark:text-slate-300">{text.multiplier}:</span>
 												<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.balanceMultiplier}x</span>
 											</div>
 											<div class="flex justify-between border-t border-slate-300 pt-1 dark:border-white/20">
-												<span class="text-slate-600 dark:text-slate-300">Penalties:</span>
+												<span class="text-slate-600 dark:text-slate-300">{text.penalties}:</span>
 												<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.penalties}</span>
 											</div>
 										</div>

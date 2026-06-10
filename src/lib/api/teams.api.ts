@@ -6,9 +6,16 @@ export type TeamResponse = {
 	teamNumber: string;
 	name: string;
 	school: string;
+	location?: string;
+	representativeEmail?: string;
+	representativePhone?: string;
 	coach?: string;
+	teacherName?: string;
+	teacherEmail?: string;
+	teacherPhone?: string;
 	robotName?: string;
 	members?: string[];
+	memberDetails?: { name: string; className: string }[];
 	createdAt: string;
 	updatedAt: string;
 };
@@ -18,9 +25,16 @@ export type CreateTeam = {
 	competitionIds?: string[];
 	name: string;
 	school: string;
+	location?: string;
+	representativeEmail?: string;
+	representativePhone?: string;
 	coach?: string;
+	teacherName?: string;
+	teacherEmail?: string;
+	teacherPhone?: string;
 	robotName?: string;
 	members?: string[];
+	memberDetails?: { name: string; className: string }[];
 };
 
 export type UpdateTeam = Partial<CreateTeam>;

@@ -2,27 +2,58 @@
     import Navbar from '$lib/components/layout/Navbar.svelte';
     import Footer from '$lib/components/layout/Footer.svelte';
     import type { PageData } from './$types';
+    import { getLocale } from '$lib/paraglide/runtime';
     import { Trophy, Calendar, Clock, CheckCircle, ArrowRight } from 'lucide-svelte';
 
-    let { data }: { data: PageData } = $props();
+	let { data }: { data: PageData } = $props();
+    const locale = $derived(getLocale() as 'en' | 'vi');
+    const text = $derived.by(() =>
+        locale === 'vi'
+            ? {
+                title: 'Giải đấu',
+                description: 'Theo dõi các giải đấu, lịch thi đấu và bảng điểm FAnRoC.',
+                metaDescription: 'Danh sách giải đấu, lịch thi đấu và kết quả FAnRoC.',
+                platform: 'Nền tảng FAnRoC',
+                total: 'Tổng',
+                active: 'Đang diễn ra',
+                upcoming: 'Sắp diễn ra',
+                completed: 'Đã kết thúc',
+                emptyTitle: 'Chưa có giải đấu',
+                emptyDescription: 'Vui lòng quay lại sau để xem các giải đấu sắp tới.',
+                noDescription: 'Chưa có mô tả.'
+            }
+            : {
+                title: 'Competitions',
+                description: 'Follow FAnRoC competitions, match schedules, and scoreboards.',
+                metaDescription: 'FAnRoC competition list, match schedules, and results.',
+                platform: 'FAnRoC Platform',
+                total: 'Total',
+                active: 'Active',
+                upcoming: 'Upcoming',
+                completed: 'Completed',
+                emptyTitle: 'No competitions yet',
+                emptyDescription: 'Check back later for upcoming competitions.',
+                noDescription: 'No description yet.'
+            }
+    );
 
     function getStatusConfig(status: string) {
         switch (status) {
             case 'upcoming':
                 return {
-                    label: 'Upcoming',
+                    label: text.upcoming,
                     classes: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/20',
                     icon: Clock
                 };
             case 'active':
                 return {
-                    label: 'Active',
+                    label: text.active,
                     classes: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/20',
                     icon: CheckCircle
                 };
             case 'completed':
                 return {
-                    label: 'Completed',
+                    label: text.completed,
                     classes: 'bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20',
                     icon: Trophy
                 };
@@ -37,7 +68,7 @@
 
     function formatDate(date: string | undefined): string {
         if (!date) return '—';
-        return new Date(date).toLocaleDateString('en-US', {
+        return new Date(date).toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric'
@@ -51,15 +82,26 @@
         const s = new Date(start);
         const e = new Date(end);
         if (s.getFullYear() === e.getFullYear() && s.getMonth() === e.getMonth()) {
-            return `${s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${e.getDate()}, ${e.getFullYear()}`;
+            return `${s.toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US', { month: 'short', day: 'numeric' })} – ${e.getDate()}, ${e.getFullYear()}`;
         }
         return `${formatDate(start)} – ${formatDate(end)}`;
+    }
+
+    function localizedName(competition: any) {
+        return (locale === 'vi' ? competition.nameVi : competition.nameEn) || competition.name;
+    }
+
+    function localizedDescription(competition: any) {
+        return (
+            (locale === 'vi' ? competition.descriptionVi : competition.descriptionEn) ||
+            competition.description
+        );
     }
 </script>
 
 <svelte:head>
-    <title>Competitions · miniFAnRoC</title>
-    <meta name="description" content="Browse all FAnRoC robotics competitions, schedules, and results." />
+    <title>{text.title} · miniFAnRoC</title>
+    <meta name="description" content={text.metaDescription} />
 </svelte:head>
 
 <Navbar />
@@ -79,27 +121,27 @@
             <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                     <p class="mb-3 text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400">
-                        FAnRoC Platform
+                        {text.platform}
                     </p>
                     <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-                        Competitions
+                        {text.title}
                     </h1>
                     <p class="mt-3 text-base text-slate-500 dark:text-slate-400">
-                        Browse all robotics competitions, schedules, and results.
+                        {text.description}
                     </p>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-center dark:border-white/10 dark:bg-slate-800/60">
                         <p class="text-2xl font-black text-slate-900 dark:text-white">{data.competitions.length}</p>
-                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Total</p>
+                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">{text.total}</p>
                     </div>
                     <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-center dark:border-emerald-500/20 dark:bg-emerald-500/10">
                         <p class="text-2xl font-black text-emerald-700 dark:text-emerald-400">{data.competitions.filter(c => c.status === 'active').length}</p>
-                        <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400">Active</p>
+                        <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400">{text.active}</p>
                     </div>
                     <div class="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-3 text-center dark:border-blue-500/20 dark:bg-blue-500/10">
                         <p class="text-2xl font-black text-blue-700 dark:text-blue-400">{data.competitions.filter(c => c.status === 'upcoming').length}</p>
-                        <p class="text-xs font-medium text-blue-600 dark:text-blue-400">Upcoming</p>
+                        <p class="text-xs font-medium text-blue-600 dark:text-blue-400">{text.upcoming}</p>
                     </div>
                 </div>
             </div>
@@ -118,8 +160,8 @@
                 <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800">
                     <Trophy class="h-7 w-7 text-slate-400" />
                 </div>
-                <p class="text-lg font-semibold text-slate-700 dark:text-slate-300">No competitions yet</p>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Check back soon for upcoming competitions.</p>
+                <p class="text-lg font-semibold text-slate-700 dark:text-slate-300">{text.emptyTitle}</p>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{text.emptyDescription}</p>
             </div>
 
         {:else}
@@ -144,16 +186,16 @@
 
                         <!-- Name -->
                         <h2 class="mb-2 text-lg font-bold leading-snug text-slate-900 transition group-hover:text-cyan-600 dark:text-white dark:group-hover:text-cyan-400">
-                            {competition.name}
+                            {localizedName(competition)}
                         </h2>
 
                         <!-- Description -->
-                        {#if competition.description}
+                        {#if localizedDescription(competition)}
                             <p class="mb-4 line-clamp-2 flex-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                                {competition.description}
+                                {localizedDescription(competition)}
                             </p>
                         {:else}
-                            <p class="mb-4 flex-1 text-sm italic text-slate-400 dark:text-slate-600">No description.</p>
+                            <p class="mb-4 flex-1 text-sm italic text-slate-400 dark:text-slate-600">{text.noDescription}</p>
                         {/if}
 
                         <!-- Date range -->

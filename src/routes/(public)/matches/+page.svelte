@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/api/client';
 	import * as m from '$lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import Navbar from '$lib/components/layout/Navbar.svelte';
 	import Footer from '$lib/components/layout/Footer.svelte';
 	import { Clock, Check, ChevronLeft, ChevronRight } from 'lucide-svelte';
@@ -223,6 +224,58 @@
 			clearInterval(refreshTimer);
 		}
 	});
+
+
+	const locale = $derived(getLocale() as 'en' | 'vi');
+	const text = $derived.by(() =>
+		locale === 'vi'
+			? {
+					upcoming: 'Sắp diễn ra',
+					results: 'Kết quả',
+					searchPlaceholder: 'Tìm theo tên đội...',
+					loading: 'Đang tải...',
+					noUpcoming: 'Chưa có trận sắp diễn ra',
+					noMatchesFound: 'Không tìm thấy trận cho',
+					noResults: 'Chưa có kết quả',
+					noResultsFound: 'Không tìm thấy kết quả cho',
+					redAlliance: 'Liên minh đỏ',
+					blueAlliance: 'Liên minh xanh',
+					final: 'Hoàn tất',
+					page: 'Trang',
+					viewDetails: 'Xem chi tiết',
+					matchDetails: 'Chi tiết trận đấu',
+					close: 'Đóng',
+					teleIndependent: 'Tele độc lập',
+					shared: 'Điểm chung',
+					penalties: 'Phạt',
+					endgame: 'Endgame',
+					balanceMultiplier: 'Hệ số cân bằng',
+					total: 'Tổng'
+				}
+			: {
+					upcoming: 'Upcoming',
+					results: 'Results',
+					searchPlaceholder: 'Search by team name...',
+					loading: 'Loading...',
+					noUpcoming: 'No upcoming matches',
+					noMatchesFound: 'No matches found for',
+					noResults: 'No results yet',
+					noResultsFound: 'No results found for',
+					redAlliance: 'Red alliance',
+					blueAlliance: 'Blue alliance',
+					final: 'Final',
+					page: 'Page',
+					viewDetails: 'View details',
+					matchDetails: 'Match details',
+					close: 'Close',
+					teleIndependent: 'Tele Independent',
+					shared: 'Shared',
+					penalties: 'Penalties',
+					endgame: 'Endgame',
+					balanceMultiplier: 'Balance Mult',
+					total: 'Total'
+				}
+	);
 </script>
 
 <Navbar />
@@ -258,7 +311,7 @@
 					onclick={() => (tab = 'scheduled')}
 				>
 					<Clock size={16} class="text-cyan-400" />
-					<span>Upcoming</span>
+					<span>{text.upcoming}</span>
 				</button>
 				<button
 					type="button"
@@ -266,12 +319,12 @@
 					onclick={() => (tab = 'results')}
 				>
 					<Check size={16} class="text-emerald-400" />
-					<span>Results</span>
+					<span>{text.results}</span>
 				</button>
 				<div class="flex-1 sm:ml-auto">
 					<input
 						type="text"
-						placeholder="Search by team name..."
+						placeholder={text.searchPlaceholder}
 						bind:value={searchQuery}
 						class="w-full rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder-slate-500 transition focus:border-cyan-400 focus:outline-none dark:border-white/10 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
 					/>
@@ -280,16 +333,16 @@
 			
 
 			{#if loading}
-				<div class="py-8 text-center">Loading…</div>
+				<div class="py-8 text-center">{text.loading}</div>
 			{:else if error}
 				<div class="py-8 text-center text-red-500">{error}</div>
 			{:else}
 				{#if tab === 'scheduled'}
 					{#if scheduledList.length === 0}
-						<div class="py-8 text-center">No upcoming matches</div>
+						<div class="py-8 text-center">{text.noUpcoming}</div>
 					{:else if getFilteredMatches(scheduledList).length === 0}
 						<div class="py-8 text-center text-slate-500 dark:text-slate-400">
-							No matches found for "{searchQuery}"
+							{text.noMatchesFound} "{searchQuery}"
 						</div>
 					{:else}
 						<div class="grid gap-4 md:grid-cols-2">
@@ -305,7 +358,7 @@
 									</div>
 									<div class="grid gap-3 sm:grid-cols-2">
 												<div class="rounded-3xl bg-slate-50 p-4 transition hover:shadow-lg hover:shadow-red-500/50 dark:bg-slate-950/70">
-											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red alliance</p>
+											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">{text.redAlliance}</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 												{#each match.redTeamIds as teamId}
 													<button
@@ -319,7 +372,7 @@
 											</div>
 										</div>
 												<div class="rounded-3xl bg-slate-50 p-4 transition hover:shadow-lg hover:shadow-sky-500/50 dark:bg-slate-950/70">
-											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Blue alliance</p>
+											<p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">{text.blueAlliance}</p>
 											<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 												{#each match.blueTeamIds as teamId}
 													<button
@@ -355,10 +408,10 @@
 					{/if}
 				{:else}
 					{#if finishedList.length === 0}
-						<div class="py-8 text-center">No results yet</div>
+						<div class="py-8 text-center">{text.noResults}</div>
 				{:else if getFilteredMatches(finishedList).length === 0}
 					<div class="py-8 text-center text-slate-500 dark:text-slate-400">
-						No results found for "{searchQuery}"
+						{text.noResultsFound} "{searchQuery}"
 					</div>
 				{:else}
 					<div class="grid gap-4 md:grid-cols-2">
@@ -375,7 +428,7 @@
 										</p>
 								<div class="grid gap-3 sm:grid-cols-[1fr_auto_1fr] items-center">
 											<div class={`rounded-3xl p-4 transition hover:shadow-lg hover:shadow-red-500/50 ${getMatchWinner(match.id) === 'red' ? 'border-2 border-red-500 bg-red-50 dark:bg-red-500/10' : 'bg-slate-50 dark:bg-slate-950/70'}`}>
-										<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">Red alliance</p>
+										<p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600 dark:text-red-400">{text.redAlliance}</p>
 										<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 											{#each match.redTeamIds as teamId}
 												<button
@@ -389,14 +442,14 @@
 										</div>
 									</div>
 									<div class="flex flex-col items-center justify-center gap-2 rounded-3xl bg-slate-900 px-4 py-6 text-white dark:bg-white/10 dark:text-white">
-										<p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-300">Final</p>
+										<p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-300">{text.final}</p>
 												<p class="text-xl font-black">{getScoreDisplay(match.id)}</p>
 										<p class={`text-xs font-semibold ${getMatchWinner(match.id) === 'red' ? 'text-red-400' : getMatchWinner(match.id) === 'blue' ? 'text-sky-400' : 'text-slate-400'}`}>
 											{getMatchWinner(match.id) === 'red' ? 'Red ✓' : getMatchWinner(match.id) === 'blue' ? 'Blue ✓' : 'Draw'}
 										</p>
 									</div>
 											<div class={`rounded-3xl p-4 transition hover:shadow-lg hover:shadow-sky-500/50 ${getMatchWinner(match.id) === 'blue' ? 'border-2 border-sky-500 bg-blue-50 dark:bg-blue-500/10' : 'bg-slate-50 dark:bg-slate-950/70'}`}>
-										<p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Blue alliance</p>
+										<p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">{text.blueAlliance}</p>
 										<div class="mt-3 space-y-1 text-sm font-semibold text-slate-900 dark:text-white">
 											{#each match.blueTeamIds as teamId}
 												<button
@@ -415,7 +468,7 @@
 										onclick={() => (selectedMatchId = match.id)}
 										class="w-full rounded-lg bg-cyan-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-cyan-700 dark:bg-cyan-700 dark:hover:bg-cyan-600"
 									>
-										View Details
+										{text.viewDetails}
 									</button>
 								</div>
 							</article>
@@ -429,7 +482,7 @@
 							>
 								<ChevronLeft size={16} />
 							</button>
-					<span class="text-sm text-slate-600 dark:text-slate-400">Page {resultsPage} / {totalPages(getFilteredMatches(finishedList).length)}</span>
+					<span class="text-sm text-slate-600 dark:text-slate-400">{text.page} {resultsPage} / {totalPages(getFilteredMatches(finishedList).length)}</span>
 					<button
 						onclick={async () => { resultsPage = Math.min(totalPages(getFilteredMatches(finishedList).length), resultsPage + 1); await loadScoresForCurrentPage(); }}
 								class="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-200"
@@ -450,12 +503,12 @@
 			<div class="glass-card max-h-screen w-full max-w-2xl overflow-y-auto rounded-3xl border border-white/10 bg-white/90 p-6 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/85 dark:shadow-black/20 sm:p-8">
 				<div class="mb-6 flex items-center justify-between">
 					<div>
-						<p class="text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400">Match Details</p>
+						<p class="text-xs font-semibold tracking-[0.2em] text-cyan-600 uppercase dark:text-cyan-400">{text.matchDetails}</p>
 						<h2 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">{formatMatchId(details.match)}</h2>
 					</div>
 					<button
 						onclick={() => (selectedMatchId = null)}
-						title="Close"
+						title={text.close}
 						class="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-800"
 					>
 						<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -468,31 +521,31 @@
 					<div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950/70">
 						<div class="grid gap-4 sm:grid-cols-2">
 							<div>
-								<h3 class="mb-3 text-sm font-semibold text-red-600 dark:text-red-400">Red Alliance</h3>
+								<h3 class="mb-3 text-sm font-semibold text-red-600 dark:text-red-400">{text.redAlliance}</h3>
 								<div class="space-y-2 text-sm">
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Tele Independent:</span>
+										<span class="text-slate-600 dark:text-slate-300">{text.teleIndependent}:</span>
 										<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.teleIndependent ?? 'N/A'}</span>
 									</div>
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Shared:</span>
+										<span class="text-slate-600 dark:text-slate-300">{text.shared}:</span>
 										<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.sharedScore ?? 'N/A'}</span>
 									</div>
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Penalties:</span>
+										<span class="text-slate-600 dark:text-slate-300">{text.penalties}:</span>
 										<span class="font-semibold text-slate-900 dark:text-white">-{details.score.red.penalties ?? 'N/A'}</span>
 									</div>
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Endgame:</span>
+										<span class="text-slate-600 dark:text-slate-300">{text.endgame}:</span>
 										<span class="font-semibold text-slate-900 dark:text-white">{details.score.red.endgame ?? 'N/A'}</span>
 									</div>
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Balance Mult:</span>
+										<span class="text-slate-600 dark:text-slate-300">{text.balanceMultiplier}:</span>
 										<span class="font-semibold text-slate-900 dark:text-white">×{details.score.red.balanceMultiplier ?? 'N/A'}</span>
 									</div>
 									<div class="border-t border-slate-200 pt-2 dark:border-white/10">
 										<div class="flex justify-between">
-											<span class="font-semibold text-red-600 dark:text-red-400">Total:</span>
+											<span class="font-bold text-red-600 dark:text-red-400">{text.total}:</span>
 											<span class="text-lg font-black text-red-600 dark:text-red-400">{details.score.red.total ?? 'N/A'}</span>
 										</div>
 									</div>
@@ -500,31 +553,31 @@
 							</div>
 
 							<div>
-								<h3 class="mb-3 text-sm font-semibold text-sky-600 dark:text-sky-400">Blue Alliance</h3>
+								<h3 class="mb-3 text-sm font-semibold text-sky-600 dark:text-sky-400">{text.blueAlliance}</h3>
 								<div class="space-y-2 text-sm">
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Tele Independent:</span>
+										<span class="text-slate-600 dark:text-slate-300">{text.teleIndependent}:</span>
 										<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.teleIndependent ?? 'N/A'}</span>
 									</div>
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Shared:</span>
+										<span class="text-slate-600 dark:text-slate-300">{text.shared}:</span>
 										<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.sharedScore ?? 'N/A'}</span>
 									</div>
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Penalties:</span>
+										<span class="text-slate-600 dark:text-slate-300">{text.penalties}:</span>
 										<span class="font-semibold text-slate-900 dark:text-white">-{details.score.blue.penalties ?? 'N/A'}</span>
 									</div>
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Endgame:</span>
+										<span class="text-slate-600 dark:text-slate-300">{text.endgame}:</span>
 										<span class="font-semibold text-slate-900 dark:text-white">{details.score.blue.endgame ?? 'N/A'}</span>
 									</div>
 									<div class="flex justify-between">
-										<span class="text-slate-600 dark:text-slate-400">Balance Mult:</span>
+										<span class="text-slate-600 dark:text-slate-300">{text.balanceMultiplier}:</span>
 										<span class="font-semibold text-slate-900 dark:text-white">×{details.score.blue.balanceMultiplier ?? 'N/A'}</span>
 									</div>
 									<div class="border-t border-slate-200 pt-2 dark:border-white/10">
 										<div class="flex justify-between">
-											<span class="font-semibold text-sky-600 dark:text-sky-400">Total:</span>
+											<span class="font-bold text-sky-600 dark:text-sky-400">{text.total}:</span>
 											<span class="text-lg font-black text-sky-600 dark:text-sky-400">{details.score.blue.total ?? 'N/A'}</span>
 										</div>
 									</div>

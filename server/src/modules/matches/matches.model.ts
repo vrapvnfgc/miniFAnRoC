@@ -13,7 +13,7 @@ const MatchSchema = new Schema<IMatch>(
 
 		phase: {
 			type: String,
-			enum: ['qualification', 'semifinal', 'final'],
+			enum: ['qualification', 'playoff'],
 			required: true
 		},
 

@@ -54,8 +54,9 @@ class ScoresService {
 			throw AppError.conflict('Finalized score cannot be edited', 'SCORE_ALREADY_FINALIZED');
 		}
 
-		const red = buildAllianceScore(data.red);
-		const blue = buildAllianceScore(data.blue);
+		const sharedScore = data.red.sharedScore;
+		const red = buildAllianceScore({ ...data.red, sharedScore });
+		const blue = buildAllianceScore({ ...data.blue, sharedScore });
 		const status = data.status || 'draft';
 
 		if (existingScore) {
