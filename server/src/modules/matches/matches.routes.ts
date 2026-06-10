@@ -14,7 +14,7 @@ const MatchIdParamSchema = z.object({
 
 const MatchStatusSchema = z.enum(['queued', 'scheduled', 'in_progress', 'finished', 'terminated']);
 
-const MatchPhaseSchema = z.enum(['qualification', 'semifinal', 'final']);
+const MatchPhaseSchema = z.enum(['qualification', 'playoff']);
 
 const CreateMatchSchema = z.object({
 	matchNumber: z.number().int().positive('Match number must be positive'),

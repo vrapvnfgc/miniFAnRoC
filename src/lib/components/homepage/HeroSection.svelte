@@ -54,7 +54,7 @@
 
 			<div class="mt-10 flex flex-wrap gap-4">
 				<a
-					href="/register"
+					href="/auth"
 					class="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-7 py-4 font-semibold text-white shadow-lg shadow-cyan-500/25 transition hover:scale-105 hover:shadow-cyan-500/40"
 				>
 					{m.hero_cta_register()}

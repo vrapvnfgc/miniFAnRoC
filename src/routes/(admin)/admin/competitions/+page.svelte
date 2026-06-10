@@ -22,14 +22,24 @@
 	// Form fields for create/edit
 	let formName = $state('');
 	let formDescription = $state('');
+	let formNameEn = $state('');
+	let formNameVi = $state('');
+	let formDescriptionEn = $state('');
+	let formDescriptionVi = $state('');
 	let formStatus = $state<'upcoming' | 'active' | 'completed'>('upcoming');
+	let formNextCompetitionId = $state('');
 	let formStartDate = $state('');
 	let formEndDate = $state('');
 
 	function openCreateSheet() {
 		formName = '';
 		formDescription = '';
+		formNameEn = '';
+		formNameVi = '';
+		formDescriptionEn = '';
+		formDescriptionVi = '';
 		formStatus = 'upcoming';
+		formNextCompetitionId = '';
 		formStartDate = '';
 		formEndDate = '';
 		isCreateSheetOpen = true;
@@ -39,7 +49,12 @@
 		editingCompetition = competition;
 		formName = competition.name;
 		formDescription = competition.description || '';
+		formNameEn = competition.nameEn || '';
+		formNameVi = competition.nameVi || '';
+		formDescriptionEn = competition.descriptionEn || '';
+		formDescriptionVi = competition.descriptionVi || '';
 		formStatus = competition.status;
+		formNextCompetitionId = competition.nextCompetitionId || '';
 		formStartDate = competition.startDate ? new Date(competition.startDate).toISOString().slice(0, 16) : '';
 		formEndDate = competition.endDate ? new Date(competition.endDate).toISOString().slice(0, 16) : '';
 		isEditSheetOpen = true;
@@ -116,6 +131,7 @@
 						<Table.Head class="font-semibold text-zinc-100">Name</Table.Head>
 						<Table.Head class="font-semibold text-zinc-100">Description</Table.Head>
 						<Table.Head class="font-semibold text-zinc-100">Status</Table.Head>
+						<Table.Head class="font-semibold text-zinc-100">Advance To</Table.Head>
 						<Table.Head class="font-semibold text-zinc-100">Start Date</Table.Head>
 						<Table.Head class="font-semibold text-zinc-100">End Date</Table.Head>
 						<Table.Head class="text-right font-semibold text-zinc-100">Actions</Table.Head>
@@ -132,6 +148,9 @@
 								<span class={`inline-block px-2 py-1 rounded border text-xs font-medium ${getStatusColor(competition.status)}`}>
 									{competition.status}
 								</span>
+							</Table.Cell>
+							<Table.Cell class="text-zinc-400 max-w-xs truncate">
+								{data.competitions.find((c) => c.id === competition.nextCompetitionId)?.name || '—'}
 							</Table.Cell>
 							<Table.Cell class="text-zinc-400 text-sm">{formatDateTime(competition.startDate)}</Table.Cell>
 							<Table.Cell class="text-zinc-400 text-sm">{formatDateTime(competition.endDate)}</Table.Cell>
@@ -227,6 +246,29 @@
 					/>
 				</div>
 
+				<div class="grid gap-3 rounded-lg border border-zinc-700 p-3">
+					<p class="text-sm font-semibold text-zinc-100">Public bilingual display</p>
+					<p class="text-xs text-zinc-400">
+						Optional. Public pages use these fields by language and fall back to the default name/description.
+					</p>
+					<div class="grid gap-2">
+						<Label for="nameEn">English Name</Label>
+						<Input id="nameEn" name="nameEn" placeholder="e.g., Regional Qualifier 2026" bind:value={formNameEn} />
+					</div>
+					<div class="grid gap-2">
+						<Label for="nameVi">Vietnamese Name</Label>
+						<Input id="nameVi" name="nameVi" placeholder="VD: Vòng loại khu vực 2026" bind:value={formNameVi} />
+					</div>
+					<div class="grid gap-2">
+						<Label for="descriptionEn">English Description</Label>
+						<Input id="descriptionEn" name="descriptionEn" placeholder="Public English summary" bind:value={formDescriptionEn} />
+					</div>
+					<div class="grid gap-2">
+						<Label for="descriptionVi">Vietnamese Description</Label>
+						<Input id="descriptionVi" name="descriptionVi" placeholder="Mô tả tiếng Việt hiển thị công khai" bind:value={formDescriptionVi} />
+					</div>
+				</div>
+
 				<div class="grid gap-2">
 					<Label for="status">Status *</Label>
 					<select
@@ -239,6 +281,21 @@
 						<option value="upcoming">Upcoming</option>
 						<option value="active">Active</option>
 						<option value="completed">Completed</option>
+					</select>
+				</div>
+
+				<div class="grid gap-2">
+					<Label for="nextCompetitionId">Advance To</Label>
+					<select
+						id="nextCompetitionId"
+						name="nextCompetitionId"
+						bind:value={formNextCompetitionId}
+						class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+					>
+						<option value="">No advancement</option>
+						{#each data.competitions as competition}
+							<option value={competition.id}>{competition.name}</option>
+						{/each}
 					</select>
 				</div>
 
@@ -305,6 +362,29 @@
 						/>
 					</div>
 
+					<div class="grid gap-3 rounded-lg border border-zinc-700 p-3">
+						<p class="text-sm font-semibold text-zinc-100">Public bilingual display</p>
+						<p class="text-xs text-zinc-400">
+							Optional. Public pages use these fields by language and fall back to the default name/description.
+						</p>
+						<div class="grid gap-2">
+							<Label for="editNameEn">English Name</Label>
+							<Input id="editNameEn" name="nameEn" placeholder="e.g., Regional Qualifier 2026" bind:value={formNameEn} />
+						</div>
+						<div class="grid gap-2">
+							<Label for="editNameVi">Vietnamese Name</Label>
+							<Input id="editNameVi" name="nameVi" placeholder="VD: Vòng loại khu vực 2026" bind:value={formNameVi} />
+						</div>
+						<div class="grid gap-2">
+							<Label for="editDescriptionEn">English Description</Label>
+							<Input id="editDescriptionEn" name="descriptionEn" placeholder="Public English summary" bind:value={formDescriptionEn} />
+						</div>
+						<div class="grid gap-2">
+							<Label for="editDescriptionVi">Vietnamese Description</Label>
+							<Input id="editDescriptionVi" name="descriptionVi" placeholder="Mô tả tiếng Việt hiển thị công khai" bind:value={formDescriptionVi} />
+						</div>
+					</div>
+
 					<div class="grid gap-2">
 						<Label for="editStatus">Status *</Label>
 						<select
@@ -317,6 +397,21 @@
 							<option value="upcoming">Upcoming</option>
 							<option value="active">Active</option>
 							<option value="completed">Completed</option>
+						</select>
+					</div>
+
+					<div class="grid gap-2">
+						<Label for="editNextCompetitionId">Advance To</Label>
+						<select
+							id="editNextCompetitionId"
+							name="nextCompetitionId"
+							bind:value={formNextCompetitionId}
+							class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+						>
+							<option value="">No advancement</option>
+							{#each data.competitions.filter((competition) => competition.id !== editingCompetition.id) as competition}
+								<option value={competition.id}>{competition.name}</option>
+							{/each}
 						</select>
 					</div>
 

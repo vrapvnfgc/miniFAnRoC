@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const matchPhases = ['qualification', 'semifinal', 'final'] as const;
+const matchPhases = ['qualification', 'playoff'] as const;
 export type MatchPhase = (typeof matchPhases)[number];
 
 const matchStatuses = ['queued', 'scheduled', 'in_progress', 'finished', 'terminated'] as const;

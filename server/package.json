@@ -5,6 +5,7 @@
 	"main": "dist/server.js",
 	"scripts": {
 		"dev": "tsx watch src/server.ts",
+		"seed:demo": "tsx src/seed/runDemoSeed.ts",
 		"build": "tsup src/server.ts --format esm --clean --sourcemap --out-dir ../build",
 		"start": "node ../build/server.js",
 		"test": "vitest run",

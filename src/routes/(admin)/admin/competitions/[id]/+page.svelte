@@ -45,13 +45,13 @@
 
     // Score form state
     let redTeleIndependent = $state(0);
-    let redShared = $state(0);
+    let sharedScore = $state(0);
     let redPenalties = $state(0);
     let redEndgame = $state(0);
     let redEndgameMultiplier = $state(1);
 
     let blueTeleIndependent = $state(0);
-    let blueShared = $state(0);
+
     let bluePenalties = $state(0);
     let blueEndgame = $state(0);
     let blueEndgameMultiplier = $state(1);
@@ -112,13 +112,13 @@
             const scoreRes = await api.scores.getByMatchId(match.id);
             if (scoreRes.data?.score) {
                 redTeleIndependent = scoreRes.data.score.red.teleIndependent || 0;
-                redShared = scoreRes.data.score.red.sharedScore || 0;
+                sharedScore = scoreRes.data.score.red.sharedScore || scoreRes.data.score.blue.sharedScore || 0;
                 redPenalties = scoreRes.data.score.red.penalties || 0;
                 redEndgame = scoreRes.data.score.red.endgame || 0;
                 redEndgameMultiplier = scoreRes.data.score.red.endgameMultiplier || 1;
 
                 blueTeleIndependent = scoreRes.data.score.blue.teleIndependent || 0;
-                blueShared = scoreRes.data.score.blue.sharedScore || 0;
+
                 bluePenalties = scoreRes.data.score.blue.penalties || 0;
                 blueEndgame = scoreRes.data.score.blue.endgame || 0;
                 blueEndgameMultiplier = scoreRes.data.score.blue.endgameMultiplier || 1;
@@ -133,12 +133,12 @@
     function openScoreSheet(match: any) {
         scoringMatch = match;
         redTeleIndependent = 0;
-        redShared = 0;
+        sharedScore = 0;
         redPenalties = 0;
         redEndgame = 0;
         redEndgameMultiplier = 1;
         blueTeleIndependent = 0;
-        blueShared = 0;
+
         bluePenalties = 0;
         blueEndgame = 0;
         blueEndgameMultiplier = 1;
@@ -491,8 +491,7 @@
                     <Label for="phase">Phase *</Label>
                     <select id="phase" name="phase" bind:value={formPhase} class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-zinc-100" required>
                         <option value="qualification">Qualification</option>
-                        <option value="semifinal">Semifinal</option>
-                        <option value="final">Final</option>
+                        <option value="playoff">Playoff</option>
                     </select>
                 </div>
 
@@ -610,14 +609,14 @@
                             </div>
 
                             <div class="grid gap-2">
-                                <Label for="redShared" class="text-sm">Shared Score</Label>
+                                <Label for="redShared" class="text-sm">Shared score chung</Label>
                                 <Input 
                                     id="redShared" 
-                                    name="redShared" 
+                                    name="sharedScore" 
                                     type="number"
                                     step="0.5"
                                     min="0"
-                                    bind:value={redShared}
+                                    bind:value={sharedScore}
                                     class="bg-slate-700"
                                     required 
                                 />
@@ -687,14 +686,14 @@
                             </div>
 
                             <div class="grid gap-2">
-                                <Label for="blueShared" class="text-sm">Shared Score</Label>
+                                <Label for="blueShared" class="text-sm">Shared score chung</Label>
                                 <Input 
                                     id="blueShared" 
-                                    name="blueShared" 
+                                    name="sharedScore" 
                                     type="number"
                                     step="0.5"
                                     min="0"
-                                    bind:value={blueShared}
+                                    bind:value={sharedScore}
                                     class="bg-slate-700"
                                     required 
                                 />
@@ -804,8 +803,7 @@
                                 required
                             >
                                 <option value="qualification">Qualification</option>
-                                <option value="semifinal">Semifinal</option>
-                                <option value="final">Final</option>
+                                <option value="playoff">Playoff</option>
                             </select>
                         </div>
 
@@ -835,8 +833,8 @@
                                 <Input id="redTeleIndependent" name="redTeleIndependent" type="number" step="0.5" min="0" bind:value={redTeleIndependent} class="bg-slate-700" required />
                             </div>
                             <div class="grid gap-2">
-                                <Label for="redShared" class="text-sm">Red Shared</Label>
-                                <Input id="redShared" name="redShared" type="number" step="0.5" min="0" bind:value={redShared} class="bg-slate-700" required />
+                                <Label for="redShared" class="text-sm">Shared score chung</Label>
+                                <Input id="redShared" name="sharedScore" type="number" step="0.5" min="0" bind:value={sharedScore} class="bg-slate-700" required />
                             </div>
                             <div class="grid gap-2">
                                 <Label for="redPenalties" class="text-sm">Red Penalties</Label>
@@ -856,8 +854,8 @@
                                 <Input id="blueTeleIndependent" name="blueTeleIndependent" type="number" step="0.5" min="0" bind:value={blueTeleIndependent} class="bg-slate-700" required />
                             </div>
                             <div class="grid gap-2">
-                                <Label for="blueShared" class="text-sm">Blue Shared</Label>
-                                <Input id="blueShared" name="blueShared" type="number" step="0.5" min="0" bind:value={blueShared} class="bg-slate-700" required />
+                                <Label for="blueShared" class="text-sm">Shared score chung</Label>
+                                <Input id="blueShared" name="sharedScore" type="number" step="0.5" min="0" bind:value={sharedScore} class="bg-slate-700" required />
                             </div>
                             <div class="grid gap-2">
                                 <Label for="bluePenalties" class="text-sm">Blue Penalties</Label>

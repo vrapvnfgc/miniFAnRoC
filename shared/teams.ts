@@ -5,9 +5,23 @@ export const ITeamSchema = z.object({
 	competitionIds: z.array(z.string()).optional(),
 	name: z.string().min(1, 'Name is required'),
 	school: z.string().min(1, 'School is required'),
+	location: z.string().optional(),
+	representativeEmail: z.string().email().optional(),
+	representativePhone: z.string().optional(),
 	coach: z.string().optional(),
+	teacherName: z.string().optional(),
+	teacherEmail: z.string().email().optional(),
+	teacherPhone: z.string().optional(),
 	robotName: z.string().optional(),
 	members: z.array(z.string()).optional(),
+	memberDetails: z
+		.array(
+			z.object({
+				name: z.string().min(1),
+				className: z.string().min(1)
+			})
+		)
+		.optional(),
 	createdAt: z.date(),
 	updatedAt: z.date()
 });
@@ -23,9 +37,24 @@ export const CreateTeamSchema = z.object({
 	competitionIds: z.array(z.string()).optional(),
 	name: z.string().min(1, 'Name is required'),
 	school: z.string().min(1, 'School is required'),
+	location: z.string().optional(),
+	representativeEmail: z.string().email().optional(),
+	representativePhone: z.string().optional(),
 	coach: z.string().optional(),
+	teacherName: z.string().optional(),
+	teacherEmail: z.string().email().optional(),
+	teacherPhone: z.string().optional(),
 	robotName: z.string().optional(),
-	members: z.array(z.string()).optional()
+	members: z.array(z.string()).optional(),
+	memberDetails: z
+		.array(
+			z.object({
+				name: z.string().min(1),
+				className: z.string().min(1)
+			})
+		)
+		.max(4)
+		.optional()
 });
 export type CreateTeam = z.infer<typeof CreateTeamSchema>;
 
