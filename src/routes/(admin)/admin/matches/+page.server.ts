@@ -210,6 +210,7 @@ export const actions: Actions = {
         const redEndgameMultiplier = parseFloat(data.get('redEndgameMultiplier')?.toString() || '1');
 
         const blueTeleIndependent = parseFloat(data.get('blueTeleIndependent')?.toString() || '0');
+
         const bluePenalties = parseFloat(data.get('bluePenalties')?.toString() || '0');
         const blueEndgame = parseFloat(data.get('blueEndgame')?.toString() || '0');
         const blueEndgameMultiplier = parseFloat(data.get('blueEndgameMultiplier')?.toString() || '1');
@@ -282,6 +283,7 @@ export const actions: Actions = {
         const redEndgameMultiplier = parseFloat(data.get('redEndgameMultiplier')?.toString() || '1');
 
         const blueTeleIndependent = parseFloat(data.get('blueTeleIndependent')?.toString() || '0');
+
         const bluePenalties = parseFloat(data.get('bluePenalties')?.toString() || '0');
         const blueEndgame = parseFloat(data.get('blueEndgame')?.toString() || '0');
         const blueEndgameMultiplier = parseFloat(data.get('blueEndgameMultiplier')?.toString() || '1');

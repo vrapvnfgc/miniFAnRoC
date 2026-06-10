@@ -5,7 +5,7 @@
     import { getLocale } from '$lib/paraglide/runtime';
     import { Trophy, Calendar, Clock, CheckCircle, ArrowRight } from 'lucide-svelte';
 
-    let { data }: { data: PageData } = $props();
+	let { data }: { data: PageData } = $props();
     const locale = $derived(getLocale() as 'en' | 'vi');
     const text = $derived.by(() =>
         locale === 'vi'

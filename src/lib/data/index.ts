@@ -7,15 +7,6 @@ export interface TimelineEvent {
 	icon: string;
 }
 
-export interface Award {
-	id: string;
-	titleKey: string;
-	prize: string;
-	color: string;
-	icon: string;
-	rank: number;
-}
-
 export interface Sponsor {
 	id: string;
 	name: string;
@@ -71,57 +62,6 @@ export const timelineEvents: TimelineEvent[] = [
 		date: '20/04/2025',
 		status: 'upcoming',
 		icon: 'star'
-	}
-];
-
-export const awards: Award[] = [
-	{
-		id: '1',
-		titleKey: 'awards.champion',
-		prize: '50.000.000 VNĐ',
-		color: 'from-yellow-400 to-amber-500',
-		icon: 'trophy',
-		rank: 1
-	},
-	{
-		id: '2',
-		titleKey: 'awards.runner_up',
-		prize: '30.000.000 VNĐ',
-		color: 'from-slate-300 to-slate-400',
-		icon: 'medal',
-		rank: 2
-	},
-	{
-		id: '3',
-		titleKey: 'awards.third_place',
-		prize: '15.000.000 VNĐ',
-		color: 'from-amber-600 to-orange-700',
-		icon: 'award',
-		rank: 3
-	},
-	{
-		id: '4',
-		titleKey: 'awards.innovation',
-		prize: '10.000.000 VNĐ',
-		color: 'from-cyber-400 to-violet-500',
-		icon: 'lightbulb',
-		rank: 4
-	},
-	{
-		id: '5',
-		titleKey: 'awards.spirit',
-		prize: '5.000.000 VNĐ',
-		color: 'from-pink-400 to-rose-500',
-		icon: 'heart',
-		rank: 5
-	},
-	{
-		id: '6',
-		titleKey: 'awards.rookie',
-		prize: '5.000.000 VNĐ',
-		color: 'from-green-400 to-emerald-500',
-		icon: 'sprout',
-		rank: 6
 	}
 ];
 

@@ -1,7 +1,5 @@
 <script lang="ts">
 	import * as m from '$lib/paraglide/messages';
-	import Navbar from '$lib/components/layout/Navbar.svelte';
-	import Footer from '$lib/components/layout/Footer.svelte';
 	import HeroSection from '$lib/components/homepage/HeroSection.svelte';
 	import AboutSection from '$lib/components/homepage/AboutSection.svelte';
 	import StatisticsSection from '$lib/components/homepage/StatisticsSection.svelte';
@@ -18,19 +16,12 @@
 	<meta name="description" content={m.page_description()} />
 </svelte:head>
 
-<!-- Root wrapper: light = white bg + dark text, dark = slate-950 bg + white text -->
-<div
-	class="min-h-screen overflow-x-hidden bg-white text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-white"
->
-	<Navbar />
-	<HeroSection />
-	<AboutSection />
-	<StatisticsSection />
-	<TimelineSection />
-	<VietnamMapSection />
-	<DivisionsSection />
-	<MatchesSection />
-	<CTASection />
-	<SponsorsSection />
-	<Footer />
-</div>
+<HeroSection />
+<AboutSection />
+<StatisticsSection />
+<TimelineSection />
+<VietnamMapSection />
+<DivisionsSection />
+<MatchesSection />
+<CTASection />
+<SponsorsSection />

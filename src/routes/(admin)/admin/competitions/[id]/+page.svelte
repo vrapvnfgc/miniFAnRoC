@@ -51,6 +51,7 @@
     let redEndgameMultiplier = $state(1);
 
     let blueTeleIndependent = $state(0);
+
     let bluePenalties = $state(0);
     let blueEndgame = $state(0);
     let blueEndgameMultiplier = $state(1);
@@ -117,6 +118,7 @@
                 redEndgameMultiplier = scoreRes.data.score.red.endgameMultiplier || 1;
 
                 blueTeleIndependent = scoreRes.data.score.blue.teleIndependent || 0;
+
                 bluePenalties = scoreRes.data.score.blue.penalties || 0;
                 blueEndgame = scoreRes.data.score.blue.endgame || 0;
                 blueEndgameMultiplier = scoreRes.data.score.blue.endgameMultiplier || 1;
@@ -136,6 +138,7 @@
         redEndgame = 0;
         redEndgameMultiplier = 1;
         blueTeleIndependent = 0;
+
         bluePenalties = 0;
         blueEndgame = 0;
         blueEndgameMultiplier = 1;

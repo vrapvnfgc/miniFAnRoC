@@ -5,9 +5,7 @@
 
 	const quickLinks = [
 		{ label: m.nav_teams(), href: '/teams' },
-		{ label: m.nav_ranking(), href: '/ranking' },
 		{ label: m.nav_matches(), href: '/matches' },
-		{ label: m.nav_awards(), href: '/awards' },
 		{ label: m.nav_manual(), href: '/manual' },
 		{ label: m.nav_resources(), href: '/resources' }
 	];

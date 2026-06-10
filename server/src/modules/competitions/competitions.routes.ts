@@ -120,7 +120,6 @@ async function getCompetitionRankingsHandler(req: Request, res: Response, next: 
 		next(error);
 	}
 }
-
 async function getAwardReportHandler(req: Request, res: Response, next: NextFunction) {
 	try {
 		const includeUnfinalized = req.query.includeUnfinalized === 'true';

@@ -12,6 +12,7 @@
 
 	const navItems = [
 		{ label: m.nav_home(), href: '/' },
+		{ label: m.nav_teams(), href: '/teams' },
 		{ label: (m as any).nav_competitions(), href: '/competitions' },
 		{ label: m.nav_matches(), href: '/matches' },
 		{
@@ -156,7 +157,7 @@
 				href="/auth"
 				class="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-105 hover:shadow-cyan-500/40"
 			>
-				{m.nav_login()}
+				{m.btn_sign_up()}
 			</a>
 		</div>
 
@@ -244,7 +245,7 @@
 						onclick={closeMobile}
 						class="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white"
 					>
-						{m.nav_login()}
+						{m.btn_sign_up()}
 					</a>
 				</div>
 			</div>

@@ -236,6 +236,7 @@
 				redEndgameMultiplier = scoreRes.data.score.red.endgameMultiplier || 1;
 
 				blueTeleIndependent = scoreRes.data.score.blue.teleIndependent || 0;
+
 				bluePenalties = scoreRes.data.score.blue.penalties || 0;
 				blueEndgame = scoreRes.data.score.blue.endgame || 0;
 				blueEndgameMultiplier = scoreRes.data.score.blue.endgameMultiplier || 1;
@@ -533,6 +534,22 @@
 				</div>
 
 				<div class="grid gap-2">
+					<Label for="competitionId">Competition *</Label>
+					<select 
+						id="competitionId" 
+						name="competitionId" 
+						bind:value={formCompetitionId}
+						class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+						required
+					>
+						<option value="">Select a competition...</option>
+						{#each data.competitions as competition}
+							<option value={competition.id}>{competition.name}</option>
+						{/each}
+					</select>
+				</div>
+
+				<div class="grid gap-2">
 					<Label for="fieldId">Location *</Label>
 					<select 
 						id="fieldId" 
@@ -701,6 +718,21 @@
 					>
 						<option value="qualification">Qualification</option>
 						<option value="playoff">Playoff</option>
+					</select>
+				</div>
+
+				<div class="grid gap-2">
+					<Label for="editCompetitionId">Competition</Label>
+					<select 
+						id="editCompetitionId" 
+						name="competitionId" 
+						bind:value={formCompetitionId}
+						class="flex h-10 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+					>
+						<option value="">No Competition (Optional)</option>
+						{#each data.competitions as competition}
+							<option value={competition.id}>{competition.name}</option>
+						{/each}
 					</select>
 				</div>
 
@@ -1199,7 +1231,6 @@
 							required
 						/>
 					</div>
-
 					<div class="space-y-4 rounded-lg border border-red-700 bg-red-900/20 p-3">
 						<h3 class="font-semibold text-red-400">Red Alliance Score</h3>
 						
@@ -1219,6 +1250,7 @@
 							</div>
 
 							<div class="grid gap-2">
+
 								<Label for="editFinRedPenalties" class="text-sm">Penalties</Label>
 								<Input 
 									id="editFinRedPenalties" 
@@ -1281,6 +1313,7 @@
 							</div>
 
 							<div class="grid gap-2">
+
 								<Label for="editFinBluePenalties" class="text-sm">Penalties</Label>
 								<Input 
 									id="editFinBluePenalties" 
