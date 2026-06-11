@@ -6,6 +6,8 @@ import { ScoresService } from './scores.api';
 import { AuthService } from './auth.api';
 import { UserService } from './user.api';
 import { CompetitionsService } from './competitions.api';
+import { AuditLogsService } from './auditLogs.api';
+import { RankingsService } from './rankings.api';
 import { env } from '$env/dynamic/public';
 
 const API_BASE_URL = env.PUBLIC_BACKEND_API_URL || 'http://localhost:3000/api/v1';
@@ -18,6 +20,8 @@ export class APIClient {
 	readonly auth: AuthService;
 	readonly users: UserService;
 	readonly competitions: CompetitionsService;
+	readonly auditLogs: AuditLogsService;
+	readonly rankings: RankingsService;
 
 	constructor(baseUrl = API_BASE_URL) {
 		const http = new HttpClient(baseUrl);
@@ -29,6 +33,8 @@ export class APIClient {
 		this.auth = new AuthService(http);
 		this.users = new UserService(http);
 		this.competitions = new CompetitionsService(http);
+		this.auditLogs = new AuditLogsService(http);
+		this.rankings = new RankingsService(http);
 	}
 }
 

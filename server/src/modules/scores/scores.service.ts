@@ -114,6 +114,11 @@ class ScoresService {
 
 		return mapScore(finalizedScore);
 	}
+
+	async getAllScores(): Promise<MatchScoreResponse[]> {
+		const scores = await MatchScoreModel.find();
+		return scores.map(mapScore);
+	}
 }
 
 export const scoresService = new ScoresService();

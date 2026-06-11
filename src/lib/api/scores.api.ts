@@ -49,4 +49,8 @@ export class ScoresService extends BaseService {
 			`/matches/${matchId}/score/finalize`
 		);
 	}
+
+	getAll(): Promise<ApiResponse<{ scores: MatchScoreResponse[] }>> {
+		return this.http.get<ApiResponse<{ scores: MatchScoreResponse[] }>>('/scores');
+	}
 }

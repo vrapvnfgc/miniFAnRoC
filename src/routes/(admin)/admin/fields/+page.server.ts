@@ -4,14 +4,16 @@ import { api } from '$lib/api';
 
 export const load: PageServerLoad = async () => {
     try {
-        const fieldsRes = await api.fields.getAll();
+        const [fieldsRes, competitionsRes] = await Promise.all([api.fields.getAll(), api.competitions.getAll()]);
         return {
-            fields: fieldsRes.data?.fields || []
+            fields: fieldsRes.data?.fields || [],
+            competitions: competitionsRes.data?.competitions || []
         };
     } catch (err) {
         console.error('Fields loader error:', err);
         return {
             fields: [],
+            competitions: [],
             error: 'Could not fetch fields'
         };
     }
@@ -23,6 +25,7 @@ export const actions: Actions = {
         const name = data.get('name');
         const description = data.get('description');
         const status = data.get('status');
+        const competitionId = data.get('competitionId');
 
         if (!name) {
             return fail(400, { missing: true, type: 'create' });
@@ -32,6 +35,7 @@ export const actions: Actions = {
             await api.fields.create({
                 name: name.toString(),
                 description: description?.toString() || undefined,
+                competitionId: competitionId?.toString() || undefined,
                 status: status?.toString() as any
             });
 
@@ -53,6 +57,7 @@ export const actions: Actions = {
         const name = data.get('name');
         const description = data.get('description');
         const status = data.get('status');
+        const competitionId = data.get('competitionId');
 
         if (!id || !name) {
             return fail(400, { missing: true, type: 'update' });
@@ -62,6 +67,7 @@ export const actions: Actions = {
             await api.fields.update(id.toString(), {
                 name: name.toString(),
                 description: description?.toString() || undefined,
+                competitionId: competitionId?.toString() || undefined,
                 status: status?.toString() as any
             });
 

@@ -4,6 +4,7 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
+	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import CaretDownIcon from 'phosphor-svelte/lib/CaretDown';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
@@ -29,6 +30,15 @@
 	let formRobotName = $state('');
 	let formCompetitionIds = $state<string[]>([]);
 	let competitionSearch = $state('');
+
+	let formLocation = $state('');
+	let formRepEmail = $state('');
+	let formRepPhone = $state('');
+	let formTeacherName = $state('');
+	let formTeacherEmail = $state('');
+	let formTeacherPhone = $state('');
+	let formMembersStr = $state('');
+	let formMemberDetailsStr = $state('');
 
 	function toggleCompetition(id: string) {
 		if (formCompetitionIds.includes(id)) {
@@ -59,6 +69,14 @@
 		formCoach = '';
 		formRobotName = '';
 		formCompetitionIds = [];
+		formLocation = '';
+		formRepEmail = '';
+		formRepPhone = '';
+		formTeacherName = '';
+		formTeacherEmail = '';
+		formTeacherPhone = '';
+		formMembersStr = '';
+		formMemberDetailsStr = '[]';
 		isCreateSheetOpen = true;
 	}
 
@@ -70,6 +88,16 @@
 		formCoach = team.coach || '';
 		formRobotName = team.robotName || '';
 		formCompetitionIds = team.competitionIds || [];
+		
+		formLocation = team.location || '';
+		formRepEmail = team.representativeEmail || '';
+		formRepPhone = team.representativePhone || '';
+		formTeacherName = team.teacherName || '';
+		formTeacherEmail = team.teacherEmail || '';
+		formTeacherPhone = team.teacherPhone || '';
+		formMembersStr = (team.members || []).join(', ');
+		formMemberDetailsStr = JSON.stringify(team.memberDetails || []);
+		
 		isEditSheetOpen = true;
 	}
 
@@ -99,6 +127,10 @@
 			})
 			.join(', ');
 	}
+	
+	let membersJson = $derived.by(() => {
+		return JSON.stringify(formMembersStr.split(',').map(s => s.trim()).filter(Boolean));
+	});
 </script>
 
 <div class="flex flex-col gap-6 p-6">
@@ -206,7 +238,7 @@
 
 	<!-- Create Sheet -->
 	<Sheet.Root open={isCreateSheetOpen} onOpenChange={(open) => isCreateSheetOpen = open}>
-		<Sheet.Content class="w-[400px] sm:w-[540px]">
+		<Sheet.Content class="w-[400px] sm:w-[540px] overflow-y-auto">
 			<Sheet.Header>
 				<Sheet.Title>Create New Team</Sheet.Title>
 				<Sheet.Description>
@@ -215,37 +247,26 @@
 			</Sheet.Header>
 
 			<form method="POST" action="?/create" use:enhance onsubmit={() => closeSheets()} class="space-y-4 py-4">
-				<div class="grid gap-2">
-					<Label for="teamNumber">Team Number *</Label>
-					<Input 
-						id="teamNumber" 
-						name="teamNumber" 
-						placeholder="e.g., 101"
-						bind:value={formTeamNumber}
-						required 
-					/>
+				<div class="grid grid-cols-2 gap-4">
+					<div class="grid gap-2">
+						<Label for="teamNumber">Team Number *</Label>
+						<Input id="teamNumber" name="teamNumber" bind:value={formTeamNumber} required />
+					</div>
+					<div class="grid gap-2">
+						<Label for="name">Team Name *</Label>
+						<Input id="name" name="name" bind:value={formName} required />
+					</div>
 				</div>
 
-				<div class="grid gap-2">
-					<Label for="name">Team Name *</Label>
-					<Input 
-						id="name" 
-						name="name" 
-						placeholder="e.g., Team Volt"
-						bind:value={formName}
-						required 
-					/>
-				</div>
-
-				<div class="grid gap-2">
-					<Label for="school">School *</Label>
-					<Input 
-						id="school" 
-						name="school" 
-						placeholder="e.g., Lincoln High School"
-						bind:value={formSchool}
-						required 
-					/>
+				<div class="grid grid-cols-2 gap-4">
+					<div class="grid gap-2">
+						<Label for="school">School *</Label>
+						<Input id="school" name="school" bind:value={formSchool} required />
+					</div>
+					<div class="grid gap-2">
+						<Label for="location">Location</Label>
+						<Input id="location" name="location" bind:value={formLocation} />
+					</div>
 				</div>
 
 				<div class="grid gap-2">
@@ -289,24 +310,58 @@
 					{/each}
 				</div>
 
-				<div class="grid gap-2">
-					<Label for="coach">Coach Name</Label>
-					<Input 
-						id="coach" 
-						name="coach" 
-						placeholder="e.g., John Doe"
-						bind:value={formCoach}
-					/>
+				<div class="grid grid-cols-2 gap-4">
+					<div class="grid gap-2">
+						<Label for="coach">Coach Name</Label>
+						<Input id="coach" name="coach" bind:value={formCoach} />
+					</div>
+					<div class="grid gap-2">
+						<Label for="robotName">Robot Name</Label>
+						<Input id="robotName" name="robotName" bind:value={formRobotName} />
+					</div>
 				</div>
 
+				<fieldset class="border rounded-md p-4 space-y-4">
+					<legend class="text-sm font-medium px-2 text-muted-foreground">Representatives</legend>
+					<div class="grid grid-cols-2 gap-4">
+						<div class="grid gap-2">
+							<Label for="representativeEmail">Rep Email</Label>
+							<Input id="representativeEmail" type="email" name="representativeEmail" bind:value={formRepEmail} />
+						</div>
+						<div class="grid gap-2">
+							<Label for="representativePhone">Rep Phone</Label>
+							<Input id="representativePhone" name="representativePhone" bind:value={formRepPhone} />
+						</div>
+					</div>
+				</fieldset>
+				
+				<fieldset class="border rounded-md p-4 space-y-4">
+					<legend class="text-sm font-medium px-2 text-muted-foreground">Teachers</legend>
+					<div class="grid grid-cols-3 gap-2">
+						<div class="grid gap-2">
+							<Label for="teacherName">Name</Label>
+							<Input id="teacherName" name="teacherName" bind:value={formTeacherName} />
+						</div>
+						<div class="grid gap-2">
+							<Label for="teacherEmail">Email</Label>
+							<Input id="teacherEmail" type="email" name="teacherEmail" bind:value={formTeacherEmail} />
+						</div>
+						<div class="grid gap-2">
+							<Label for="teacherPhone">Phone</Label>
+							<Input id="teacherPhone" name="teacherPhone" bind:value={formTeacherPhone} />
+						</div>
+					</div>
+				</fieldset>
+
 				<div class="grid gap-2">
-					<Label for="robotName">Robot Name</Label>
-					<Input 
-						id="robotName" 
-						name="robotName" 
-						placeholder="e.g., Thunderbot"
-						bind:value={formRobotName}
-					/>
+					<Label for="members">Members (comma separated)</Label>
+					<Input id="members" bind:value={formMembersStr} />
+					<input type="hidden" name="members" value={membersJson} />
+				</div>
+				
+				<div class="grid gap-2">
+					<Label for="memberDetails">Member Details (JSON)</Label>
+					<Textarea id="memberDetails" name="memberDetails" bind:value={formMemberDetailsStr} />
 				</div>
 
 				<div class="flex gap-2">
@@ -319,7 +374,7 @@
 
 	<!-- Edit Sheet -->
 	<Sheet.Root open={isEditSheetOpen} onOpenChange={(open) => isEditSheetOpen = open}>
-		<Sheet.Content class="w-[400px] sm:w-[540px]">
+		<Sheet.Content class="w-[400px] sm:w-[540px] overflow-y-auto">
 			<Sheet.Header>
 				<Sheet.Title>Edit Team</Sheet.Title>
 				<Sheet.Description>
@@ -331,37 +386,26 @@
 				<form method="POST" action="?/update" use:enhance onsubmit={() => closeSheets()} class="space-y-4 py-4">
 					<input type="hidden" name="id" value={editingTeam.id} />
 
-					<div class="grid gap-2">
-						<Label for="editTeamNumber">Team Number *</Label>
-						<Input 
-							id="editTeamNumber" 
-							name="teamNumber" 
-							placeholder="e.g., 101"
-							bind:value={formTeamNumber}
-							required 
-						/>
+					<div class="grid grid-cols-2 gap-4">
+						<div class="grid gap-2">
+							<Label for="editTeamNumber">Team Number *</Label>
+							<Input id="editTeamNumber" name="teamNumber" bind:value={formTeamNumber} required />
+						</div>
+						<div class="grid gap-2">
+							<Label for="editName">Team Name *</Label>
+							<Input id="editName" name="name" bind:value={formName} required />
+						</div>
 					</div>
 
-					<div class="grid gap-2">
-						<Label for="editName">Team Name *</Label>
-						<Input 
-							id="editName" 
-							name="name" 
-							placeholder="e.g., Team Volt"
-							bind:value={formName}
-							required 
-						/>
-					</div>
-
-					<div class="grid gap-2">
-						<Label for="editSchool">School *</Label>
-						<Input 
-							id="editSchool" 
-							name="school" 
-							placeholder="e.g., Lincoln High School"
-							bind:value={formSchool}
-							required 
-						/>
+					<div class="grid grid-cols-2 gap-4">
+						<div class="grid gap-2">
+							<Label for="editSchool">School *</Label>
+							<Input id="editSchool" name="school" bind:value={formSchool} required />
+						</div>
+						<div class="grid gap-2">
+							<Label for="editLocation">Location</Label>
+							<Input id="editLocation" name="location" bind:value={formLocation} />
+						</div>
 					</div>
 
 					<div class="grid gap-2">
@@ -405,24 +449,58 @@
 						{/each}
 					</div>
 
-					<div class="grid gap-2">
-						<Label for="editCoach">Coach Name</Label>
-						<Input 
-							id="editCoach" 
-							name="coach" 
-							placeholder="e.g., John Doe"
-							bind:value={formCoach}
-						/>
+					<div class="grid grid-cols-2 gap-4">
+						<div class="grid gap-2">
+							<Label for="editCoach">Coach Name</Label>
+							<Input id="editCoach" name="coach" bind:value={formCoach} />
+						</div>
+						<div class="grid gap-2">
+							<Label for="editRobotName">Robot Name</Label>
+							<Input id="editRobotName" name="robotName" bind:value={formRobotName} />
+						</div>
 					</div>
 
+					<fieldset class="border rounded-md p-4 space-y-4">
+						<legend class="text-sm font-medium px-2 text-muted-foreground">Representatives</legend>
+						<div class="grid grid-cols-2 gap-4">
+							<div class="grid gap-2">
+								<Label for="editRepEmail">Rep Email</Label>
+								<Input id="editRepEmail" type="email" name="representativeEmail" bind:value={formRepEmail} />
+							</div>
+							<div class="grid gap-2">
+								<Label for="editRepPhone">Rep Phone</Label>
+								<Input id="editRepPhone" name="representativePhone" bind:value={formRepPhone} />
+							</div>
+						</div>
+					</fieldset>
+					
+					<fieldset class="border rounded-md p-4 space-y-4">
+						<legend class="text-sm font-medium px-2 text-muted-foreground">Teachers</legend>
+						<div class="grid grid-cols-3 gap-2">
+							<div class="grid gap-2">
+								<Label for="editTeacherName">Name</Label>
+								<Input id="editTeacherName" name="teacherName" bind:value={formTeacherName} />
+							</div>
+							<div class="grid gap-2">
+								<Label for="editTeacherEmail">Email</Label>
+								<Input id="editTeacherEmail" type="email" name="teacherEmail" bind:value={formTeacherEmail} />
+							</div>
+							<div class="grid gap-2">
+								<Label for="editTeacherPhone">Phone</Label>
+								<Input id="editTeacherPhone" name="teacherPhone" bind:value={formTeacherPhone} />
+							</div>
+						</div>
+					</fieldset>
+
 					<div class="grid gap-2">
-						<Label for="editRobotName">Robot Name</Label>
-						<Input 
-							id="editRobotName" 
-							name="robotName" 
-							placeholder="e.g., Thunderbot"
-							bind:value={formRobotName}
-						/>
+						<Label for="editMembers">Members (comma separated)</Label>
+						<Input id="editMembers" bind:value={formMembersStr} />
+						<input type="hidden" name="members" value={membersJson} />
+					</div>
+					
+					<div class="grid gap-2">
+						<Label for="editMemberDetails">Member Details (JSON)</Label>
+						<Textarea id="editMemberDetails" name="memberDetails" bind:value={formMemberDetailsStr} />
 					</div>
 
 					<div class="flex gap-2">

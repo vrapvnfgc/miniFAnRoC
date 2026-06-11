@@ -10,6 +10,9 @@ import { matchesRouter } from './modules/matches/matches.routes';
 import { scoresRouter } from './modules/scores/scores.routes';
 import { authRouter } from './modules/auth/auth.routes';
 import { competitionsRouter } from './modules/competitions/competitions.routes';
+import { auditLogsRouter } from './modules/auditLogs/auditLogs.routes';
+import { scoresListRouter } from './modules/scores/scoresList.routes';
+import { rankingsRouter } from './modules/rankings/rankings.routes';
 
 const app = express();
 
@@ -24,7 +27,10 @@ app.use('/api/v1/teams', teamsRouter);
 app.use('/api/v1/fields', fieldsRouter);
 app.use('/api/v1/matches', matchesRouter);
 app.use('/api/v1/matches', scoresRouter);
+app.use('/api/v1/scores', scoresListRouter);
 app.use('/api/v1/competitions', competitionsRouter);
+app.use('/api/v1/audit-logs', auditLogsRouter);
+app.use('/api/v1/rankings', rankingsRouter);
 
 if (process.env.NODE_ENV === 'production') {
 	try {

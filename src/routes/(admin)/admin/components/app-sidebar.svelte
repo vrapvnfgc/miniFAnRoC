@@ -5,6 +5,9 @@
 	import CalendarEventIcon from '@tabler/icons-svelte/icons/calendar-event';
 	import TrophyIcon from '@tabler/icons-svelte/icons/trophy';
 	import InnerShadowTopIcon from '@tabler/icons-svelte/icons/inner-shadow-top';
+	import ScoreboardIcon from '@tabler/icons-svelte/icons/scoreboard';
+	import ReportIcon from '@tabler/icons-svelte/icons/report';
+	import ChartBarIcon from '@tabler/icons-svelte/icons/chart-bar';
 	import NavMain from './nav-main.svelte';
 	import NavSecondary from './nav-secondary.svelte';
 	import NavUser from './nav-user.svelte';
@@ -42,6 +45,21 @@
 				title: 'Matches',
 				url: '/admin/matches',
 				icon: CalendarEventIcon
+			},
+			{
+				title: 'Scores',
+				url: '/admin/scores',
+				icon: ScoreboardIcon
+			},
+			{
+				title: 'Rankings',
+				url: '/admin/rankings',
+				icon: ChartBarIcon
+			},
+			{
+				title: 'Audit Logs',
+				url: '/admin/auditLogs',
+				icon: ReportIcon
 			}
 		],
 		navSecondary: [

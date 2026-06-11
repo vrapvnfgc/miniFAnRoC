@@ -62,7 +62,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 
 	if (path.startsWith('/admin')) {
 		if (!event.locals.user) {
-			throw redirect(303, `/auth?redirectTo=${encodeURIComponent(path)}`);
+			throw redirect(303, `/login?redirectTo=${encodeURIComponent(path)}`);
 		}
 		if (event.locals.user.role !== 'ADMIN') {
 			throw redirect(303, '/');
