@@ -32,6 +32,9 @@ export function connectToField(fieldId: string) {
 	}
 
 	const url = env.PUBLIC_BACKEND_URL || 'http://localhost:3000';
+
+	console.log('Socket connecting to:', url);
+
 	socket = io(url);
 
 	socket.on('connect', () => {

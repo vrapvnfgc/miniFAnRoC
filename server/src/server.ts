@@ -21,7 +21,7 @@ const startServer = async () => {
 		const server = createServer(app);
 		setupWebSocket(server);
 
-		server.listen(config.port, () => {
+		server.listen(config.port, '0.0.0.0', () => {
 			console.log(`=========================================`);
 			console.log(`  server starting in [${config.nodeEnv}] mode`);
 			console.log(`  listening on: http://localhost:${config.port}`);
