@@ -57,12 +57,12 @@ export class FieldManager {
 		// For simplicity, we assume we fetch it or client sends details. We will just set matchId.
 		state.matchId = matchId;
 		state.status = 'PRE_MATCH';
-		state.timer = 150; // 2.5 minutes total (30s auto, 120s teleop)
+		state.timer = 120; // 2.5 minutes total (30s auto, 120s teleop)
 		state.liveScore = { red: defaultScore(), blue: defaultScore(), status: 'draft' };
-		
+
 		// Typically, fetch teams from match
 		// state.teams = { red: match.redTeamIds, blue: match.blueTeamIds };
-		
+
 		this.broadcastFieldState(fieldId);
 	}
 
@@ -75,10 +75,10 @@ export class FieldManager {
 	public startMatch(fieldId: string) {
 		const state = this.getFieldState(fieldId);
 		if (state.status === 'IDLE' || state.status === 'MATCH_FINISHED') return;
-		
+
 		if (state.status === 'PRE_MATCH') {
 			state.status = 'AUTONOMOUS';
-			state.timer = 150;
+			state.timer = 120;
 		} else if (state.status === 'AUTONOMOUS' && state.timer <= 120) {
 			state.status = 'TELEOP';
 		}
@@ -92,7 +92,7 @@ export class FieldManager {
 		const interval = setInterval(() => {
 			if (state.timer > 0) {
 				state.timer--;
-				
+
 				if (state.timer === 120 && state.status === 'AUTONOMOUS') {
 					state.status = 'TELEOP';
 					this.broadcastFieldState(fieldId);
@@ -125,7 +125,7 @@ export class FieldManager {
 		this.pauseMatch(fieldId);
 		const state = this.getFieldState(fieldId);
 		state.status = 'PRE_MATCH';
-		state.timer = 150;
+		state.timer = 120;
 		this.broadcastFieldState(fieldId);
 	}
 
@@ -151,7 +151,7 @@ export class FieldManager {
 		const state = this.getFieldState(fieldId);
 		state.liveScore.status = 'finalized';
 		this.broadcastFieldState(fieldId);
-		
+
 		// In a full implementation, you would save `state.liveScore` to `MatchScoreModel` here
 		// and update `RankingsService` to recalculate.
 	}

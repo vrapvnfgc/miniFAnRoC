@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"compile:i18n": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide",
-		"dev": "concurrently -n \"client,server\" -c \"cyan,magenta\" \"vite dev\" \"pnpm --filter server dev\"",
+		"dev": "concurrently -n \"client,server\" -c \"cyan,magenta\" \"vite dev --host\" \"pnpm --filter server dev\"",
 		"build": "pnpm compile:i18n && vite build && pnpm --filter @mini-fanroc/server build",
 		"start": "pnpm --filter @mini-fanroc/server start",
 		"preview": "vite preview",
