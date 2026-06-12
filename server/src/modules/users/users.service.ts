@@ -144,6 +144,39 @@ class UsersService {
 			console.log(`[Seed] Root admin user (${adminEmail}) already exists`);
 		}
 	}
+
+	async updateUser(id: string, data: any): Promise<UserResponse> {
+		const user = await UserModel.findById(id);
+		if (!user) {
+			throw AppError.notFound(`User with ID "${id}" could not be found`);
+		}
+
+		if (data.name) user.name = data.name;
+		if (data.email) {
+			const existing = await UserModel.findOne({ email: data.email.toLowerCase() });
+			if (existing && String(existing._id) !== id) {
+				throw AppError.conflict('A user with this email address already exists', 'EMAIL_ALREADY_EXISTS');
+			}
+			user.email = data.email;
+		}
+		if (data.role) user.role = data.role;
+		
+		if (data.password) {
+			user.passwordHash = await hashPassword(data.password);
+		}
+
+		const updatedUser = await user.save();
+		return mapUser(updatedUser);
+	}
+
+	async deleteUser(id: string): Promise<void> {
+		const user = await UserModel.findById(id);
+		if (!user) {
+			throw AppError.notFound(`User with ID "${id}" could not be found`);
+		}
+
+		await UserModel.deleteOne({ _id: id });
+	}
 }
 
 export const usersService = new UsersService();

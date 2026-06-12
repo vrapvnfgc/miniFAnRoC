@@ -16,4 +16,16 @@ export class UserService extends BaseService {
 	async list(options?: RequestInit): Promise<ApiResponse<{ users: UserResponse[] }>> {
 		return this.http.get<ApiResponse<{ users: UserResponse[] }>>('/users', options);
 	}
+
+	async update(
+		id: string,
+		data: Partial<CreateUser>,
+		options?: RequestInit
+	): Promise<ApiResponse<{ user: UserResponse }>> {
+		return this.http.patch<ApiResponse<{ user: UserResponse }>>(`/users/${id}`, data, options);
+	}
+
+	async delete(id: string, options?: RequestInit): Promise<ApiResponse<void>> {
+		return this.http.delete<ApiResponse<void>>(`/users/${id}`, options);
+	}
 }

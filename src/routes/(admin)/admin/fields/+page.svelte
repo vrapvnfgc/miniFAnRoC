@@ -18,15 +18,16 @@
     let deleteFieldName = $state('');
     let editingField = $state<any>(null);
 
-    // Form fields
     let formName = $state('');
     let formDescription = $state('');
     let formStatus = $state('ACTIVE');
+    let formCompetitionId = $state('');
 
     function openCreateSheet() {
         formName = '';
         formDescription = '';
         formStatus = 'ACTIVE';
+        formCompetitionId = '';
         isCreateSheetOpen = true;
     }
 
@@ -35,6 +36,7 @@
         formName = field.name || '';
         formDescription = field.description || '';
         formStatus = field.status || 'ACTIVE';
+        formCompetitionId = field.competitionId || '';
         isEditSheetOpen = true;
     }
 
@@ -83,6 +85,7 @@
                 <Table.Header>
                     <Table.Row class="border-b border-zinc-700 bg-zinc-800/70 hover:bg-zinc-800/70">
                         <Table.Head class="font-semibold text-zinc-100">Name</Table.Head>
+                        <Table.Head class="font-semibold text-zinc-100">Competition</Table.Head>
                         <Table.Head class="font-semibold text-zinc-100">Description</Table.Head>
                         <Table.Head class="font-semibold text-zinc-100">Status</Table.Head>
                         <Table.Head class="text-right font-semibold text-zinc-100">Actions</Table.Head>
@@ -93,12 +96,21 @@
                     {#each data.fields as field (field.id)}
                         <Table.Row class="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
                             <Table.Cell class="font-medium text-zinc-100">{field.name}</Table.Cell>
+                            <Table.Cell class="text-zinc-400">{data.competitions.find(c => c.id === field.competitionId)?.name || '—'}</Table.Cell>
                             <Table.Cell class="text-zinc-400">{field.description || '—'}</Table.Cell>
                             <Table.Cell class="text-zinc-300">{field.status}</Table.Cell>
                             <Table.Cell class="text-right">
-                                <div class="flex gap-2 justify-end">
-                                    <Button variant="outline" size="sm" onclick={() => openEditSheet(field)} class="border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100">Edit</Button>
-                                    <Button variant="destructive" size="sm" onclick={() => openDeleteConfirm(field)} class="bg-red-600 hover:bg-red-700 text-white">Delete</Button>
+                                <div class="flex flex-col gap-2 justify-end items-end">
+                                    <div class="flex gap-2">
+                                        <Button variant="outline" size="sm" onclick={() => openEditSheet(field)} class="border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100">Edit</Button>
+                                        <Button variant="destructive" size="sm" onclick={() => openDeleteConfirm(field)} class="bg-red-600 hover:bg-red-700 text-white">Delete</Button>
+                                    </div>
+                                    <div class="flex gap-2 mt-1">
+                                        <a href="/controller/{field.id}" target="_blank" class="text-xs bg-blue-900/50 hover:bg-blue-800 text-blue-200 px-2 py-1 rounded border border-blue-800 transition-colors">Controller</a>
+                                        <a href="/scorekeeper/{field.id}" target="_blank" class="text-xs bg-green-900/50 hover:bg-green-800 text-green-200 px-2 py-1 rounded border border-green-800 transition-colors">Scorekeeper</a>
+                                        <a href="/referee/{field.id}" target="_blank" class="text-xs bg-yellow-900/50 hover:bg-yellow-800 text-yellow-200 px-2 py-1 rounded border border-yellow-800 transition-colors">Referee</a>
+                                        <a href="/fields/{field.id}" target="_blank" class="text-xs bg-purple-900/50 hover:bg-purple-800 text-purple-200 px-2 py-1 rounded border border-purple-800 transition-colors">Display</a>
+                                    </div>
                                 </div>
                             </Table.Cell>
                         </Table.Row>
@@ -162,6 +174,16 @@
                 </div>
 
                 <div class="grid gap-2">
+                    <Label for="competitionId">Competition</Label>
+                    <select id="competitionId" name="competitionId" bind:value={formCompetitionId} class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-zinc-100">
+                        <option value="">None</option>
+                        {#each data.competitions as comp}
+                            <option value={comp.id}>{comp.name}</option>
+                        {/each}
+                    </select>
+                </div>
+
+                <div class="grid gap-2">
                     <Label for="status">Status</Label>
                     <select id="status" name="status" bind:value={formStatus} class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-zinc-100">
                         <option value="ACTIVE">ACTIVE</option>
@@ -204,6 +226,16 @@
                     <div class="grid gap-2">
                         <Label for="editDescription">Description</Label>
                         <Input id="editDescription" name="description" bind:value={formDescription} />
+                    </div>
+
+                    <div class="grid gap-2">
+                        <Label for="editCompetitionId">Competition</Label>
+                        <select id="editCompetitionId" name="competitionId" bind:value={formCompetitionId} class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-zinc-100">
+                            <option value="">None</option>
+                            {#each data.competitions as comp}
+                                <option value={comp.id}>{comp.name}</option>
+                            {/each}
+                        </select>
                     </div>
 
                     <div class="grid gap-2">

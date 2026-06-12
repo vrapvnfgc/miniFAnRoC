@@ -3,6 +3,8 @@ import { app } from './app';
 import { config } from './config';
 import { usersService } from './modules/users/users.service';
 import { seedDemoData } from './seed/demoData';
+import { createServer } from 'http';
+import { setupWebSocket } from './ws';
 
 const startServer = async () => {
 	try {
@@ -16,7 +18,10 @@ const startServer = async () => {
 			await seedDemoData();
 		}
 
-		app.listen(config.port, () => {
+		const server = createServer(app);
+		setupWebSocket(server);
+
+		server.listen(config.port, () => {
 			console.log(`=========================================`);
 			console.log(`  server starting in [${config.nodeEnv}] mode`);
 			console.log(`  listening on: http://localhost:${config.port}`);
