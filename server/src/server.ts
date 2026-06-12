@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import { app } from './app';
 import { config } from './config';
 import { usersService } from './modules/users/users.service';
-import { seedDemoData } from './seed/demoData';
 import { createServer } from 'http';
 import { setupWebSocket } from './ws';
 
@@ -13,10 +12,6 @@ const startServer = async () => {
 		console.log('connected to MongoDB successfully');
 
 		await usersService.seedAdminUser();
-
-		if (config.seedDemoData) {
-			await seedDemoData();
-		}
 
 		const server = createServer(app);
 		setupWebSocket(server);
