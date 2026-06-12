@@ -136,7 +136,7 @@ export class FieldManager {
 		Object.assign(state.liveScore[alliance], scoreUpdate);
 		// Recalculate total
 		const s = state.liveScore[alliance];
-		s.total = ((s.teleIndependent || 0) + (s.sharedScore || 0) + (s.endgame || 0)) * (s.balanceMultiplier || 1) - (s.penalties || 0);
+		s.total = (s.teleIndependent || 0) * (s.balanceMultiplier || 1) + (s.sharedScore || 0) + (s.endgame || 0) - (s.penalties || 0);
 
 		this.io.to(`field:${fieldId}`).emit('scoreUpdate', state.liveScore);
 	}

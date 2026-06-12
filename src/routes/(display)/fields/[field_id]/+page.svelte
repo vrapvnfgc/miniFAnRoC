@@ -1,12 +1,38 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { connectToField, disconnectFromField, fieldState, isConnected } from '$lib/stores/socket';
+	import { api } from '$lib/api';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	onMount(() => {
+	let teams = $state<any[]>(data.teams || []);
+	let rankings = $state<any[]>(data.rankings || []);
+	let fieldName = $state<string>(data.field?.name || 'Field ' + data.fieldId);
+
+	let teamMap = $derived(
+		teams.reduce((acc: Record<string, string>, t: any) => {
+			acc[t.id] = t.name;
+			return acc;
+		}, {} as Record<string, string>)
+	);
+
+	onMount(async () => {
 		connectToField(data.fieldId);
+		
+		try {
+			const [fieldRes, teamsRes, rankingsRes] = await Promise.all([
+				api.fields.getById(data.fieldId),
+				api.teams.getAll(),
+				api.rankings.getAll(true)
+			]);
+			
+			if (fieldRes.data?.field) fieldName = fieldRes.data.field.name;
+			if (teamsRes.data?.teams) teams = teamsRes.data.teams;
+			if (rankingsRes.data?.rankings) rankings = rankingsRes.data.rankings;
+		} catch (e) {
+			console.error('Failed to fetch data on mount:', e);
+		}
 	});
 
 	onDestroy(() => {
@@ -25,7 +51,7 @@
 	<header class="bg-zinc-900 border-b border-zinc-800 p-4 flex justify-between items-center h-24">
 		<div class="flex items-center gap-4">
 			<img src="/logo.png" alt="Logo" class="h-12 w-12 object-contain" onerror={(e) => e.currentTarget.style.display='none'} />
-			<h1 class="text-3xl font-black tracking-widest uppercase">Field {data.fieldId}</h1>
+			<h1 class="text-3xl font-black tracking-widest uppercase">{fieldName}</h1>
 		</div>
 		<div class="flex flex-col items-center">
 			<div class="text-sm font-bold text-zinc-500 tracking-widest uppercase">{$fieldState?.status || 'OFFLINE'}</div>
@@ -53,7 +79,7 @@
 						<h2 class="text-4xl font-black text-red-500 mb-6">RED<br/>ALLIANCE</h2>
 						<div class="space-y-4">
 							{#each $fieldState.teams.red as team}
-								<div class="text-3xl font-mono font-bold text-white">{team}</div>
+								<div class="text-3xl font-mono font-bold text-white">{teamMap[team] || team}</div>
 							{/each}
 						</div>
 					</div>
@@ -70,7 +96,7 @@
 						<h2 class="text-4xl font-black text-blue-500 mb-6">BLUE<br/>ALLIANCE</h2>
 						<div class="space-y-4">
 							{#each $fieldState.teams.blue as team}
-								<div class="text-3xl font-mono font-bold text-white">{team}</div>
+								<div class="text-3xl font-mono font-bold text-white">{teamMap[team] || team}</div>
 							{/each}
 						</div>
 					</div>
@@ -88,7 +114,7 @@
 					Live Rankings
 				</div>
 				<div class="flex-1 overflow-y-auto p-4 space-y-2">
-					{#each data.rankings.slice(0, 10) as rank}
+					{#each rankings.slice(0, 10) as rank}
 						<div class="flex items-center gap-4 bg-zinc-950 p-3 rounded-lg border border-zinc-800">
 							<div class="text-2xl font-black text-cyan-500 w-8 text-center">{rank.rank}</div>
 							<div class="flex-1">
@@ -100,7 +126,7 @@
 							</div>
 						</div>
 					{/each}
-					{#if data.rankings.length === 0}
+					{#if rankings.length === 0}
 						<div class="text-center text-zinc-500 italic mt-8">No rankings available</div>
 					{/if}
 				</div>

@@ -33,6 +33,50 @@
 		// but since backend doesn't allow updateScore when not draft, we need to add `revertScore` to WS.
 		// For now, assume WS handles it. Let's just say we can't revert without WS.
 	}
+
+	import { api } from '$lib/api';
+
+	async function handleFinalizeScore() {
+		if (!$fieldState || !$fieldState.matchId) {
+			alert('No active match to finalize!');
+			return;
+		}
+
+		try {
+			// Save the score
+			await api.scores.save($fieldState.matchId, {
+				red: {
+					teleIndependent: $fieldState.liveScore.red.teleIndependent || 0,
+					sharedScore: $fieldState.liveScore.red.sharedScore || 0,
+					penalties: $fieldState.liveScore.red.penalties || 0,
+					endgame: $fieldState.liveScore.red.endgame || 0,
+					balanceMultiplier: $fieldState.liveScore.red.balanceMultiplier || 1
+				},
+				blue: {
+					teleIndependent: $fieldState.liveScore.blue.teleIndependent || 0,
+					sharedScore: $fieldState.liveScore.blue.sharedScore || 0,
+					penalties: $fieldState.liveScore.blue.penalties || 0,
+					endgame: $fieldState.liveScore.blue.endgame || 0,
+					balanceMultiplier: $fieldState.liveScore.blue.balanceMultiplier || 1
+				},
+				status: 'submitted'
+			});
+
+			// Mark score as finalized
+			await api.scores.finalize($fieldState.matchId);
+
+			// Mark match as finished
+			await api.matches.update($fieldState.matchId, {
+				status: 'finished'
+			});
+
+			// Let the field state know so other clients update
+			finalizeScore(data.fieldId);
+		} catch (error) {
+			console.error('Failed to finalize score to backend:', error);
+			alert('Failed to save score to backend. See console for details.');
+		}
+	}
 </script>
 
 <div class="p-4 max-w-6xl mx-auto space-y-6">
@@ -114,7 +158,7 @@
 					size="lg" 
 					class="bg-green-600 hover:bg-green-700 text-xl px-16 py-8 h-auto font-bold"
 					disabled={$fieldState.liveScore.status === 'finalized'}
-					onclick={() => finalizeScore(data.fieldId)}
+					onclick={handleFinalizeScore}
 				>
 					FINALIZE MATCH
 				</Button>

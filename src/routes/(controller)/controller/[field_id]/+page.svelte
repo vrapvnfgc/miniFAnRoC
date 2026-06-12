@@ -8,6 +8,13 @@
 
 	let { data }: { data: PageData } = $props();
 
+	let teamMap = $derived(
+		(data.teams || []).reduce((acc: Record<string, string>, t: any) => {
+			acc[t.id] = t.name;
+			return acc;
+		}, {} as Record<string, string>)
+	);
+
 	onMount(() => {
 		connectToField(data.fieldId);
 	});
@@ -91,7 +98,7 @@
 				{#if $fieldState.teams.red.length > 0}
 					<div class="flex gap-2">
 						{#each $fieldState.teams.red as team}
-							<span class="bg-red-900/50 text-red-100 px-3 py-1 rounded font-mono">{team}</span>
+							<span class="bg-red-900/50 text-red-100 px-3 py-1 rounded font-mono">{teamMap[team] || team}</span>
 						{/each}
 					</div>
 				{:else}
@@ -107,7 +114,7 @@
 				{#if $fieldState.teams.blue.length > 0}
 					<div class="flex gap-2">
 						{#each $fieldState.teams.blue as team}
-							<span class="bg-blue-900/50 text-blue-100 px-3 py-1 rounded font-mono">{team}</span>
+							<span class="bg-blue-900/50 text-blue-100 px-3 py-1 rounded font-mono">{teamMap[team] || team}</span>
 						{/each}
 					</div>
 				{:else}

@@ -4,13 +4,35 @@ import { api } from '$lib/api';
 export const load: PageLoad = async ({ params }) => {
 	const fieldId = params.field_id;
 	
+	let rankings: any[] = [];
+	let teams: any[] = [];
+	let field: any = null;
+
 	try {
-		const res = await api.rankings.getAll(true); // include unfinalized for live feel maybe? Or just false
-		return {
-			fieldId,
-			rankings: res.data?.rankings || []
-		};
+		const rankingsRes = await api.rankings.getAll(true);
+		rankings = rankingsRes.data?.rankings || [];
 	} catch (e) {
-		return { fieldId, rankings: [] };
+		console.error('Failed to load rankings:', e);
 	}
+
+	try {
+		const teamsRes = await api.teams.getAll();
+		teams = teamsRes.data?.teams || [];
+	} catch (e) {
+		console.error('Failed to load teams:', e);
+	}
+
+	try {
+		const fieldRes = await api.fields.getById(fieldId);
+		field = fieldRes.data?.field || null;
+	} catch (e) {
+		console.error('Failed to load field:', e);
+	}
+
+	return {
+		fieldId,
+		field,
+		rankings,
+		teams
+	};
 };

@@ -6,6 +6,13 @@
 
 	let { data }: { data: PageData } = $props();
 
+	let teamMap = $derived(
+		(data.teams || []).reduce((acc: Record<string, string>, t: any) => {
+			acc[t.id] = t.name;
+			return acc;
+		}, {} as Record<string, string>)
+	);
+
 	onMount(() => {
 		connectToField(data.fieldId);
 	});
@@ -56,7 +63,7 @@
 			<div class="bg-red-950/20 border-2 border-red-900 rounded-xl overflow-hidden flex flex-col">
 				<div class="bg-red-900 p-4 text-center">
 					<h2 class="text-2xl font-bold text-white">RED ALLIANCE</h2>
-					<div class="text-red-200 font-mono mt-1">{$fieldState.teams.red.join(' & ') || 'No Teams'}</div>
+					<div class="text-red-200 font-mono mt-1">{$fieldState.teams.red.map((id: string) => teamMap[id] || id).join(' & ') || 'No Teams'}</div>
 					<div class="text-5xl font-black text-white mt-4">{$fieldState.liveScore.red.total}</div>
 				</div>
 				<div class="p-6 space-y-6 flex-1">
@@ -96,7 +103,7 @@
 			<div class="bg-blue-950/20 border-2 border-blue-900 rounded-xl overflow-hidden flex flex-col">
 				<div class="bg-blue-900 p-4 text-center">
 					<h2 class="text-2xl font-bold text-white">BLUE ALLIANCE</h2>
-					<div class="text-blue-200 font-mono mt-1">{$fieldState.teams.blue.join(' & ') || 'No Teams'}</div>
+					<div class="text-blue-200 font-mono mt-1">{$fieldState.teams.blue.map((id: string) => teamMap[id] || id).join(' & ') || 'No Teams'}</div>
 					<div class="text-5xl font-black text-white mt-4">{$fieldState.liveScore.blue.total}</div>
 				</div>
 				<div class="p-6 space-y-6 flex-1">
