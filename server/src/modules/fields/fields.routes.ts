@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { validate } from '../../core/middlewares';
+import { pathParam, validate } from '../../core/middlewares';
 import { fieldsService } from './fields.service';
 
 const router = Router();
@@ -73,7 +73,7 @@ async function getActiveFieldsHandler(_req: Request, res: Response, next: NextFu
 
 async function getFieldByIdHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const field = await fieldsService.getFieldById(req.params.id);
+		const field = await fieldsService.getFieldById(pathParam(req.params.id));
 
 		res.status(200).json({
 			status: 'success',
@@ -86,7 +86,7 @@ async function getFieldByIdHandler(req: Request, res: Response, next: NextFuncti
 
 async function updateFieldHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const field = await fieldsService.updateField(req.params.id, req.body);
+		const field = await fieldsService.updateField(pathParam(req.params.id), req.body);
 
 		res.status(200).json({
 			status: 'success',
@@ -99,7 +99,7 @@ async function updateFieldHandler(req: Request, res: Response, next: NextFunctio
 
 async function deleteFieldHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		await fieldsService.deleteField(req.params.id);
+		await fieldsService.deleteField(pathParam(req.params.id));
 
 		res.status(204).send();
 	} catch (error) {

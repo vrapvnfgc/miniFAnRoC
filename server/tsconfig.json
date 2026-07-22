@@ -9,9 +9,11 @@
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
 		"sourceMap": true,
+		"noEmit": true,
+		"types": ["@cloudflare/workers-types", "node", "vitest/globals"],
 		"paths": {
 			"@shared": ["../shared/index.ts"]
 		}
 	},
-	"include": ["src/**/*", "../shared/**/*"]
+	"include": ["src/**/*", "worker-configuration.d.ts", "../shared/**/*"]
 }

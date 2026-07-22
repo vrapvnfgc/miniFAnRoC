@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { validate } from '../../core/middlewares';
+import { pathParam, validate } from '../../core/middlewares';
 import { competitionsService } from './competitions.service';
 import { rankingsService } from '../rankings/rankings.service';
 
@@ -32,9 +32,21 @@ const UpdateCompetitionSchema = CreateCompetitionSchema.partial();
 router.post('/', validate({ body: CreateCompetitionSchema }), createCompetitionHandler);
 router.get('/', getAllCompetitionsHandler);
 router.get('/:id', validate({ params: CompetitionIdParamSchema }), getCompetitionByIdHandler);
-router.get('/:id/rankings', validate({ params: CompetitionIdParamSchema }), getCompetitionRankingsHandler);
-router.get('/:id/award-report', validate({ params: CompetitionIdParamSchema }), getAwardReportHandler);
-router.get('/:id/advance-report', validate({ params: CompetitionIdParamSchema }), getAdvanceReportHandler);
+router.get(
+	'/:id/rankings',
+	validate({ params: CompetitionIdParamSchema }),
+	getCompetitionRankingsHandler
+);
+router.get(
+	'/:id/award-report',
+	validate({ params: CompetitionIdParamSchema }),
+	getAwardReportHandler
+);
+router.get(
+	'/:id/advance-report',
+	validate({ params: CompetitionIdParamSchema }),
+	getAdvanceReportHandler
+);
 router.patch(
 	'/:id',
 	validate({ params: CompetitionIdParamSchema, body: UpdateCompetitionSchema }),
@@ -72,7 +84,7 @@ async function getAllCompetitionsHandler(_req: Request, res: Response, next: Nex
 
 async function getCompetitionByIdHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const competition = await competitionsService.getCompetitionById(req.params.id);
+		const competition = await competitionsService.getCompetitionById(pathParam(req.params.id));
 
 		res.status(200).json({
 			status: 'success',
@@ -85,7 +97,10 @@ async function getCompetitionByIdHandler(req: Request, res: Response, next: Next
 
 async function updateCompetitionHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const competition = await competitionsService.updateCompetition(req.params.id, req.body);
+		const competition = await competitionsService.updateCompetition(
+			pathParam(req.params.id),
+			req.body
+		);
 
 		res.status(200).json({
 			status: 'success',
@@ -98,7 +113,7 @@ async function updateCompetitionHandler(req: Request, res: Response, next: NextF
 
 async function deleteCompetitionHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		await competitionsService.deleteCompetition(req.params.id);
+		await competitionsService.deleteCompetition(pathParam(req.params.id));
 
 		res.status(204).send();
 	} catch (error) {
@@ -110,7 +125,10 @@ async function getCompetitionRankingsHandler(req: Request, res: Response, next: 
 	try {
 		const includeUnfinalized = req.query.includeUnfinalized === 'true';
 
-		const rankings = await rankingsService.getRankingsForCompetition(req.params.id, includeUnfinalized);
+		const rankings = await rankingsService.getRankingsForCompetition(
+			pathParam(req.params.id),
+			includeUnfinalized
+		);
 
 		res.status(200).json({
 			status: 'success',
@@ -123,7 +141,10 @@ async function getCompetitionRankingsHandler(req: Request, res: Response, next: 
 async function getAwardReportHandler(req: Request, res: Response, next: NextFunction) {
 	try {
 		const includeUnfinalized = req.query.includeUnfinalized === 'true';
-		const report = await competitionsService.getAwardReport(req.params.id, includeUnfinalized);
+		const report = await competitionsService.getAwardReport(
+			pathParam(req.params.id),
+			includeUnfinalized
+		);
 
 		res.status(200).json({
 			status: 'success',
@@ -137,7 +158,10 @@ async function getAwardReportHandler(req: Request, res: Response, next: NextFunc
 async function getAdvanceReportHandler(req: Request, res: Response, next: NextFunction) {
 	try {
 		const includeUnfinalized = req.query.includeUnfinalized === 'true';
-		const report = await competitionsService.getAdvanceReport(req.params.id, includeUnfinalized);
+		const report = await competitionsService.getAdvanceReport(
+			pathParam(req.params.id),
+			includeUnfinalized
+		);
 
 		res.status(200).json({
 			status: 'success',

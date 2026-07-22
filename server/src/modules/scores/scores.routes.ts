@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { validate } from '../../core/middlewares';
+import { pathParam, validate } from '../../core/middlewares';
 import { scoresService } from './scores.service';
 
 const router = Router();
@@ -43,7 +43,7 @@ export { router as scoresRouter };
 
 async function saveMatchScoreHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const score = await scoresService.saveMatchScore(req.params.matchId, req.body);
+		const score = await scoresService.saveMatchScore(pathParam(req.params.matchId), req.body);
 
 		res.status(200).json({
 			status: 'success',
@@ -56,7 +56,7 @@ async function saveMatchScoreHandler(req: Request, res: Response, next: NextFunc
 
 async function getScoreByMatchIdHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const score = await scoresService.getScoreByMatchId(req.params.matchId);
+		const score = await scoresService.getScoreByMatchId(pathParam(req.params.matchId));
 
 		res.status(200).json({
 			status: 'success',
@@ -69,7 +69,7 @@ async function getScoreByMatchIdHandler(req: Request, res: Response, next: NextF
 
 async function finalizeScoreHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const score = await scoresService.finalizeScore(req.params.matchId);
+		const score = await scoresService.finalizeScore(pathParam(req.params.matchId));
 
 		res.status(200).json({
 			status: 'success',

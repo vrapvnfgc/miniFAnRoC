@@ -2,6 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { AnyZodObject, ZodError } from 'zod';
 import { AppError } from './errors';
 
+export function pathParam(value: string | string[]): string {
+	return Array.isArray(value) ? (value[0] ?? '') : value;
+}
+
 export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
 	const start = Date.now();
 	res.on('finish', () => {
@@ -61,7 +65,7 @@ export const errorHandler = (err: any, req: Request, res: Response, _next: NextF
 			code,
 			message,
 			...(details && { details }),
-			...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+			...(String(process.env.NODE_ENV) === 'development' && { stack: err.stack })
 		}
 	});
 };

@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { validate } from '../../core/middlewares';
+import { pathParam, validate } from '../../core/middlewares';
 import { matchesService } from './matches.service';
 import { auditLogger } from '../../core/audit.logger';
 
@@ -19,8 +19,8 @@ const MatchPhaseSchema = z.enum(['qualification', 'playoff']);
 const CreateMatchSchema = z.object({
 	matchNumber: z.number().int().positive('Match number must be positive'),
 	phase: MatchPhaseSchema,
-		fieldId: ObjectIdSchema,
-		competitionId: ObjectIdSchema.optional(),
+	fieldId: ObjectIdSchema,
+	competitionId: ObjectIdSchema.optional(),
 	redTeamIds: z.array(ObjectIdSchema).length(2, 'Red alliance must have exactly 2 teams'),
 	blueTeamIds: z.array(ObjectIdSchema).length(2, 'Blue alliance must have exactly 2 teams'),
 	status: MatchStatusSchema.optional(),
@@ -80,7 +80,7 @@ async function getAllMatchesHandler(_req: Request, res: Response, next: NextFunc
 
 async function getMatchByIdHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const match = await matchesService.getMatchById(req.params.id);
+		const match = await matchesService.getMatchById(pathParam(req.params.id));
 
 		res.status(200).json({
 			status: 'success',
@@ -93,13 +93,14 @@ async function getMatchByIdHandler(req: Request, res: Response, next: NextFuncti
 
 async function updateMatchHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const match = await matchesService.updateMatch(req.params.id, req.body);
+		const id = pathParam(req.params.id);
+		const match = await matchesService.updateMatch(id, req.body);
 
 		await auditLogger.logAction({
 			req,
 			action: 'UPDATE',
 			resource: 'MATCH',
-			resourceId: req.params.id,
+			resourceId: id,
 			details: req.body
 		});
 
@@ -114,13 +115,14 @@ async function updateMatchHandler(req: Request, res: Response, next: NextFunctio
 
 async function deleteMatchHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		await matchesService.deleteMatch(req.params.id);
+		const id = pathParam(req.params.id);
+		await matchesService.deleteMatch(id);
 
 		await auditLogger.logAction({
 			req,
 			action: 'DELETE',
 			resource: 'MATCH',
-			resourceId: req.params.id
+			resourceId: id
 		});
 
 		res.status(204).send();

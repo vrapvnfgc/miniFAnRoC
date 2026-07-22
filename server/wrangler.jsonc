@@ -1,0 +1,27 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "mini-fanroc-server",
+	"main": "src/worker.ts",
+	"compatibility_date": "2026-07-21",
+	"compatibility_flags": ["nodejs_compat"],
+	"alias": {
+		"mongoose": "./node_modules/mongoose/index.js"
+	},
+	"vars": {
+		"NODE_ENV": "production"
+	},
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "FIELD_ROOM",
+				"class_name": "FieldRoom"
+			}
+		]
+	},
+	"exports": {
+		"FieldRoom": {
+			"type": "durable-object",
+			"storage": "sqlite"
+		}
+	}
+}

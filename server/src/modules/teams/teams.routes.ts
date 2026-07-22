@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { validate } from '../../core/middlewares';
+import { pathParam, validate } from '../../core/middlewares';
 import { teamsService } from './teams.service';
 import { auditLogger } from '../../core/audit.logger';
 
@@ -87,7 +87,7 @@ async function getAllTeamsHandler(_req: Request, res: Response, next: NextFuncti
 
 async function getTeamByIdHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const team = await teamsService.getTeamById(req.params.id);
+		const team = await teamsService.getTeamById(pathParam(req.params.id));
 
 		res.status(200).json({
 			status: 'success',
@@ -100,13 +100,14 @@ async function getTeamByIdHandler(req: Request, res: Response, next: NextFunctio
 
 async function updateTeamHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const team = await teamsService.updateTeam(req.params.id, req.body);
+		const id = pathParam(req.params.id);
+		const team = await teamsService.updateTeam(id, req.body);
 
 		await auditLogger.logAction({
 			req,
 			action: 'UPDATE',
 			resource: 'TEAM',
-			resourceId: req.params.id,
+			resourceId: id,
 			details: req.body
 		});
 
@@ -121,13 +122,14 @@ async function updateTeamHandler(req: Request, res: Response, next: NextFunction
 
 async function deleteTeamHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		await teamsService.deleteTeam(req.params.id);
+		const id = pathParam(req.params.id);
+		await teamsService.deleteTeam(id);
 
 		await auditLogger.logAction({
 			req,
 			action: 'DELETE',
 			resource: 'TEAM',
-			resourceId: req.params.id
+			resourceId: id
 		});
 
 		res.status(204).send();

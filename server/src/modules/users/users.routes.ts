@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { CreateUserSchema } from '@shared';
-import { validate } from '../../core/middlewares';
+import { pathParam, validate } from '../../core/middlewares';
 import { usersService } from './users.service';
 import { z } from 'zod';
 import { requireAuth, requireAdmin } from '../../core/auth.middleware';
@@ -23,7 +23,12 @@ const UpdateUserSchema = z.object({
 	role: z.enum(['USER', 'ADMIN']).optional()
 });
 
-router.patch('/:id', requireAdmin, validate({ params: UserIdParamSchema, body: UpdateUserSchema }), updateUserHandler);
+router.patch(
+	'/:id',
+	requireAdmin,
+	validate({ params: UserIdParamSchema, body: UpdateUserSchema }),
+	updateUserHandler
+);
 router.delete('/:id', requireAdmin, validate({ params: UserIdParamSchema }), deleteUserHandler);
 
 export { router as usersRouter };
@@ -51,7 +56,7 @@ async function createUserHandler(req: Request, res: Response, next: NextFunction
 
 async function getUserByIdHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const user = await usersService.getUserById(req.params.id);
+		const user = await usersService.getUserById(pathParam(req.params.id));
 		res.status(200).json({
 			status: 'success',
 			data: { user }
@@ -75,13 +80,14 @@ async function getAllUsersHandler(_req: Request, res: Response, next: NextFuncti
 
 async function updateUserHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		const user = await usersService.updateUser(req.params.id, req.body);
+		const id = pathParam(req.params.id);
+		const user = await usersService.updateUser(id, req.body);
 
 		await auditLogger.logAction({
 			req,
 			action: 'UPDATE',
 			resource: 'USER',
-			resourceId: req.params.id,
+			resourceId: id,
 			details: req.body
 		});
 
@@ -96,13 +102,14 @@ async function updateUserHandler(req: Request, res: Response, next: NextFunction
 
 async function deleteUserHandler(req: Request, res: Response, next: NextFunction) {
 	try {
-		await usersService.deleteUser(req.params.id);
+		const id = pathParam(req.params.id);
+		await usersService.deleteUser(id);
 
 		await auditLogger.logAction({
 			req,
 			action: 'DELETE',
 			resource: 'USER',
-			resourceId: req.params.id
+			resourceId: id
 		});
 
 		res.status(204).send();
